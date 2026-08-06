@@ -1,35 +1,35 @@
 @mixin palette-light {
 	--pal-ink: #24211d;
-	--pal-muted: #6f675e;
-	--pal-paper: #fdf7ff;
-	--pal-soft: #f1e7f6;
-	--pal-line: #d1c5dd;
-	--pal-grid: #e4d9ec;
-	--pal-accent: #de18f5;
-	--pal-accent-dark: #ab1abb;
-	--pal-accent-soft: #f7e5ff;
-	--pal-code: #1d1b18;
-	--pal-code-muted: #827a6e;
-	--pal-success: #4f7a39;
-	--pal-warning: #9a6512;
-	--pal-danger: #a8372b;
+	--pal-muted: #667064;
+	--pal-paper: #fbfaf3;
+	--pal-soft: #edf2e8;
+	--pal-line: #c8d2c0;
+	--pal-grid: #dce5d6;
+	--pal-accent: #2f6b45;
+	--pal-accent-dark: #245238;
+	--pal-accent-soft: #dcebdd;
+	--pal-code: #182019;
+	--pal-code-muted: #7d897a;
+	--pal-success: #5c833f;
+	--pal-warning: #93671f;
+	--pal-danger: #a24732;
 }
 
 @mixin palette-dark {
-	--pal-ink: #f3ecdf;
-	--pal-muted: #aaa092;
-	--pal-paper: #191713;
-	--pal-soft: #211e19;
-	--pal-line: #3b362e;
-	--pal-grid: #2d2923;
-	--pal-accent: #f27157;
-	--pal-accent-dark: #d95943;
-	--pal-accent-soft: #46261f;
-	--pal-code: #100f0d;
-	--pal-code-muted: #766f65;
-	--pal-success: #88b96b;
-	--pal-warning: #dda94c;
-	--pal-danger: #ed7668;
+	--pal-ink: #eef2e8;
+	--pal-muted: #a8b3a5;
+	--pal-paper: #151a15;
+	--pal-soft: #1d251d;
+	--pal-line: #394638;
+	--pal-grid: #283328;
+	--pal-accent: #78bd82;
+	--pal-accent-dark: #91cf98;
+	--pal-accent-soft: #263d2b;
+	--pal-code: #101510;
+	--pal-code-muted: #788475;
+	--pal-success: #91c66b;
+	--pal-warning: #d7aa55;
+	--pal-danger: #db7862;
 }
 
 :root {

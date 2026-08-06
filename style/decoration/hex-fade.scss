@@ -1,0 +1,45 @@
+.hex-fade {
+	position: relative;
+	isolation: isolate;
+
+	&::before, &::after {
+		position: absolute;
+		inset: 0;
+		content: "";
+		pointer-events: none;
+	}
+
+	&::before {
+		z-index: -2;
+		background: var(--pal-grid);
+		mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='41.5'%3E%3Cg fill='none' stroke='black' stroke-width='1' stroke-linecap='square'%3E%3Cpath d='M0 0 12-20.75h24L48 0 36 20.75H12Z'/%3E%3Cpath d='m72 0 12-20.75h24L120 0l-12 20.75H84Z'/%3E%3Cpath d='m36 20.75L48 0h24l12 20.75L72 41.5H48Z'/%3E%3Cpath d='m108 20.75L120 0h24l12 20.75-12 20.75h-24Z'/%3E%3Cpath d='m0 41.5 12-20.75h24L48 41.5 36 62.25H12Z'/%3E%3Cpath d='m72 41.5 12-20.75h24l12 20.75-12 20.75H84Z'/%3E%3C/g%3E%3C/svg%3E");
+		mask-repeat: repeat;
+		mask-size: 9rem 2.59375rem;
+	}
+
+	&::after {
+		z-index: -1;
+		background: radial-gradient(ellipse at center, transparent 20%, var(--pal-paper) 78%);
+	}
+
+	.hex-twinkle {
+		display: block;
+		position: absolute;
+		z-index: -2;
+		width: 3rem;
+		height: 2.59375rem;
+		clip-path: polygon(25% 0, 75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%);
+		animation: hex-twinkle 2.8s ease-in-out forwards;
+		pointer-events: none;
+
+		&--d1 { background: color-mix(in srgb, var(--pal-accent) 10%, transparent); }
+		&--d2 { background: color-mix(in srgb, var(--pal-success) 8%, transparent); }
+		&--d3 { background: color-mix(in srgb, var(--pal-warning) 8%, transparent); }
+		&--d4 { background: color-mix(in srgb, var(--pal-danger) 6%, transparent); }
+	}
+
+	@keyframes hex-twinkle {
+		0%, 100% { opacity: 0; }
+		45%, 60% { opacity: 1; }
+	}
+}
