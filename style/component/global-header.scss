@@ -1,129 +1,73 @@
 @use "../variable/break";
 
 global-header {
-	display: flex;
-	width: min(calc(100% - 2rem), var(--size-shell));
+	display: block;
+	position: relative;
+	width: 100%;
 	min-height: 4.5rem;
-	margin-inline: auto;
-	align-items: center;
-	justify-content: space-between;
+	margin: 0;
 	border-bottom: 1px solid var(--pal-line);
+	background: var(--pal-soft);
 
-	&.sidebar {
-		display: block;
-		position: relative;
-		margin: 0;
-		background: var(--pal-soft);
+	>.brand {
+		display: flex;
+		min-height: 4rem;
+		padding: 1rem;
+		align-items: center;
+	}
 
-		>.brand {
-			display: flex;
-			min-height: 4rem;
-			padding: 1rem;
-			align-items: center;
-		}
+	details {
+		summary {
+			position: absolute;
+			top: .8rem;
+			right: 1rem;
+			padding: .45rem .65rem;
+			border: 1px solid var(--pal-line);
+			border-radius: .35rem;
+			background: var(--pal-paper);
+			font-size: .78rem;
+			font-weight: 700;
+			list-style: none;
+			cursor: pointer;
 
-		details {
-			summary {
-				position: absolute;
-				top: .8rem;
-				right: 1rem;
-				padding: .45rem .65rem;
-				border: 1px solid var(--pal-line);
-				border-radius: .35rem;
-				background: var(--pal-paper);
-				font-size: .78rem;
-				font-weight: 700;
-				list-style: none;
-				cursor: pointer;
-
-				&::-webkit-details-marker {
-					display: none;
-				}
-			}
-
-			.sidebar-content {
-				padding: 0 1rem 1rem;
+			&::-webkit-details-marker {
+				display: none;
 			}
 		}
 
-		nav {
-			display: block;
-
-			p {
-				margin: 1.25rem .65rem .35rem;
-				color: var(--pal-muted);
-				font-size: .65rem;
-				font-weight: 700;
-				letter-spacing: .08em;
-				text-transform: uppercase;
-			}
-
-			ul {
-				margin: 0;
-				padding: 0;
-				list-style: none;
-			}
-
-			a {
-				display: block;
-				padding: .45rem .65rem;
-				border-radius: .35rem;
-				color: var(--pal-muted);
-				font-size: .82rem;
-				text-decoration: none;
-
-				&:hover, &:focus, &[aria-current="location"] {
-					background: var(--pal-paper);
-					color: var(--pal-ink);
-				}
-			}
-		}
-
-		.sidebar-actions {
-			display: flex;
-			gap: .5rem;
-			margin-top: 1.5rem;
-			align-items: center;
-		}
-
-		@media(min-width: break.$desktop) {
-			position: sticky;
-			top: 0;
-			width: 15rem;
-			height: 100svh;
-			min-height: 100svh;
-			flex-shrink: 0;
-			align-self: flex-start;
-			overflow-y: auto;
-			border-right: 1px solid var(--pal-line);
-			border-bottom: 0;
-
-			details {
-				summary {
-					display: none;
-				}
-
-				.sidebar-content {
-					padding: 0 1rem 1.5rem;
-				}
-			}
+		.sidebar-content {
+			padding: 0 1rem 1rem;
 		}
 	}
 
 	nav {
-		display: flex;
-		gap: .5rem;
-		align-items: center;
+		display: block;
 
-		>a {
-			&:not(.button) {
-				display: none;
-				padding: .5rem;
-				color: var(--pal-muted);
-				text-decoration: none;
-			}
+		p {
+			margin: 1.25rem .65rem .35rem;
+			color: var(--pal-muted);
+			font-size: .65rem;
+			font-weight: 700;
+			letter-spacing: .08em;
+			text-transform: uppercase;
+		}
 
-			&:hover {
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		a {
+			display: block;
+			padding: .45rem .65rem;
+			border-radius: .35rem;
+			color: var(--pal-muted);
+			font-size: .82rem;
+			text-decoration: none;
+
+			&:hover, &:focus, &[aria-current="location"] {
+				background: var(--pal-paper);
 				color: var(--pal-ink);
 			}
 		}
@@ -149,17 +93,9 @@ global-header {
 				line-height: 1;
 			}
 
-			&[data-theme-mode="system"]::before {
-				content: "◐";
-			}
-
-			&[data-theme-mode="light"]::before {
-				content: "☼";
-			}
-
-			&[data-theme-mode="dark"]::before {
-				content: "☾";
-			}
+			&[data-theme-mode="system"]::before { content: "◐"; }
+			&[data-theme-mode="light"]::before { content: "☼"; }
+			&[data-theme-mode="dark"]::before { content: "☾"; }
 
 			&:hover, &:focus-visible {
 				border-color: var(--pal-accent);
@@ -195,12 +131,24 @@ global-header {
 		}
 	}
 
-	@media(min-width: break.$desktop) {
-		nav {
-			gap: 1rem;
+	.sidebar-actions {
+		display: flex;
+		gap: .5rem;
+		margin-top: 1.5rem;
+		align-items: center;
+	}
 
-			>a:not(.button) {
-				display: inline-block;
+	@media(min-width: break.$desktop) {
+		border-right: 1px solid var(--pal-line);
+		border-bottom: 0;
+
+		details {
+			summary {
+				display: none;
+			}
+
+			.sidebar-content {
+				padding: 0 1rem 1.5rem;
 			}
 		}
 	}

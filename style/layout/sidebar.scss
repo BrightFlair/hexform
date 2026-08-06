@@ -1,0 +1,33 @@
+@use "../variable/break";
+
+%l-sidebar {
+	@media(min-width: break.$desktop) {
+		display: flex;
+		flex-wrap: wrap;
+
+		>global-header {
+			position: sticky;
+			top: 0;
+			width: 15rem;
+			height: 100svh;
+			min-height: 100svh;
+			flex-shrink: 0;
+			align-self: flex-start;
+			overflow-y: auto;
+		}
+
+		>main {
+			width: calc(100% - 15rem);
+			min-width: 0;
+			padding: 2.5rem;
+			flex: 0 0 calc(100% - 15rem);
+		}
+
+		>global-footer {
+			width: min(calc(100% - 15rem), var(--size-shell));
+			margin-left: 15rem;
+			margin-right: 0;
+			flex: 0 0 min(calc(100% - 15rem), var(--size-shell));
+		}
+	}
+}

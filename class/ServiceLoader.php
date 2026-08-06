@@ -19,4 +19,8 @@ class ServiceLoader extends DefaultServiceLoader {
 			$session->getStore("authwave", true),
 		);
 	}
+
+//	public function loadUser():?User {
+//
+//	}
 }

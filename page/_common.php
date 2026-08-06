@@ -25,6 +25,4 @@ function go(
 			"/app/",
 		);
 	}
-
-	$authenticator->login();
 }

@@ -15,12 +15,8 @@ global-footer {
 
 	@media(min-width: break.$desktop) {
 		display: flex;
-		width: min(calc(100% - 15rem), var(--size-shell));
 		gap: 2rem;
-		margin-left: 15rem;
-		margin-right: 0;
 		padding-inline: 1rem;
-		flex: 0 0 min(calc(100% - 15rem), var(--size-shell));
 		align-items: center;
 
 		p {
