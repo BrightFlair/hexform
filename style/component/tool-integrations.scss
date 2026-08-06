@@ -1,0 +1,45 @@
+@use "../variable/break";
+
+tool-integrations {
+	display: block;
+
+	ul {
+		display: flex;
+		margin: 0;
+		padding: 0;
+		flex-wrap: wrap;
+		justify-content: center;
+		list-style: none;
+
+		li {
+			width: 50%;
+			padding: .35rem;
+
+			@media(min-width: break.$desktop) {
+				width: 16.666%;
+			}
+		}
+
+		a {
+			display: flex;
+			min-height: 5rem;
+			gap: .65rem;
+			align-items: center;
+			justify-content: center;
+			border: 1px solid var(--pal-line);
+			border-radius: .45rem;
+			background: color-mix(in srgb, var(--pal-paper) 88%, transparent);
+			font-weight: 700;
+			text-decoration: none;
+
+			&:hover {
+				border-color: var(--pal-accent);
+				color: var(--pal-accent);
+			}
+		}
+
+		span {
+			font-size: 1.35rem;
+		}
+	}
+}

@@ -1,0 +1,4 @@
+.shell {
+	width: min(calc(100% - 2rem), var(--size-shell));
+	margin-inline: auto;
+}

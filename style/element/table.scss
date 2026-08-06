@@ -1,0 +1,22 @@
+table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: .85rem;
+
+	th, td {
+		padding: .75rem;
+		border-bottom: 1px solid var(--pal-line);
+		text-align: left;
+	}
+
+	th {
+		background: var(--pal-soft);
+		font-size: .72rem;
+		letter-spacing: .05em;
+		text-transform: uppercase;
+	}
+
+	tbody tr:hover {
+		background: color-mix(in srgb, var(--pal-soft) 60%, transparent);
+	}
+}

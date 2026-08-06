@@ -1,0 +1,55 @@
+@mixin palette-light {
+	--pal-ink: #24211d;
+	--pal-muted: #6f675e;
+	--pal-paper: #fffdf7;
+	--pal-soft: #f6f1e7;
+	--pal-line: #ddd4c5;
+	--pal-grid: #ece5d9;
+	--pal-accent: #c4472d;
+	--pal-accent-dark: #9f321f;
+	--pal-accent-soft: #fae2d8;
+	--pal-code: #1d1b18;
+	--pal-code-muted: #827a6e;
+	--pal-success: #4f7a39;
+	--pal-warning: #9a6512;
+	--pal-danger: #a8372b;
+}
+
+@mixin palette-dark {
+	--pal-ink: #f3ecdf;
+	--pal-muted: #aaa092;
+	--pal-paper: #191713;
+	--pal-soft: #211e19;
+	--pal-line: #3b362e;
+	--pal-grid: #2d2923;
+	--pal-accent: #f27157;
+	--pal-accent-dark: #d95943;
+	--pal-accent-soft: #46261f;
+	--pal-code: #100f0d;
+	--pal-code-muted: #766f65;
+	--pal-success: #88b96b;
+	--pal-warning: #dda94c;
+	--pal-danger: #ed7668;
+}
+
+:root {
+	@include palette-light;
+	color-scheme: light;
+}
+
+@media(prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		@include palette-dark;
+		color-scheme: dark;
+	}
+}
+
+:root[data-theme="light"] {
+	@include palette-light;
+	color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+	@include palette-dark;
+	color-scheme: dark;
+}

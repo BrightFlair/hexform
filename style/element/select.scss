@@ -1,0 +1,6 @@
+@use "../decoration/ui";
+
+select {
+	@extend %d-ui;
+	width: 100%;
+}

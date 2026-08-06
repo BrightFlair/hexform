@@ -1,0 +1,8 @@
+@use "../decoration/ui";
+
+output {
+	@extend %d-ui;
+	display: block;
+	width: 100%;
+	background: var(--pal-soft);
+}

@@ -1,0 +1,36 @@
+%d-card {
+	display: block;
+	padding: 1.25rem;
+	border: 1px solid var(--pal-line);
+	border-radius: var(--size-radius);
+	background: var(--pal-paper);
+	box-shadow: 0 .1rem .25rem color-mix(in srgb, var(--pal-ink) 5%, transparent);
+
+	>:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.card {
+	@extend %d-card;
+	color: var(--pal-ink);
+	text-decoration: none;
+
+	>.badge {
+		margin-bottom: .75rem;
+	}
+
+	&--soft {
+		background: var(--pal-soft);
+		box-shadow: none;
+	}
+
+	&--interactive {
+		transition: border-color 120ms ease, transform 120ms ease;
+
+		&:hover {
+			border-color: var(--pal-accent);
+			transform: translateY(-.1rem);
+		}
+	}
+}

@@ -1,0 +1,17 @@
+.callout {
+	--callout-colour: var(--pal-accent);
+	display: block;
+	padding: 1rem;
+	border: 1px solid color-mix(in srgb, var(--callout-colour) 45%, var(--pal-line));
+	border-left: .25rem solid var(--callout-colour);
+	border-radius: .35rem;
+	background: color-mix(in srgb, var(--callout-colour) 8%, var(--pal-paper));
+
+	>:last-child {
+		margin-bottom: 0;
+	}
+
+	&--success { --callout-colour: var(--theme-success); }
+	&--warning { --callout-colour: var(--theme-warning); }
+	&--danger { --callout-colour: var(--theme-danger); }
+}

@@ -1,0 +1,10 @@
+@use "../decoration/form-fields" as *;
+
+signup-form {
+	display: block;
+	width: 100%;
+
+	form {
+		@extend %d-form-fields;
+	}
+}

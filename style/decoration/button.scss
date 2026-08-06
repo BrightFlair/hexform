@@ -1,0 +1,56 @@
+@use "ui";
+
+%d-button {
+	@extend %d-ui;
+	display: inline-flex;
+	width: auto;
+	align-items: center;
+	justify-content: center;
+	background: var(--pal-soft);
+	font-weight: 700;
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+
+	&:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--pal-soft), var(--pal-ink) 5%);
+	}
+
+	&.primary, &.button--primary, &:not(.secondary, .danger, .quiet, .button--outline) {
+		border-color: var(--theme-action-bg);
+		background: var(--theme-action-bg);
+		color: var(--theme-action-fg);
+
+		&:hover:not(:disabled) {
+			border-color: var(--theme-action-bg-hover);
+			background: var(--theme-action-bg-hover);
+		}
+	}
+
+	&.secondary, &.button--outline {
+		background: var(--pal-paper);
+		color: var(--pal-ink);
+	}
+
+	&.danger {
+		border-color: var(--theme-danger);
+		background: var(--theme-danger);
+		color: var(--pal-paper);
+	}
+
+	&.quiet {
+		border-color: transparent;
+		background: transparent;
+		color: var(--pal-ink);
+	}
+
+	&.small, &.button--small {
+		min-height: 2.2rem;
+		padding: .45rem .65rem;
+		font-size: .78rem;
+	}
+}
+
+.button {
+	@extend %d-button;
+}

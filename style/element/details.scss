@@ -1,0 +1,16 @@
+details {
+	border-bottom: 1px solid var(--pal-line);
+
+	&:last-child {
+		border-bottom: 0;
+	}
+
+	summary {
+		padding-block: .85rem;
+		cursor: pointer;
+	}
+
+	>p {
+		padding: 0 1rem .85rem;
+	}
+}

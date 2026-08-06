@@ -1,0 +1,18 @@
+$desktop: 58rem;
+$wide: 76rem;
+
+:root {
+	--break: mobile;
+}
+
+@media(min-width: $desktop) {
+	:root {
+		--break: desktop;
+	}
+}
+
+@media(min-width: $wide) {
+	:root {
+		--break: wide;
+	}
+}

@@ -1,0 +1,13 @@
+.section-heading {
+	max-width: var(--size-reading);
+	margin-bottom: 3rem;
+
+	>p:last-child {
+		margin-bottom: 0;
+	}
+
+	&--center {
+		margin-inline: auto;
+		text-align: center;
+	}
+}

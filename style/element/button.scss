@@ -1,0 +1,5 @@
+@use "../decoration/button";
+
+button {
+	@extend %d-button;
+}

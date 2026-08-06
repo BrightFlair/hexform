@@ -1,0 +1,8 @@
+@use "../decoration/ui";
+
+textarea {
+	@extend %d-ui;
+	width: 100%;
+	min-height: 8rem;
+	resize: vertical;
+}

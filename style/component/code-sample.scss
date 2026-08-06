@@ -1,0 +1,36 @@
+code-sample {
+	display: block;
+	overflow-x: auto;
+	width: min(100%, 47rem);
+	margin: 3.5rem auto 0;
+	padding: 1.25rem 0;
+	border: 1px solid #39342c;
+	border-radius: .65rem;
+	background: var(--pal-code);
+	box-shadow: 0 1.5rem 4rem rgba(64, 45, 32, .14);
+	color: #eee5d5;
+	text-align: left;
+
+	.code-line {
+		display: flex;
+		min-width: 39rem;
+		padding-inline: 1rem;
+		line-height: 1.8;
+		white-space: pre;
+
+		i {
+			width: 2.4rem;
+			color: var(--pal-code-muted);
+			font-style: normal;
+			user-select: none;
+		}
+
+		code { font: inherit; }
+		b { color: #f3a65a; font-weight: 400; }
+		em { color: #e7d36f; font-style: normal; }
+		q {
+			color: #98c379;
+			quotes: none;
+		}
+	}
+}

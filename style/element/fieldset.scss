@@ -1,0 +1,12 @@
+fieldset {
+	margin: 0;
+	padding: 1rem;
+	border: 1px solid var(--pal-line);
+	border-radius: var(--size-radius);
+
+	legend {
+		padding-inline: .4rem;
+		font-size: .85rem;
+		font-weight: 700;
+	}
+}

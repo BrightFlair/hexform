@@ -1,0 +1,32 @@
+@use "../variable/break";
+
+feature-item {
+	display: block;
+	padding-block: 2rem;
+	border-bottom: 1px solid var(--pal-line);
+
+	.feature-number {
+		display: block;
+		margin-bottom: 1rem;
+		color: var(--pal-accent);
+		font-size: .8rem;
+		font-weight: 700;
+	}
+
+	p {
+		max-width: 40rem;
+		margin-bottom: 0;
+	}
+
+	@media(min-width: break.$desktop) {
+		display: flex;
+		gap: 3rem;
+		padding: 2.5rem;
+
+		.feature-number {
+			flex: 0 0 4rem;
+			margin-bottom: 0;
+			padding-top: .25rem;
+		}
+	}
+}

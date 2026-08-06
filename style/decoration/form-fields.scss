@@ -1,0 +1,110 @@
+@use "../variable/break";
+
+%d-form-fields {
+	display: flex;
+	width: 100%;
+	gap: 1rem;
+	flex-direction: column;
+
+	&.compact {
+		gap: .65rem;
+	}
+
+	.field, >label {
+		display: block;
+		width: 100%;
+		max-width: var(--size-form-field);
+		margin: 0;
+
+		>span:first-child {
+			display: block;
+			margin-bottom: .4rem;
+			color: var(--pal-ink);
+			font-size: .82rem;
+			font-weight: 700;
+		}
+
+		>small {
+			display: block;
+			margin-top: .35rem;
+			color: var(--pal-muted);
+			font-size: .72rem;
+			font-weight: 400;
+		}
+
+		&.invalid >small {
+			color: var(--theme-danger);
+		}
+	}
+
+	.choice {
+		display: flex;
+		margin: 0;
+		align-items: flex-start;
+		color: var(--pal-ink);
+		font-size: .85rem;
+		font-weight: 400;
+		cursor: pointer;
+	}
+
+	.field-row {
+		display: flex;
+		gap: 1rem;
+		flex-direction: column;
+
+		@media(min-width: break.$desktop) {
+			flex-direction: row;
+
+			>* {
+				width: 50%;
+				max-width: none;
+			}
+		}
+	}
+
+	.fields {
+		display: flex;
+		gap: .6rem;
+		flex-direction: column;
+
+		>* {
+			width: 100%;
+		}
+
+		@media(min-width: break.$desktop) {
+			flex-direction: row;
+
+			input {
+				flex: 1 1 auto;
+				border-radius: .4rem 0 0 .4rem;
+			}
+
+			button {
+				width: auto;
+				border-radius: 0 .4rem .4rem 0;
+				white-space: nowrap;
+			}
+		}
+	}
+
+	.actions {
+		display: flex;
+		width: 100%;
+		gap: .65rem;
+		margin-top: .5rem;
+		flex-wrap: wrap;
+		justify-content: flex-end;
+
+		.action-left {
+			margin-right: auto;
+		}
+	}
+}
+
+.form-fields {
+	@extend %d-form-fields;
+
+	&.card {
+		display: flex;
+	}
+}

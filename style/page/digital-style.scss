@@ -1,0 +1,92 @@
+@use "../variable/break";
+
+body.uri--digital-style {
+	.ds-header {
+		max-width: 52rem;
+		margin-bottom: 3rem;
+		padding-bottom: 2rem;
+		border-bottom: 1px solid var(--pal-line);
+
+		h1 {
+			font-size: clamp(2.2rem, 8vw, 4.5rem);
+		}
+	}
+
+	.ds-section {
+		max-width: 64rem;
+		margin-bottom: 4rem;
+		scroll-margin-top: 1rem;
+
+		>header {
+			max-width: 44rem;
+			margin-bottom: 1.5rem;
+
+			h2 {
+				font-size: clamp(1.7rem, 5vw, 2.5rem);
+			}
+		}
+	}
+
+	.ds-grid {
+		display: flex;
+		gap: 1rem;
+		flex-direction: column;
+
+		>* {
+			flex: 1 1 0;
+		}
+
+		@media(min-width: break.$desktop) {
+			flex-direction: row;
+		}
+	}
+
+	.ds-stack {
+		display: flex;
+		gap: .75rem;
+		flex-wrap: wrap;
+		align-items: center;
+	}
+
+	.form-fields+.ds-stack,
+	.table-scroll+.ds-grid {
+		margin-top: 1rem;
+	}
+
+	.ds-swatch {
+		display: block;
+		min-height: 6rem;
+		padding: .75rem;
+		border: 1px solid var(--pal-line);
+		border-radius: .35rem;
+		font-size: .72rem;
+		font-weight: 700;
+
+		&--accent { background: var(--pal-accent); color: var(--pal-paper); }
+		&--soft { background: var(--pal-soft); }
+		&--success { background: var(--pal-success); color: var(--pal-paper); }
+		&--warning { background: var(--pal-warning); color: var(--pal-paper); }
+		&--danger { background: var(--pal-danger); color: var(--pal-paper); }
+	}
+
+	.table-scroll {
+		overflow-x: auto;
+		border: 1px solid var(--pal-line);
+		border-radius: var(--size-radius);
+	}
+
+	code:not(code-sample code), kbd {
+		padding: .1rem .3rem;
+		border: 1px solid var(--pal-line);
+		border-radius: .25rem;
+		background: var(--pal-soft);
+		font: inherit;
+		font-size: .82em;
+	}
+
+	progress, meter {
+		width: 100%;
+		height: 1rem;
+		accent-color: var(--pal-accent);
+	}
+}

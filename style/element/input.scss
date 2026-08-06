@@ -1,0 +1,32 @@
+@use "../decoration/ui";
+
+input {
+	@extend %d-ui;
+	width: 100%;
+
+	&[type="checkbox"], &[type="radio"] {
+		width: 1.1rem;
+		min-height: auto;
+		height: 1.1rem;
+		margin: .15rem .5rem 0 0;
+		padding: 0;
+		accent-color: var(--pal-accent);
+	}
+
+	&[type="color"] {
+		width: 4rem;
+		padding: .25rem;
+	}
+
+	&[type="range"] {
+		padding-inline: 0;
+		border-color: transparent;
+		background: transparent;
+		accent-color: var(--pal-accent);
+	}
+
+	&[aria-invalid="true"] {
+		border-color: var(--theme-danger);
+		outline-color: var(--theme-danger-soft);
+	}
+}

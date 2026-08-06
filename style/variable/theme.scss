@@ -1,0 +1,13 @@
+:root {
+	--theme-bg: var(--pal-paper);
+	--theme-fg: var(--pal-ink);
+	--theme-muted: var(--pal-muted);
+	--theme-border: var(--pal-line);
+	--theme-action-bg: var(--pal-accent);
+	--theme-action-bg-hover: var(--pal-accent-dark);
+	--theme-action-fg: var(--pal-paper);
+	--theme-success: var(--pal-success);
+	--theme-warning: var(--pal-warning);
+	--theme-danger: var(--pal-danger);
+	--theme-danger-soft: color-mix(in srgb, var(--pal-danger) 18%, transparent);
+}

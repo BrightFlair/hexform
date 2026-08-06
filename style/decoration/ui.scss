@@ -1,0 +1,28 @@
+%d-ui {
+	box-sizing: border-box;
+	min-height: 2.75rem;
+	padding: .65rem .8rem;
+	border: 1px solid var(--pal-line);
+	border-radius: .4rem;
+	background-color: var(--pal-paper);
+	color: var(--pal-ink);
+	font: inherit;
+	font-size: .9rem;
+	line-height: 1.35;
+	transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+
+	&:hover:not(:disabled) {
+		border-color: var(--pal-muted);
+	}
+
+	&:focus, &:focus-visible {
+		border-color: var(--pal-accent);
+		outline: .2rem solid var(--pal-accent-soft);
+		outline-offset: 0;
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		opacity: .5;
+	}
+}
