@@ -2,6 +2,12 @@
   "name": "brightflair/hexform",
   "description": "A minimal PHP.GT WebEngine homepage.",
   "require": {
-    "phpgt/webengine": "^5.0"
+	"phpgt/webengine": "^5.0",
+	"authwave/php-client": "dev-master"
+  },
+  "autoload": {
+	"psr-4": {
+	  "HexForm\\": "./class"
+	}
   }
 }

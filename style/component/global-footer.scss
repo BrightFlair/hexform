@@ -4,7 +4,7 @@ global-footer {
 	display: block;
 	width: min(calc(100% - 2rem), var(--size-shell));
 	margin-inline: auto;
-	padding: 2.5rem 0rem;
+	padding: 2.5rem 0;
 	border-top: 1px solid var(--pal-line);
 	color: var(--pal-muted);
 	font-size: .78rem;
