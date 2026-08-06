@@ -34,7 +34,7 @@ pricing-card {
 
 		span {
 			color: var(--pal-muted);
-			font-size: .8rem;
+			font-size: .85rem;
 		}
 	}
 
@@ -49,7 +49,7 @@ pricing-card {
 		position: relative;
 		padding: .3rem 0 .3rem 1.5rem;
 		color: var(--pal-muted);
-		font-size: .88rem;
+		font-size: .92rem;
 
 		&::before {
 			position: absolute;
@@ -69,7 +69,7 @@ pricing-card {
 			padding: .35rem;
 			background: var(--pal-accent);
 			color: var(--pal-paper);
-			font-size: .7rem;
+			font-size: .8rem;
 			font-weight: 700;
 			letter-spacing: .1em;
 			text-align: center;

@@ -2,6 +2,13 @@
 	position: relative;
 	isolation: isolate;
 
+	p {
+		text-shadow: -0.1rem -0.1rem .25rem var(--pal-paper),
+			0.1rem -0.1rem .25rem var(--pal-paper),
+			0.1rem 0.1rem .25rem var(--pal-paper),
+			-0.1rem 0.1rem .25rem var(--pal-paper);
+	}
+
 	&::before, &::after {
 		position: absolute;
 		inset: 0;
