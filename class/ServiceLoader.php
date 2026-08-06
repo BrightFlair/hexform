@@ -2,6 +2,9 @@
 namespace HexForm;
 
 use Authwave\Authenticator;
+use HexForm\User\User;
+use HexForm\User\UserRepository;
+use Gt\Database\Database;
 use Gt\Http\Uri;
 use Gt\Session\Session;
 use GT\WebEngine\Service\DefaultServiceLoader;
@@ -20,7 +23,18 @@ class ServiceLoader extends DefaultServiceLoader {
 		);
 	}
 
-//	public function loadUser():?User {
-//
-//	}
+	public function loadUser():?User {
+		$authenticator = $this->container->get(Authenticator::class);
+		if(!$authenticator->isLoggedIn()) {
+			return null;
+		}
+
+		$userRepository = $this->container->get(UserRepository::class);
+		return $userRepository->fromAuthwaveUser($authenticator->getUser());
+	}
+
+	public function loadUserRepository():UserRepository {
+		$database = $this->container->get(Database::class);
+		return new UserRepository($database->queryCollection("User"));
+	}
 }
