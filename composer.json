@@ -1,0 +1,7 @@
+{
+  "name": "brightflair/hexform",
+  "description": "A minimal PHP.GT WebEngine homepage.",
+  "require": {
+    "phpgt/webengine": "^5.0"
+  }
+}
