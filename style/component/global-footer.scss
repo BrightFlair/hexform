@@ -4,7 +4,7 @@ global-footer {
 	display: block;
 	width: min(calc(100% - 2rem), var(--size-shell));
 	margin-inline: auto;
-	padding-block: 2.5rem;
+	padding: 2.5rem 0rem;
 	border-top: 1px solid var(--pal-line);
 	color: var(--pal-muted);
 	font-size: .78rem;
@@ -15,7 +15,12 @@ global-footer {
 
 	@media(min-width: break.$desktop) {
 		display: flex;
+		width: min(calc(100% - 15rem), var(--size-shell));
 		gap: 2rem;
+		margin-left: 15rem;
+		margin-right: 0;
+		padding-inline: 1rem;
+		flex: 0 0 min(calc(100% - 15rem), var(--size-shell));
 		align-items: center;
 
 		p {

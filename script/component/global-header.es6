@@ -12,6 +12,9 @@ document.querySelectorAll("global-header").forEach(header => {
 		if(breakpoint === "desktop" || breakpoint === "wide") {
 			details.open = true;
 		}
+		else {
+			details.open = false;
+		}
 	}
 
 	window.addEventListener("resize", resizeGlobalHeader);

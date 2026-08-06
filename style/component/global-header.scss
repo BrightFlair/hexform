@@ -87,6 +87,14 @@ global-header {
 		}
 
 		@media(min-width: break.$desktop) {
+			position: sticky;
+			top: 0;
+			width: 15rem;
+			height: 100svh;
+			min-height: 100svh;
+			flex-shrink: 0;
+			align-self: flex-start;
+			overflow-y: auto;
 			border-right: 1px solid var(--pal-line);
 			border-bottom: 0;
 

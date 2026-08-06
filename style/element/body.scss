@@ -19,20 +19,13 @@ body {
 
 	@media(min-width: break.$desktop) {
 		display: flex;
-
-		>global-header {
-			position: sticky;
-			top: 0;
-			width: 15rem;
-			height: 100svh;
-			min-height: 100svh;
-			flex: 0 0 15rem;
-			overflow-y: auto;
-		}
+		flex-wrap: wrap;
 
 		>main {
+			width: calc(100% - 15rem);
 			min-width: 0;
 			padding: 2.5rem;
+			flex: 0 0 calc(100% - 15rem);
 		}
 	}
 }
