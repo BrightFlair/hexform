@@ -45,8 +45,28 @@ class SubmissionRepository {
 		$this->db->delete("delete", $submission->id);
 	}
 
+	public function deleteByIdForUser(string $id, User $user):bool {
+		$submission = $this->getByIdForUser($id, $user);
+		if(!$submission) {
+			return false;
+		}
+
+		$this->delete($submission);
+		return true;
+	}
+
 	public function markNotJunk(Submission $submission):void {
 		$this->db->update("markNotJunk", $submission->id);
+	}
+
+	public function markNotJunkByIdForUser(string $id, User $user):bool {
+		$submission = $this->getByIdForUser($id, $user);
+		if(!$submission) {
+			return false;
+		}
+
+		$this->markNotJunk($submission);
+		return true;
 	}
 
 	/**

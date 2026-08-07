@@ -20,6 +20,16 @@ class EndpointRepository {
 		$this->db->delete("delete", $endpoint->id);
 	}
 
+	public function deleteByIdForUser(string $id, User $user):bool {
+		$endpoint = $this->getByIdForUser($id, $user);
+		if(!$endpoint) {
+			return false;
+		}
+
+		$this->delete($endpoint);
+		return true;
+	}
+
 	/** @return array<Endpoint> */
 	public function getForUser(User $user):array {
 		$list = [];

@@ -51,8 +51,6 @@ function do_delete(
 	Input $input,
 	Response $response,
 ): void {
-	if($s = $repository->getByIdForUser($input->getString("id"), $user)) {
-		$repository->delete($s);
-	}
+	$repository->deleteByIdForUser($input->getString("id"), $user);
 	$response->reload();
 }

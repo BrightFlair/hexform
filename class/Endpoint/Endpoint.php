@@ -36,6 +36,8 @@ readonly class Endpoint {
 
 	#[BindGetter]
 	public function getRetentionValue():string {
-		return $this->retentionMonths === null ? "forever" : (string)$this->retentionMonths;
+		return $this->retentionMonths === null
+			? "forever"
+			: (string)$this->retentionMonths;
 	}
 }

@@ -30,19 +30,13 @@ function go(
 	);
 }
 
-function find_junk(User $user, SubmissionRepository $repository, Input $input) {
-	return $repository->getByIdForUser($input->getString("id"), $user);
-}
-
 function do_not_junk(
 	User $user,
 	SubmissionRepository $repository,
 	Input $input,
 	Response $response,
 ): void {
-	if($s = find_junk($user, $repository, $input)) {
-		$repository->markNotJunk($s);
-	}
+	$repository->markNotJunkByIdForUser($input->getString("id"), $user);
 	$response->reload();
 }
 
@@ -52,8 +46,6 @@ function do_delete(
 	Input $input,
 	Response $response,
 ): void {
-	if($s = find_junk($user, $repository, $input)) {
-		$repository->delete($s);
-	}
+	$repository->deleteByIdForUser($input->getString("id"), $user);
 	$response->reload();
 }

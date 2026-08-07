@@ -33,14 +33,12 @@ readonly class Submission {
 		return $this->fieldPreview($this->mainField, "No preview configured");
 	}
 
-	/** @return array<int, array{field: string, value: string|false}> */
+	/** @return array<int, array{field: string, value: string}> */
 	public function getDataRows():array {
 		return array_map(
 			fn($key, $value) => [
 				"field" => $key,
-				"value" => is_scalar($value)
-					? (string)$value
-					: json_encode($value)
+				"value" => $this->stringify($value),
 			],
 			array_keys($this->data),
 			$this->data,
@@ -51,9 +49,15 @@ readonly class Submission {
 		if(!$field || !isset($this->data[$field])) {
 			return $fallback;
 		}
-		$value = is_scalar($this->data[$field])
-			? (string)$this->data[$field]
-			: json_encode($this->data[$field]);
+		$value = $this->stringify($this->data[$field]);
 		return mb_strimwidth($value, 0, 100, "…");
+	}
+
+	private function stringify(mixed $value):string {
+		if(is_scalar($value)) {
+			return (string)$value;
+		}
+
+		return json_encode($value) ?: "";
 	}
 }

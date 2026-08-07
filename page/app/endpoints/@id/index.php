@@ -16,8 +16,9 @@ function go(
 	Binder $binder,
 	HTMLDocument $document,
 ): void {
-	$endpoint = get_endpoint($repository, $path, $user, $response);
-	if (!$endpoint) {
+	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
+		$response->redirect("/app/endpoints/");
 		return;
 	}
 	$binder->bindData($endpoint);
@@ -41,8 +42,9 @@ function do_save(
 	Response $response,
 	Input $input,
 ): void {
-	$e = get_endpoint($repository, $path, $user, $response);
+	$e = $repository->getByIdForUser($path->get("id"), $user);
 	if(!$e) {
+		$response->redirect("/app/endpoints/");
 		return;
 	}
 	$retention = $input->getString("retentionMonths");
@@ -72,22 +74,6 @@ function do_delete(
 	User $user,
 	Response $response,
 ): void {
-	$e = get_endpoint($repository, $path, $user, $response);
-	if($e) {
-		$repository->delete($e);
-	}
+	$repository->deleteByIdForUser($path->get("id"), $user);
 	$response->redirect("/app/endpoints/");
-}
-
-function get_endpoint(
-	EndpointRepository $repository,
-	DynamicPath $path,
-	User $user,
-	Response $response,
-): ?Endpoint {
-	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
-	if(!$endpoint) {
-		$response->redirect("/app/endpoints/");
-	}
-	return $endpoint;
 }
