@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2edfcc05d5e4f78acf98c873d7ee2729",
+    "content-hash": "aec4bbc386f049321619f88b67dab725",
     "packages": [
         {
             "name": "authwave/php-client",
@@ -7268,7 +7268,9 @@
     },
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": {},
+    "platform": {
+        "php": ">=8.4"
+    },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
 }

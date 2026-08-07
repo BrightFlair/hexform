@@ -2,6 +2,7 @@
 	"name": "brightflair/hexform",
 	"description": "A minimal PHP.GT WebEngine homepage.",
 	"require": {
+		"php": ">=8.4",
 		"phpgt/webengine": "^5.0",
 		"authwave/php-client": "dev-master"
 	},
