@@ -1,1 +1,101 @@
-	<h1>Secret login area!</h1>
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Overview</p>
+		<h1>Dashboard</h1>
+		<p>Everything happening across your forms.</p>
+	</div>
+</header>
+
+<section class="onboarding card" aria-labelledby="onboarding-title">
+	<header>
+		<div>
+			<p class="eyebrow">Getting started</p>
+			<h2 id="onboarding-title">Launch your first form</h2>
+		</div>
+		<strong>
+			<span data-bind:text="completedSteps">0</span>
+			/4 complete
+		</strong>
+	</header>
+	<ol>
+		<li data-step="endpoint">
+			<span>1</span>
+			<div>
+				<strong>Create your first endpoint</strong>
+				<p>Connect a form to its own secure action URL.</p>
+			</div>
+			<a class="button small secondary" href="/app/endpoints/create/">Create endpoint</a>
+		</li>
+		<li data-step="submission">
+			<span>2</span>
+			<div>
+				<strong>Receive your first submission</strong>
+				<p>Send a test entry from your website or HTML snippet.</p>
+			</div>
+			<a class="button small secondary" href="/app/submissions/">View inbox</a>
+		</li>
+		<li data-step="junk">
+			<span>3</span>
+			<div>
+				<strong>Set up junk protection</strong>
+				<p>Enable detection and add a honeypot field.</p>
+			</div>
+			<a class="button small secondary" href="/app/endpoints/">Configure</a>
+		</li>
+		<li data-step="forwarder">
+			<span>4</span>
+			<div>
+				<strong>Set up a forwarder</strong>
+				<p>Send new submissions to another tool automatically.</p>
+			</div>
+			<a class="button small secondary" href="/app/endpoints/">Configure</a>
+		</li>
+	</ol>
+</section>
+
+<form class="dashboard-filter" method="get">
+	<label>
+		Endpoint
+		<select name="endpoint" data-endpoint-select>
+			<option value="">All endpoints</option>
+			<option data-list data-bind:value="id" data-bind:text="title">Endpoint</option>
+		</select>
+	</label>
+	<button class="secondary" type="submit">Apply</button>
+</form>
+
+<section class="metric-grid" aria-label="Usage summary">
+	<article class="metric-card">
+		<p>Total submissions</p>
+		<strong data-bind:text="total">0</strong>
+		<span>All time</span>
+	</article>
+	<article class="metric-card">
+		<p>This month</p>
+		<strong data-bind:text="thisMonth">0</strong>
+		<span>Accepted and junk</span>
+	</article>
+	<article class="metric-card">
+		<p>Junk messages</p>
+		<strong data-bind:text="junk">0</strong>
+		<a href="/app/junk/">View junk</a>
+	</article>
+	<article class="metric-card">
+		<p>Active endpoints</p>
+		<strong data-bind:text="endpointCount">0</strong>
+		<a href="/app/endpoints/">Manage endpoints</a>
+	</article>
+</section>
+
+<section class="dashboard-chart card">
+	<header>
+		<div>
+			<p class="eyebrow">Last 30 days</p>
+			<h2>Submission activity</h2>
+		</div>
+	</header>
+	<div class="chart" role="img" aria-label="Submissions received each day"></div>
+	<script type="application/json" data-bind:text="chartJson">
+		{}
+	</script>
+</section>

@@ -4,6 +4,8 @@ namespace HexForm;
 use Authwave\Authenticator;
 use HexForm\User\User;
 use HexForm\User\UserRepository;
+use HexForm\Endpoint\EndpointRepository;
+use HexForm\Submission\SubmissionRepository;
 use Gt\Database\Database;
 use Gt\Http\Uri;
 use Gt\Session\Session;
@@ -36,5 +38,13 @@ class ServiceLoader extends DefaultServiceLoader {
 	public function loadUserRepository():UserRepository {
 		$database = $this->container->get(Database::class);
 		return new UserRepository($database->queryCollection("User"));
+	}
+
+	public function loadEndpointRepository():EndpointRepository {
+		return new EndpointRepository($this->container->get(Database::class)->queryCollection("Endpoint"));
+	}
+
+	public function loadSubmissionRepository():SubmissionRepository {
+		return new SubmissionRepository($this->container->get(Database::class)->queryCollection("Submission"));
 	}
 }

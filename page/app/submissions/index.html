@@ -1,0 +1,53 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Inbox</p>
+		<h1>Submissions</h1>
+		<p>Read and manage the entries received by your forms.</p>
+	</div>
+</header>
+<form class="dashboard-filter" method="get">
+	<label>
+		Endpoint
+		<select name="endpoint" data-endpoint-select>
+			<option value="">All endpoints</option>
+			<option data-list data-bind:value="id" data-bind:text="title">Endpoint</option>
+		</select>
+	</label>
+	<button class="secondary">Filter</button>
+</form>
+<div class="table-scroll card">
+	<table>
+		<thead>
+			<tr>
+				<th>Endpoint</th>
+				<th>Date</th>
+				<th>Submitter</th>
+				<th>Contents</th>
+				<th><span class="visually-hidden">Actions</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-list>
+				<td><strong data-bind:text="endpointTitle">Endpoint</strong></td>
+				<td data-bind:text="dateDisplay">Date</td>
+				<td data-bind:text="submitter">Unknown</td>
+				<td data-bind:text="contents">Preview</td>
+				<td class="row-actions">
+					<a class="button quiet small" data-read>Read</a>
+					<form method="post">
+						<input type="hidden" name="id" data-bind:value="id" />
+						<button
+							class="quiet small"
+							name="do"
+							value="delete"
+							onclick="return confirm('Delete this submission?')"
+						>
+							Delete
+						</button>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<p class="empty-state">No submissions found.</p>
+</div>

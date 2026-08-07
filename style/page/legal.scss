@@ -1,0 +1,65 @@
+body.dir--legal {
+	>global-header {
+		min-height: 4.5rem;
+		border-right: 0;
+		border-bottom: 1px solid var(--pal-line);
+
+		details {
+			display: block;
+			position: absolute;
+			top: 0;
+			right: 0;
+			height: auto;
+
+			summary {
+				display: none;
+			}
+
+			&:not([open])>.sidebar-content,
+			.sidebar-content {
+				display: block;
+				height: auto;
+				padding: 1rem;
+			}
+
+			.sidebar-actions {
+				position: static;
+				margin: 0;
+
+				.theme-toggle-label {
+					top: calc(100% + .5rem);
+					right: 0;
+					bottom: auto;
+					left: auto;
+					transform: none;
+				}
+			}
+		}
+	}
+
+	>main {
+		width: min(calc(100% - 2rem), 52rem);
+		margin-inline: auto;
+		padding-block: clamp(3rem, 8vw, 6rem);
+	}
+
+	.legal-document {
+		h1 {
+			margin-bottom: .5rem;
+		}
+
+		.updated {
+			margin-bottom: 3rem;
+			color: var(--pal-muted);
+		}
+
+		h2 {
+			margin-top: 3rem;
+			font-size: clamp(1.5rem, 4vw, 2rem);
+		}
+
+		li+li {
+			margin-top: .75rem;
+		}
+	}
+}

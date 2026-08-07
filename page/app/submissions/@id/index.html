@@ -1,0 +1,23 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow" data-bind:text="endpointTitle">Endpoint</p>
+		<h1>Submission</h1>
+		<p>
+			Received
+			<span data-bind:text="dateDisplay">recently</span>
+			from
+			<span data-bind:text="submitter">an unknown submitter</span>
+			.
+		</p>
+	</div>
+	<a class="button secondary" href="/app/submissions/">Back to inbox</a>
+</header>
+<section class="card submission-detail">
+	<h2>Submitted data</h2>
+	<dl>
+		<div data-list>
+			<dt data-bind:text="field">Field</dt>
+			<dd data-bind:text="value">Value</dd>
+		</div>
+	</dl>
+</section>

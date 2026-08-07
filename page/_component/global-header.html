@@ -5,27 +5,28 @@
 <details>
 	<summary>Menu</summary>
 	<div class="sidebar-content">
-		<nav aria-label="Main navigation">
-			<p>General</p>
+		<nav class="app-navigation" aria-label="Application navigation">
+			<p>HexForm</p>
 			<ul>
-				<li><a href="/">Homepage</a></li>
-				<li><a href="/digital-style/">Digital style</a></li>
+				<li><a href="/app/">Dashboard</a></li>
+				<li><a href="/app/endpoints/">Endpoints</a></li>
+				<li><a href="/app/submissions/">Submissions</a></li>
+				<li><a href="/app/junk/">Junk</a></li>
 			</ul>
-			<p>Digital style</p>
+			<p>Your account</p>
 			<ul>
-				<li><a href="/digital-style/#colour">Colour</a></li>
-				<li><a href="/digital-style/#typography">Typography</a></li>
-				<li><a href="/digital-style/#buttons">Buttons</a></li>
-				<li><a href="/digital-style/#forms">Form fields</a></li>
-				<li><a href="/digital-style/#choices">Choices</a></li>
-				<li><a href="/digital-style/#cards">Cards</a></li>
-				<li><a href="/digital-style/#feedback">Feedback</a></li>
-				<li><a href="/digital-style/#data">Data display</a></li>
-				<li><a href="/digital-style/#navigation">Navigation</a></li>
+				<li><a href="/app/help/">Help</a></li>
+				<li><a href="/app/account/">Account</a></li>
+				<li><a href="/app/?logout">Log out</a></li>
 			</ul>
 		</nav>
 		<div class="sidebar-actions">
-			<button type="button" class="small secondary" data-theme-toggle data-theme-mode="system">
+			<a class="button secondary homepage-dashboard" href="/app/">Dashboard</a>
+			<nav class="sidebar-legal app-only" aria-label="Legal">
+				<a href="/legal/terms/">Terms</a>
+				<a href="/legal/privacy/">Privacy</a>
+			</nav>
+			<button type="button" class="theme-toggle" data-theme-toggle data-theme-mode="system">
 				<span class="theme-toggle-label">System theme</span>
 			</button>
 		</div>

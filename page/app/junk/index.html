@@ -1,0 +1,44 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Protection</p>
+		<h1>Junk</h1>
+		<p>Review messages caught by your endpoint honeypots.</p>
+	</div>
+</header>
+<div class="table-scroll card">
+	<table>
+		<thead>
+			<tr>
+				<th>Endpoint</th>
+				<th>Date</th>
+				<th>Submitter</th>
+				<th>Contents</th>
+				<th><span class="visually-hidden">Actions</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-list>
+				<td><strong data-bind:text="endpointTitle">Endpoint</strong></td>
+				<td data-bind:text="dateDisplay">Date</td>
+				<td data-bind:text="submitter">Unknown</td>
+				<td data-bind:text="contents">Preview</td>
+				<td class="row-actions">
+					<a class="button quiet small" data-read>Read</a>
+					<form method="post">
+						<input type="hidden" name="id" data-bind:value="id" />
+						<button class="quiet small" name="do" value="not-junk">Not junk</button>
+						<button
+							class="quiet small"
+							name="do"
+							value="delete"
+							onclick="return confirm('Delete this junk message?')"
+						>
+							Delete
+						</button>
+					</form>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<p class="empty-state">No junk messages. Your inbox is clean.</p>
+</div>

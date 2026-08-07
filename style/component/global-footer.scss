@@ -13,18 +13,24 @@ global-footer {
 		margin: .5rem 0 0;
 	}
 
+	nav {
+		display: flex;
+		gap: 1rem;
+		margin-top: .5rem;
+	}
+
 	@media(min-width: break.$desktop) {
 		display: flex;
 		gap: 2rem;
 		padding-inline: 1rem;
 		align-items: center;
 
-		p {
+		p, nav {
 			margin: 0;
+		}
 
-			&:last-child {
-				margin-left: auto;
-			}
+		p:last-child {
+			margin-left: auto;
 		}
 	}
 }

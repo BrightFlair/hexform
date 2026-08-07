@@ -1,0 +1,125 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Endpoint settings</p>
+		<h1 data-bind:text="title">Endpoint</h1>
+		<p>Configure how this endpoint accepts, stores, and forwards submissions.</p>
+	</div>
+	<a class="button secondary" data-inbox>Open inbox</a>
+</header>
+<section class="action-url card">
+	<div>
+		<p class="eyebrow">Action URL</p>
+		<h2>Connect your form</h2>
+		<p>
+			Set your form’s
+			<code>action</code>
+			attribute to this URL.
+		</p>
+		<code class="copy-value" data-bind:text="actionUrl">/f/code/</code>
+	</div>
+	<code-sample aria-label="Example form HTML">
+		<span class="code-line"><code>&lt;form action=&quot;<b data-bind:text="actionUrl">/f/code/</b>&quot; method=&quot;post&quot;&gt;</code></span>
+		<span class="code-line"><code>  &lt;input name=&quot;email&quot; type=&quot;email&quot;&gt;</code></span>
+		<span class="code-line"><code>  &lt;button&gt;Send&lt;/button&gt;</code></span>
+		<span class="code-line"><code>&lt;/form&gt;</code></span>
+	</code-sample>
+</section>
+<form class="settings-form card" method="post">
+	<h2>General</h2>
+	<div class="field-row">
+		<label>
+			<span>Title</span>
+			<input name="title" data-bind:value="title" required />
+		</label>
+		<label>
+			<span>Client host</span>
+			<input type="url" name="clientHost" data-bind:value="clientHost" required />
+			<small>The website that will submit to this endpoint.</small>
+		</label>
+	</div>
+	<label>
+		<span>Confirmation URL</span>
+		<input
+			type="url"
+			name="confirmationUrl"
+			data-bind:value="confirmationUrl"
+			placeholder="https://example.com/thanks"
+		/>
+		<small>Where the visitor is sent after a successful submission.</small>
+	</label>
+	<h2>Submission display</h2>
+	<div class="field-row">
+		<label>
+			<span>Main field</span>
+			<input name="mainField" data-bind:value="mainField" placeholder="message" />
+			<small>Used for the contents preview in your inbox.</small>
+		</label>
+		<label>
+			<span>Submitter identity field</span>
+			<input
+				name="submitterIdentityField"
+				data-bind:value="submitterIdentityField"
+				placeholder="email"
+			/>
+			<small>Usually an email, name, or username field.</small>
+		</label>
+	</div>
+	<h2>Junk protection</h2>
+	<label class="choice">
+		<input type="checkbox" name="junkDetection" value="1" data-junk-detection />
+		<span>Enable junk detection</span>
+	</label>
+	<label>
+		<span>Junk field name</span>
+		<input name="junkFieldName" data-bind:value="junkFieldName" placeholder="company" />
+		<small>A hidden honeypot field. A non-empty value marks the submission as junk.</small>
+	</label>
+	<h2>Storage and limits</h2>
+	<div class="field-row">
+		<label>
+			<span>Save submissions</span>
+			<select name="retentionMonths" data-retention>
+				<option value="1">1 month</option>
+				<option value="6">6 months</option>
+				<option value="12">12 months</option>
+				<option value="forever">Forever</option>
+			</select>
+		</label>
+		<label>
+			<span>Maximum submissions per month</span>
+			<input
+				type="number"
+				min="1"
+				name="maximumSubmissionsPerMonth"
+				data-bind:value="maximumSubmissionsPerMonth"
+			/>
+			<small>Higher limits may require a plan upgrade.</small>
+		</label>
+	</div>
+	<h2>Forwarding</h2>
+	<label>
+		<span>Forwarder URL</span>
+		<input
+			type="url"
+			name="forwarderUrl"
+			data-bind:value="forwarderUrl"
+			placeholder="https://hooks.example.com/..."
+		/>
+		<small>HexForm will POST each accepted submission to this webhook.</small>
+	</label>
+	<div class="actions"><button name="do" value="save">Save changes</button></div>
+</form>
+<section class="danger-zone card">
+	<h2>Delete endpoint</h2>
+	<p>Permanently delete this endpoint and all its submissions. This cannot be undone.</p>
+	<form method="post">
+		<button
+			class="danger"
+			name="do"
+			value="delete"
+			onclick="return confirm('Delete this endpoint and all of its submissions?')"
+		>
+			Delete endpoint
+		</button>
+	</form>
+</section>

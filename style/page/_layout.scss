@@ -1,6 +1,5 @@
 @use "../layout/sidebar";
 
-body.uri--digital-style,
 body.dir--app {
 	@extend %l-sidebar;
 }

@@ -1,0 +1,36 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Forms</p>
+		<h1>Endpoints</h1>
+		<p>Create and manage the destinations that receive your form data.</p>
+	</div>
+	<a class="button" href="/app/endpoints/create/">New endpoint</a>
+</header>
+<div class="table-scroll card">
+	<table>
+		<thead>
+			<tr>
+				<th>Domain</th>
+				<th>Title</th>
+				<th>Action URL</th>
+				<th>Submissions</th>
+				<th>Last submitted</th>
+				<th><span class="visually-hidden">Actions</span></th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr data-list>
+				<td data-bind:text="clientHost">example.com</td>
+				<td><strong data-bind:text="title">Contact form</strong></td>
+				<td><code data-bind:text="actionUrl">/f/code/</code></td>
+				<td data-bind:text="submissionCount">0</td>
+				<td data-bind:text="lastSubmittedDisplay">Never</td>
+				<td class="row-actions">
+					<a class="button quiet small" data-inbox>Inbox</a>
+					<a class="button quiet small" data-configure>Configure</a>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<p class="empty-state">No endpoints yet. Create one to connect your first form.</p>
+</div>

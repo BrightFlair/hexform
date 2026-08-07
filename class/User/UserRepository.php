@@ -35,6 +35,7 @@ class UserRepository {
 		return new User(
 			$row->getString("id"),
 			$row->getString("email"),
+			$row->getString("subscriptionPlan"),
 		);
 	}
 }

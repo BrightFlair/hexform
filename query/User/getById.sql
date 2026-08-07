@@ -1,6 +1,7 @@
 select
 	id,
-	email
+	email,
+	subscriptionPlan
 from
 	User
 where

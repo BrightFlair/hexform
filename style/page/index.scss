@@ -4,8 +4,47 @@ body.uri--index {
 	display: block;
 
 	>global-header {
-		display: none;
+		position: fixed;
+		top: 0;
+		right: 0;
+		z-index: 10;
+		width: auto;
+		min-height: 0;
+		border: 0;
+		background: transparent;
+
+		>.brand, summary, nav {
+			display: none;
+		}
+
 		details {
+			display: block;
+
+			&:not([open])>.sidebar-content {
+				display: block;
+			}
+
+			.sidebar-content {
+				padding: 1rem;
+			}
+
+			.sidebar-actions {
+				position: static;
+				margin: 0;
+
+				.homepage-dashboard {
+					min-height: 2.15rem;
+					padding: .35rem .7rem;
+				}
+
+				.theme-toggle-label {
+					top: calc(100% + .5rem);
+					right: 0;
+					bottom: auto;
+					left: auto;
+					transform: none;
+				}
+			}
 		}
 	}
 

@@ -1,0 +1,28 @@
+<header class="app-page-heading">
+	<div>
+		<p class="eyebrow">Your account</p>
+		<h1>Account</h1>
+		<p>Manage your identity and subscription.</p>
+	</div>
+</header>
+<section class="account-grid">
+	<article class="card">
+		<p class="eyebrow">Profile</p>
+		<h2>Email address</h2>
+		<p class="account-value" data-bind:text="email">you@example.com</p>
+	</article>
+	<article class="card">
+		<p class="eyebrow">Billing</p>
+		<h2>Current plan</h2>
+		<p class="account-value">
+			<span class="badge" data-bind:text="subscriptionPlan">Free</span>
+		</p>
+		<p>
+			Upgrade for higher submission limits and longer retention. Subscription changes are
+			managed securely by Stripe.
+		</p>
+		<div class="actions">
+			<button disabled title="Stripe is not configured">Manage billing with Stripe</button>
+		</div>
+	</article>
+</section>
