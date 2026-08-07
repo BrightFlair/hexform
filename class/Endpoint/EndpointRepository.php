@@ -1,8 +1,8 @@
 <?php
 namespace HexForm\Endpoint;
 
-use Gt\Database\Query\QueryCollection;
-use Gt\Database\Result\Row;
+use GT\Database\Query\QueryCollection;
+use GT\Database\Result\Row;
 use HexForm\User\User;
 
 class EndpointRepository {
@@ -39,44 +39,45 @@ class EndpointRepository {
 		return $this->rowToEndpoint($this->db->fetch("getByCode", $code));
 	}
 
-	private function toParams(Endpoint $e):array {
+	/** @return array<string, bool|int|string|null> */
+	private function toParams(Endpoint $endpoint):array {
 		return [
-			"id" => $e->id,
-			"userId" => $e->userId,
-			"code" => $e->code,
-			"title" => $e->title,
-			"clientHost" => $e->clientHost,
-			"confirmationUrl" => $e->confirmationUrl,
-			"junkDetection" => $e->junkDetection,
-			"junkFieldName" => $e->junkFieldName,
-			"mainField" => $e->mainField,
-			"submitterIdentityField" => $e->submitterIdentityField,
-			"retentionMonths" => $e->retentionMonths,
-			"maximumSubmissionsPerMonth" => $e->maximumSubmissionsPerMonth,
-			"forwarderUrl" => $e->forwarderUrl,
+			"id" => $endpoint->id,
+			"userId" => $endpoint->userId,
+			"code" => $endpoint->code,
+			"title" => $endpoint->title,
+			"clientHost" => $endpoint->clientHost,
+			"confirmationUrl" => $endpoint->confirmationUrl,
+			"junkDetection" => $endpoint->junkDetection,
+			"junkFieldName" => $endpoint->junkFieldName,
+			"mainField" => $endpoint->mainField,
+			"submitterIdentityField" => $endpoint->submitterIdentityField,
+			"retentionMonths" => $endpoint->retentionMonths,
+			"maximumSubmissionsPerMonth" => $endpoint->maximumSubmissionsPerMonth,
+			"forwarderUrl" => $endpoint->forwarderUrl,
 		];
 	}
 
-	private function rowToEndpoint(?Row $r):?Endpoint {
-		if(!$r) {
+	private function rowToEndpoint(?Row $row):?Endpoint {
+		if(!$row) {
 			return null;
 		}
 		return new Endpoint(
-			$r->getString("id"),
-			$r->getString("userId"),
-			$r->getString("code"),
-			$r->getString("title"),
-			$r->getString("clientHost"),
-			$r->getString("confirmationUrl"),
-			$r->getBool("junkDetection"),
-			$r->getString("junkFieldName"),
-			$r->getString("mainField"),
-			$r->getString("submitterIdentityField"),
-			$r->getInt("retentionMonths"),
-			$r->getInt("maximumSubmissionsPerMonth"),
-			$r->getString("forwarderUrl"),
-			$r->getInt("submissionCount") ?? 0,
-			$r->getDateTime("lastSubmitted"),
+			$row->getString("id"),
+			$row->getString("userId"),
+			$row->getString("code"),
+			$row->getString("title"),
+			$row->getString("clientHost"),
+			$row->getString("confirmationUrl"),
+			$row->getBool("junkDetection"),
+			$row->getString("junkFieldName"),
+			$row->getString("mainField"),
+			$row->getString("submitterIdentityField"),
+			$row->getInt("retentionMonths"),
+			$row->getInt("maximumSubmissionsPerMonth"),
+			$row->getString("forwarderUrl"),
+			$row->getInt("submissionCount") ?? 0,
+			$row->getDateTime("lastSubmitted"),
 		);
 	}
 }

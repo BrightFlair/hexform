@@ -2,9 +2,10 @@
 namespace HexForm\Endpoint;
 
 use DateTimeInterface;
-use Gt\DomTemplate\BindGetter;
+use GT\DomTemplate\BindGetter;
 
 readonly class Endpoint {
+	/** @SuppressWarnings("PHPMD.ExcessiveParameterList") */
 	public function __construct(
 		public string $id,
 		public string $userId,

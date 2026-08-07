@@ -2,9 +2,10 @@
 namespace HexForm\Submission;
 
 use DateTimeInterface;
-use Gt\DomTemplate\BindGetter;
+use GT\DomTemplate\BindGetter;
 
 readonly class Submission {
+	/** @param array<string, mixed> $data */
 	public function __construct(
 		public string $id,
 		public string $endpointId,
@@ -32,9 +33,15 @@ readonly class Submission {
 		return $this->fieldPreview($this->mainField, "No preview configured");
 	}
 
+	/** @return array<int, array{field: string, value: string|false}> */
 	public function getDataRows():array {
 		return array_map(
-			fn($k, $v) => ["field" => $k, "value" => is_scalar($v) ? (string)$v : json_encode($v)],
+			fn($key, $value) => [
+				"field" => $key,
+				"value" => is_scalar($value)
+					? (string)$value
+					: json_encode($value)
+			],
 			array_keys($this->data),
 			$this->data,
 		);

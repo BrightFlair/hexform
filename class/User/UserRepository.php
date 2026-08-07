@@ -2,8 +2,8 @@
 namespace HexForm\User;
 
 use Authwave\User as AuthUser;
-use Gt\Database\Query\QueryCollection;
-use Gt\Database\Result\Row;
+use GT\Database\Query\QueryCollection;
+use GT\Database\Result\Row;
 
 class UserRepository {
 	public function __construct(

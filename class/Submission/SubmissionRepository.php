@@ -1,14 +1,15 @@
 <?php
 namespace HexForm\Submission;
 
-use Gt\Database\Query\QueryCollection;
-use Gt\Database\Result\Row;
+use GT\Database\Query\QueryCollection;
+use GT\Database\Result\Row;
 use HexForm\Endpoint\Endpoint;
 use HexForm\User\User;
 
 class SubmissionRepository {
 	public function __construct(private QueryCollection $db) {}
 
+	/** @param array<string, mixed> $data */
 	public function create(string $id, Endpoint $endpoint, array $data, bool $isJunk):void {
 		$this->db->insert("create", [
 			"id" => $id,
@@ -40,20 +41,28 @@ class SubmissionRepository {
 		);
 	}
 
-	public function delete(Submission $s):void {
-		$this->db->delete("delete", $s->id);
+	public function delete(Submission $submission):void {
+		$this->db->delete("delete", $submission->id);
 	}
 
-	public function markNotJunk(Submission $s):void {
-		$this->db->update("markNotJunk", $s->id);
+	public function markNotJunk(Submission $submission):void {
+		$this->db->update("markNotJunk", $submission->id);
 	}
 
+	/**
+	 * @return array{
+	 *     total: int,
+	 *     junk: int,
+	 *     thisMonth: int,
+	 *     daily: array<int, array{string|null, int|null}>
+	 * }
+	 */
 	public function getDashboard(User $user, ?string $endpointId = null):array {
-		$s = $this->db->fetch("getDashboardSummary", [
+		$rowSummary = $this->db->fetch("getDashboardSummary", [
 			"userId" => $user->id,
 			"endpointId" => $endpointId,
 		]);
-		$d = [];
+		$data = [];
 		foreach(
 			$this->db->fetchAll("getDailyCounts", [
 				"userId" => $user->id,
@@ -61,30 +70,30 @@ class SubmissionRepository {
 			])
 			as $row
 		) {
-			$d[] = [$row->getString("day"), $row->getInt("submissionCount")];
+			array_push($data, [$row->getString("day"), $row->getInt("submissionCount")]);
 		}
 		return [
-			"total" => $s?->getInt("total") ?? 0,
-			"junk" => $s?->getInt("junk") ?? 0,
-			"thisMonth" => $s?->getInt("thisMonth") ?? 0,
-			"daily" => $d,
+			"total" => $rowSummary?->getInt("total") ?? 0,
+			"junk" => $rowSummary?->getInt("junk") ?? 0,
+			"thisMonth" => $rowSummary?->getInt("thisMonth") ?? 0,
+			"daily" => $data,
 		];
 	}
 
-	private function rowToSubmission(?Row $r):?Submission {
-		if(!$r) {
+	private function rowToSubmission(?Row $row):?Submission {
+		if(!$row) {
 			return null;
 		}
 		return new Submission(
-			$r->getString("id"),
-			$r->getString("endpointId"),
-			$r->getString("endpointTitle"),
-			$r->getString("endpointCode"),
-			json_decode($r->getString("data"), true) ?? [],
-			$r->getBool("isJunk"),
-			$r->getDateTime("createdAt"),
-			$r->getString("mainField"),
-			$r->getString("submitterIdentityField"),
+			$row->getString("id"),
+			$row->getString("endpointId"),
+			$row->getString("endpointTitle"),
+			$row->getString("endpointCode"),
+			json_decode($row->getString("data"), true) ?? [],
+			$row->getBool("isJunk"),
+			$row->getDateTime("createdAt"),
+			$row->getString("mainField"),
+			$row->getString("submitterIdentityField"),
 		);
 	}
 }

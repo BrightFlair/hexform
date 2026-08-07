@@ -2,3 +2,5 @@
 /www/
 /node_modules/
 /.idea/
+/.phpunit.result.cache
+/test/phpunit/.phpunit.cache/

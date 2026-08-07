@@ -6,9 +6,9 @@ use HexForm\User\User;
 use HexForm\User\UserRepository;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
-use Gt\Database\Database;
-use Gt\Http\Uri;
-use Gt\Session\Session;
+use GT\Database\Database;
+use GT\Http\Uri;
+use GT\Session\Session;
 use GT\WebEngine\Service\DefaultServiceLoader;
 
 class ServiceLoader extends DefaultServiceLoader {
@@ -41,10 +41,16 @@ class ServiceLoader extends DefaultServiceLoader {
 	}
 
 	public function loadEndpointRepository():EndpointRepository {
-		return new EndpointRepository($this->container->get(Database::class)->queryCollection("Endpoint"));
+		return new EndpointRepository(
+			$this->container->get(Database::class)
+				->queryCollection("Endpoint")
+		);
 	}
 
 	public function loadSubmissionRepository():SubmissionRepository {
-		return new SubmissionRepository($this->container->get(Database::class)->queryCollection("Submission"));
+		return new SubmissionRepository(
+			$this->container->get(Database::class)
+				->queryCollection("Submission")
+		);
 	}
 }
