@@ -4,6 +4,7 @@
 @use "../decorator/card";
 @use "../decorator/eyebrow";
 @use "../decorator/typography";
+@use "../mixin/icon";
 
 body.dir--app {
 	>main {
@@ -98,7 +99,9 @@ body.dir--app {
 			}
 
 			>span {
-				display: grid;
+				display: flex;
+				justify-content: center;
+				align-items: center;
 				width: 2.25rem;
 				height: 2.25rem;
 				border: 1px solid var(--pal-line);
@@ -129,8 +132,7 @@ body.dir--app {
 					font-size: 0;
 
 					&::after {
-						content: "✓";
-						font-size: 1rem;
+						@include icon.icon("check", var(--pal-soft));
 					}
 				}
 
