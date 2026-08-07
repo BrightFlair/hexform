@@ -10,6 +10,11 @@ global-header {
 	border-bottom: 1px solid var(--pal-line);
 	background: var(--pal-soft);
 
+	@media(min-width: break.$desktop) {
+		border-right: 1px solid var(--pal-line);
+		border-bottom: 0;
+	}
+
 	>a:first-child {
 		@extend %d-brand;
 		display: flex;
@@ -19,6 +24,12 @@ global-header {
 	}
 
 	details {
+		@media(min-width: break.$desktop) {
+			display: flex;
+			height: calc(100svh - 4rem);
+			flex-direction: column;
+		}
+
 		summary {
 			position: absolute;
 			top: .8rem;
@@ -32,6 +43,10 @@ global-header {
 			list-style: none;
 			cursor: pointer;
 
+			@media(min-width: break.$desktop) {
+				display: none;
+			}
+
 			&::-webkit-details-marker {
 				display: none;
 			}
@@ -39,6 +54,13 @@ global-header {
 
 		.sidebar-content {
 			padding: 0 1rem 1rem;
+
+			@media(min-width: break.$desktop) {
+				display: flex;
+				height: 100%;
+				padding: 0 1rem 1.5rem;
+				flex-direction: column;
+			}
 		}
 	}
 
@@ -148,6 +170,14 @@ global-header {
 		gap: .5rem;
 		margin-top: 1.5rem;
 
+		@media(min-width: break.$desktop) {
+			position: absolute;
+			bottom: 1.5rem;
+			left: 1rem;
+			right: 1rem;
+			margin: 0;
+		}
+
 		nav {
 			display: flex;
 			flex-direction: column;
@@ -164,41 +194,13 @@ global-header {
 				text-decoration: underline;
 			}
 		}
-	}
 
-	@media(min-width: break.$desktop) {
-		border-right: 1px solid var(--pal-line);
-		border-bottom: 0;
-
-		details {
-			display: flex;
-			height: calc(100svh - 4rem);
-			flex-direction: column;
-
-			summary {
-				display: none;
-			}
-
-			.sidebar-content {
-				display: flex;
-				height: 100%;
-				padding: 0 1rem 1.5rem;
-				flex-direction: column;
-
-				.sidebar-actions {
-					position: absolute;
-					bottom: 1.5rem;
-					left: 1rem;
-					right: 1rem;
-					margin: 0;
-
-					.theme-toggle-label {
-						top: auto;
-						bottom: calc(100% + .5rem);
-						left: 0;
-						transform: none;
-					}
-				}
+		.theme-toggle-label {
+			@media(min-width: break.$desktop) {
+				top: auto;
+				bottom: calc(100% + .5rem);
+				left: 0;
+				transform: none;
 			}
 		}
 	}

@@ -88,6 +88,10 @@ body.dir--app {
 			border-bottom: 1px solid var(--pal-line);
 			align-items: center;
 
+			@media(min-width: break.$desktop) {
+				grid-template-columns: 2.5rem 1fr auto;
+			}
+
 			&:last-child {
 				padding-bottom: 0;
 				border: 0;
@@ -111,6 +115,10 @@ body.dir--app {
 			>a {
 				grid-column: 2;
 				justify-self: start;
+
+				@media(min-width: break.$desktop) {
+					grid-column: 3;
+				}
 			}
 
 			&.complete {
@@ -153,6 +161,10 @@ body.dir--app {
 		display: grid;
 		gap: 1rem;
 		margin-bottom: 1rem;
+
+		@media(min-width: break.$desktop) {
+			grid-template-columns: repeat(4, 1fr);
+		}
 	}
 
 	.metric-card {
@@ -257,6 +269,10 @@ body.dir--app {
 		.field-row {
 			display: grid;
 			gap: 1rem;
+
+			@media(min-width: break.$desktop) {
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+			}
 		}
 
 		.actions {
@@ -270,6 +286,10 @@ body.dir--app {
 		display: grid;
 		gap: 1.5rem;
 		margin-bottom: 1.5rem;
+
+		@media(min-width: break.$desktop) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
 
 		.copy-value {
 			display: block;
@@ -327,6 +347,10 @@ body.dir--app {
 		display: grid;
 		gap: 1rem;
 
+		@media(min-width: break.$desktop) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
 		article>p:first-child {
 			@extend %d-eyebrow;
 		}
@@ -341,23 +365,4 @@ body.dir--app {
 		}
 	}
 
-	@media(min-width: break.$desktop) {
-		.onboarding li {
-			grid-template-columns: 2.5rem 1fr auto;
-
-			>a {
-				grid-column: 3;
-			}
-		}
-
-		.metric-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-
-		.settings-form .field-row,
-		.account-grid,
-		.action-url {
-			grid-template-columns: repeat(2, minmax(0, 1fr));
-		}
-	}
 }

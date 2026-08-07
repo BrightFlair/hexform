@@ -54,8 +54,10 @@
 
 		@media(min-width: break.$desktop) {
 			flex-direction: row;
+		}
 
-			>* {
+		>* {
+			@media(min-width: break.$desktop) {
 				width: 50%;
 				max-width: none;
 			}
@@ -73,13 +75,17 @@
 
 		@media(min-width: break.$desktop) {
 			flex-direction: row;
+		}
 
-			input {
+		input {
+			@media(min-width: break.$desktop) {
 				flex: 1 1 auto;
 				border-radius: .4rem 0 0 .4rem;
 			}
+		}
 
-			button {
+		button {
+			@media(min-width: break.$desktop) {
 				width: auto;
 				border-radius: 0 .4rem .4rem 0;
 				white-space: nowrap;

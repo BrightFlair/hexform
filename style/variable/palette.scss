@@ -35,12 +35,12 @@
 :root {
 	@include palette-light;
 	color-scheme: light;
-}
 
-@media(prefers-color-scheme: dark) {
-	:root:not([data-theme="light"]) {
-		@include palette-dark;
-		color-scheme: dark;
+	&:not([data-theme="light"]) {
+		@media(prefers-color-scheme: dark) {
+			@include palette-dark;
+			color-scheme: dark;
+		}
 	}
 }
 

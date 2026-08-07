@@ -3,16 +3,12 @@ $wide: 76rem;
 
 :root {
 	--break: mobile;
-}
 
-@media(min-width: $desktop) {
-	:root {
+	@media(min-width: $desktop) {
 		--break: desktop;
 	}
-}
 
-@media(min-width: $wide) {
-	:root {
+	@media(min-width: $wide) {
 		--break: wide;
 	}
 }

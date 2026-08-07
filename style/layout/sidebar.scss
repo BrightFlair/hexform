@@ -4,8 +4,10 @@
 	@media(min-width: break.$desktop) {
 		display: flex;
 		flex-wrap: wrap;
+	}
 
-		>global-header {
+	>global-header {
+		@media(min-width: break.$desktop) {
 			position: sticky;
 			top: 0;
 			width: 15rem;
@@ -14,15 +16,19 @@
 			flex-shrink: 0;
 			align-self: flex-start;
 		}
+	}
 
-		>main {
+	>main {
+		@media(min-width: break.$desktop) {
 			width: calc(100% - 15rem);
 			min-width: 0;
 			padding: 2.5rem;
 			flex: 0 0 calc(100% - 15rem);
 		}
+	}
 
-		>global-footer {
+	>global-footer {
+		@media(min-width: break.$desktop) {
 			width: min(calc(100% - 15rem), var(--size-shell));
 			margin-left: 15rem;
 			margin-right: 0;

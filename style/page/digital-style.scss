@@ -14,12 +14,26 @@ body.uri--digital-style {
 
 	>main {
 		padding: 0;
+
+		@media(min-width: break.$desktop) {
+			display: grid;
+			grid-template-columns: 15rem minmax(0, 1fr);
+		}
 	}
 
 	.ds-sidebar {
 		padding: 1rem;
 		border-bottom: 1px solid var(--pal-line);
 		background: var(--pal-soft);
+
+		@media(min-width: break.$desktop) {
+			position: sticky;
+			top: 0;
+			height: 100svh;
+			border-right: 1px solid var(--pal-line);
+			border-bottom: 0;
+			overflow-y: auto;
+		}
 
 		>a:first-child {
 			@extend %d-brand;
@@ -77,6 +91,12 @@ body.uri--digital-style {
 			color: var(--pal-ink);
 			cursor: pointer;
 
+			@media(min-width: break.$desktop) {
+				position: absolute;
+				bottom: 1.5rem;
+				left: 1rem;
+			}
+
 			&[data-theme-mode="system"]::before { content: "◐"; }
 			&[data-theme-mode="light"]::before { content: "☼"; }
 			&[data-theme-mode="dark"]::before { content: "☾"; }
@@ -89,6 +109,10 @@ body.uri--digital-style {
 
 	.ds-content {
 		padding: 1rem;
+
+		@media(min-width: break.$desktop) {
+			padding: 2.5rem;
+		}
 	}
 
 	.ds-header {
@@ -242,29 +266,4 @@ body.uri--digital-style {
 		accent-color: var(--pal-accent);
 	}
 
-	@media(min-width: break.$desktop) {
-		>main {
-			display: grid;
-			grid-template-columns: 15rem minmax(0, 1fr);
-		}
-
-		.ds-sidebar {
-			position: sticky;
-			top: 0;
-			height: 100svh;
-			border-right: 1px solid var(--pal-line);
-			border-bottom: 0;
-			overflow-y: auto;
-
-			.theme-toggle {
-				position: absolute;
-				bottom: 1.5rem;
-				left: 1rem;
-			}
-		}
-
-		.ds-content {
-			padding: 2.5rem;
-		}
-	}
 }

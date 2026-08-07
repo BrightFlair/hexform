@@ -166,21 +166,27 @@ body.uri--index {
 		border: 1px solid var(--pal-line);
 		border-radius: .65rem;
 
+		@media(min-width: break.$desktop) {
+			display: flex;
+			gap: 4rem;
+			padding: 4rem;
+			align-items: center;
+		}
+
 		&__copy {
 			max-width: 34rem;
+
+			@media(min-width: break.$desktop) {
+				width: 50%;
+			}
 
 			h2 {
 				font-size: clamp(2rem, 6vw, 3rem);
 			}
 		}
 
-		@media(min-width: break.$desktop) {
-			display: flex;
-			gap: 4rem;
-			padding: 4rem;
-			align-items: center;
-
-			&__copy, signup-form {
+		signup-form {
+			@media(min-width: break.$desktop) {
 				width: 50%;
 			}
 		}

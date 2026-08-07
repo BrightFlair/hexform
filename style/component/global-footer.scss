@@ -10,32 +10,38 @@ global-footer {
 	color: var(--pal-muted);
 	font-size: 1rem;
 
+	@media(min-width: break.$desktop) {
+		display: flex;
+		gap: 2rem;
+		padding-inline: 1rem;
+		align-items: center;
+	}
+
 	>a:first-child {
 		@extend %d-brand;
 	}
 
 	p {
 		margin: .5rem 0 0;
+
+		@media(min-width: break.$desktop) {
+			margin: 0;
+		}
+
+		&:last-child {
+			@media(min-width: break.$desktop) {
+				margin-left: auto;
+			}
+		}
 	}
 
 	nav {
 		display: flex;
 		gap: 1rem;
 		margin-top: .5rem;
-	}
 
-	@media(min-width: break.$desktop) {
-		display: flex;
-		gap: 2rem;
-		padding-inline: 1rem;
-		align-items: center;
-
-		p, nav {
+		@media(min-width: break.$desktop) {
 			margin: 0;
-		}
-
-		p:last-child {
-			margin-left: auto;
 		}
 	}
 }
