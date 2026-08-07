@@ -1,4 +1,6 @@
-.brand {
+@use "../mixin/icon";
+
+%d-brand {
 	display: inline-flex;
 	gap: .5rem;
 	align-items: center;
@@ -6,8 +8,8 @@
 	letter-spacing: -.03em;
 	text-decoration: none;
 
-	span {
-		color: var(--pal-accent);
-		font-size: 1.25rem;
+	&::before {
+		@include icon.icon("hexagon", var(--pal-accent));
+		width: .9rem;
 	}
 }

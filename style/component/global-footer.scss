@@ -1,4 +1,5 @@
 @use "../variable/break";
+@use "../decorator/brand";
 
 global-footer {
 	display: block;
@@ -8,6 +9,10 @@ global-footer {
 	border-top: 1px solid var(--pal-line);
 	color: var(--pal-muted);
 	font-size: 1rem;
+
+	>a:first-child {
+		@extend %d-brand;
+	}
 
 	p {
 		margin: .5rem 0 0;

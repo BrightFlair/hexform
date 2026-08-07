@@ -1,4 +1,5 @@
 @use "../variable/break";
+@use "../decorator/button";
 
 pricing-card {
 	display: block;
@@ -13,7 +14,8 @@ pricing-card {
 		min-height: 3.2rem;
 	}
 
-	.button {
+	>a {
+		@extend %d-button;
 		width: 100%;
 		margin-block: .5rem 1.5rem;
 	}

@@ -101,10 +101,4 @@
 	}
 }
 
-.form-fields {
-	@extend %d-form-fields;
-
-	&.card {
-		display: flex;
-	}
-}
+%d-form-fields-card { display: flex; }

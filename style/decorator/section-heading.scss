@@ -1,4 +1,4 @@
-.section-heading {
+%d-section-heading {
 	max-width: var(--size-reading);
 	margin-bottom: 3rem;
 
@@ -6,8 +6,9 @@
 		margin-bottom: 0;
 	}
 
-	&--center {
-		margin-inline: auto;
-		text-align: center;
-	}
+}
+
+%d-section-heading-center {
+	margin-inline: auto;
+	text-align: center;
 }

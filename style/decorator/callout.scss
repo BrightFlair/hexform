@@ -1,4 +1,4 @@
-.callout {
+%d-callout {
 	--callout-colour: var(--pal-accent);
 	display: block;
 	padding: 1rem;
@@ -11,7 +11,8 @@
 		margin-bottom: 0;
 	}
 
-	&--success { --callout-colour: var(--theme-success); }
-	&--warning { --callout-colour: var(--theme-warning); }
-	&--danger { --callout-colour: var(--theme-danger); }
 }
+
+%d-callout-success { --callout-colour: var(--theme-success); }
+%d-callout-warning { --callout-colour: var(--theme-warning); }
+%d-callout-danger { --callout-colour: var(--theme-danger); }

@@ -1,4 +1,5 @@
 @use "../variable/break";
+@use "../mixin/icon";
 
 tool-integrations {
 	display: block;
@@ -38,8 +39,11 @@ tool-integrations {
 			}
 		}
 
-		span {
-			font-size: 1.35rem;
-		}
+		li:nth-child(1) a::before { @include icon.icon("brand-zapier", currentColor); }
+		li:nth-child(2) a::before { @include icon.icon("brand-google-drive", currentColor); }
+		li:nth-child(3) a::before { @include icon.icon("brand-trello", currentColor); }
+		li:nth-child(4) a::before { @include icon.icon("brand-github", currentColor); }
+		li:nth-child(5) a::before { @include icon.icon("mail", currentColor); }
+		li:nth-child(6) a::before { @include icon.icon("brand-slack", currentColor); }
 	}
 }

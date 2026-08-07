@@ -1,4 +1,9 @@
 @use "../variable/break";
+@use "../decorator/badge";
+@use "../decorator/button";
+@use "../decorator/card";
+@use "../decorator/eyebrow";
+@use "../decorator/typography";
 
 body.dir--app {
 	>main {
@@ -29,10 +34,29 @@ body.dir--app {
 			margin-bottom: 0;
 			color: var(--pal-muted);
 		}
+
+		>div>p:first-child {
+			@extend %d-eyebrow;
+		}
 	}
 
-	.card {
+	.onboarding,
+	.dashboard-chart,
+	.table-scroll,
+	.settings-form,
+	.action-url,
+	.danger-zone,
+	.submission-detail,
+	.account-grid>article {
+		@extend %d-card;
 		padding: 1.5rem;
+	}
+
+	.app-page-heading>a,
+	.onboarding li>a,
+	.row-actions>a,
+	.settings-form .actions>a {
+		@extend %d-button;
 	}
 
 	.onboarding {
@@ -44,6 +68,10 @@ body.dir--app {
 			align-items: flex-start;
 			justify-content: space-between;
 			border-bottom: 1px solid var(--pal-line);
+
+			p:first-child {
+				@extend %d-eyebrow;
+			}
 		}
 
 		ol {
@@ -160,6 +188,10 @@ body.dir--app {
 		script {
 			display: none;
 		}
+
+		>header p:first-child {
+			@extend %d-eyebrow;
+		}
 	}
 
 	.table-scroll {
@@ -182,7 +214,7 @@ body.dir--app {
 			display: inline-flex;
 		}
 
-		.button, button {
+		a, button {
 			min-height: 2.25rem;
 		}
 	}
@@ -249,6 +281,10 @@ body.dir--app {
 		code-sample {
 			margin: 0;
 		}
+
+		>div>p:first-child {
+			@extend %d-eyebrow;
+		}
 	}
 
 	.danger-zone {
@@ -283,27 +319,26 @@ body.dir--app {
 		}
 	}
 
-	.prose {
-		max-width: 48rem;
-		margin-inline: auto;
-
-		.lead {
-			font-size: 1.25rem;
-		}
-
-		h2 {
-			margin-top: 2.5rem;
-		}
+	>main>article {
+		@extend %d-typography;
 	}
 
 	.account-grid {
 		display: grid;
 		gap: 1rem;
+
+		article>p:first-child {
+			@extend %d-eyebrow;
+		}
 	}
 
 	.account-value {
 		font-size: 1.25rem;
 		overflow-wrap: anywhere;
+
+		>span {
+			@extend %d-badge;
+		}
 	}
 
 	@media(min-width: break.$desktop) {

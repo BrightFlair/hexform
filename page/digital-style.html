@@ -1,6 +1,6 @@
 <aside class="ds-sidebar">
-	<a class="brand" href="/">
-		<span aria-hidden="true">⬡</span> HexForm
+	<a href="/">
+		HexForm
 	</a>
 	<nav aria-label="Digital style navigation">
 		<p>General</p>
@@ -28,13 +28,13 @@
 
 <div class="ds-content">
 <header id="digital-style" class="ds-header">
-	<p class="eyebrow">HexForm design system</p>
+	<p>HexForm design system</p>
 	<h1>Digital style</h1>
 	<p>A working inventory of reusable interface patterns for HexForm. Every example on this page is built from the same shared styles available to the application.</p>
 </header>
 
 <section id="colour" class="ds-section">
-	<header><p class="eyebrow">Foundations</p><h2>Colour</h2><p>Semantic variables keep meaning consistent across light and dark themes.</p></header>
+	<header><p>Foundations</p><h2>Colour</h2><p>Semantic variables keep meaning consistent across light and dark themes.</p></header>
 	<div class="ds-grid">
 		<span class="ds-swatch ds-swatch--accent">Accent</span>
 		<span class="ds-swatch ds-swatch--soft">Surface</span>
@@ -45,8 +45,8 @@
 </section>
 
 <section id="typography" class="ds-section">
-	<header><p class="eyebrow">Foundations</p><h2>Typography</h2><p>A compact monospace hierarchy keeps technical information readable without feeling like a terminal.</p></header>
-	<div class="card">
+	<header><p>Foundations</p><h2>Typography</h2><p>A compact monospace hierarchy keeps technical information readable without feeling like a terminal.</p></header>
+	<div>
 		<h1>Heading one</h1><p>Reserved for the primary page title.</p>
 		<h2>Heading two</h2><p>Introduces major sections of a page.</p>
 		<h3>Heading three</h3><p>Names cards and smaller content groups.</p>
@@ -56,8 +56,8 @@
 </section>
 
 <section id="buttons" class="ds-section">
-	<header><p class="eyebrow">Controls</p><h2>Buttons</h2><p>Use one primary action per context. Secondary, quiet, and destructive actions retain the same dimensions and focus treatment.</p></header>
-	<div class="card">
+	<header><p>Controls</p><h2>Buttons</h2><p>Use one primary action per context. Secondary, quiet, and destructive actions retain the same dimensions and focus treatment.</p></header>
+	<div>
 		<div class="ds-stack">
 			<button type="button" class="primary">Primary action</button>
 			<button type="button" class="secondary">Secondary</button>
@@ -68,14 +68,14 @@
 		<hr>
 		<div class="ds-stack">
 			<button type="button" class="primary small">Small primary</button>
-			<a class="button small secondary" href="#buttons">Anchor button</a>
+			<a class="small secondary" href="#buttons">Anchor button</a>
 		</div>
 	</div>
 </section>
 
 <section id="forms" class="ds-section">
-	<header><p class="eyebrow">Controls</p><h2>Form fields</h2><p>The <code>form-fields</code> decoration owns spacing, labels, help text, responsive rows, and action alignment.</p></header>
-	<form class="form-fields card" action="/digital-style/" method="post">
+	<header><p>Controls</p><h2>Form fields</h2><p>The <code>form-fields</code> decorator owns spacing, labels, help text, responsive rows, and action alignment.</p></header>
+	<form action="/digital-style/" method="post">
 		<div class="field-row">
 			<label><span>Project name</span><input name="project" type="text" value="Marketing website"><small>Shown in your HexForm dashboard.</small></label>
 			<label><span>Endpoint slug</span><input name="slug" type="text" value="contact"><small>Letters, numbers, and hyphens.</small></label>
@@ -95,12 +95,12 @@
 </section>
 
 <section id="choices" class="ds-section">
-	<header><p class="eyebrow">Controls</p><h2>Choices and native inputs</h2><p>Native controls retain platform affordances while sharing the project’s spacing and accent colour.</p></header>
+	<header><p>Controls</p><h2>Choices and native inputs</h2><p>Native controls retain platform affordances while sharing the project’s spacing and accent colour.</p></header>
 	<div class="ds-grid">
-		<fieldset class="form-fields"><legend>Notifications</legend><label class="choice"><input type="checkbox" checked> Email me every submission</label><label class="choice"><input type="checkbox"> Send a daily digest</label><label class="choice"><input type="checkbox" disabled> SMS notifications</label></fieldset>
-		<fieldset class="form-fields"><legend>Retention period</legend><label class="choice"><input name="retention" type="radio"> 30 days</label><label class="choice"><input name="retention" type="radio" checked> 90 days</label><label class="choice"><input name="retention" type="radio"> 1 year</label></fieldset>
+		<fieldset><legend>Notifications</legend><label class="choice"><input type="checkbox" checked> Email me every submission</label><label class="choice"><input type="checkbox"> Send a daily digest</label><label class="choice"><input type="checkbox" disabled> SMS notifications</label></fieldset>
+		<fieldset><legend>Retention period</legend><label class="choice"><input name="retention" type="radio"> 30 days</label><label class="choice"><input name="retention" type="radio" checked> 90 days</label><label class="choice"><input name="retention" type="radio"> 1 year</label></fieldset>
 	</div>
-	<div class="card form-fields">
+	<div>
 		<label><span>Spam sensitivity</span><input type="range" min="0" max="100" value="65"></label>
 		<label><span>Brand colour</span><input type="color" value="#c4472d"></label>
 		<label><span>Launch date</span><input type="date"></label>
@@ -108,37 +108,37 @@
 </section>
 
 <section id="cards" class="ds-section">
-	<header><p class="eyebrow">Composition</p><h2>Cards and containers</h2><p>Cards group related content. They can contain any other pattern, including callouts and forms.</p></header>
+	<header><p>Composition</p><h2>Cards and containers</h2><p>Cards group related content. They can contain any other pattern, including callouts and forms.</p></header>
 	<div class="ds-grid">
-		<article class="card"><span class="badge badge--success">Active</span><h3>Contact form</h3><p>Receives submissions from example.com.</p><div class="callout callout--success"><strong>All systems operational</strong><p>Last submission received 4 minutes ago.</p></div></article>
-		<article class="card card--soft"><span class="badge">Draft</span><h3>Newsletter</h3><p>This endpoint has not been published yet.</p><button class="secondary small" type="button">Configure</button></article>
-		<a class="card card--interactive" href="#forms"><span class="badge badge--warning">Action needed</span><h3>Support request</h3><p>Add a verified forwarding address to start collecting responses.</p></a>
+		<article><span class="badge--success">Active</span><h3>Contact form</h3><p>Receives submissions from example.com.</p><div class="callout--success"><strong>All systems operational</strong><p>Last submission received 4 minutes ago.</p></div></article>
+		<article><span>Draft</span><h3>Newsletter</h3><p>This endpoint has not been published yet.</p><button class="secondary small" type="button">Configure</button></article>
+		<a href="#forms"><span class="badge--warning">Action needed</span><h3>Support request</h3><p>Add a verified forwarding address to start collecting responses.</p></a>
 	</div>
 </section>
 
 <section id="feedback" class="ds-section">
-	<header><p class="eyebrow">Composition</p><h2>Feedback and status</h2><p>Callouts communicate contextual information without interrupting the task.</p></header>
-	<div class="form-fields">
-		<div class="callout"><strong>Information</strong><p>Your endpoint URL is safe to include in public HTML.</p></div>
-		<div class="callout callout--success"><strong>Changes saved</strong><p>The new forwarding rules are active.</p></div>
-		<div class="callout callout--warning"><strong>Approaching limit</strong><p>You have used 840 of 1,000 submissions this month.</p></div>
-		<div class="callout callout--danger"><strong>Delivery failed</strong><p>HexForm could not reach the configured webhook.</p></div>
+	<header><p>Composition</p><h2>Feedback and status</h2><p>Callouts communicate contextual information without interrupting the task.</p></header>
+	<div>
+		<div><strong>Information</strong><p>Your endpoint URL is safe to include in public HTML.</p></div>
+		<div class="callout--success"><strong>Changes saved</strong><p>The new forwarding rules are active.</p></div>
+		<div class="callout--warning"><strong>Approaching limit</strong><p>You have used 840 of 1,000 submissions this month.</p></div>
+		<div class="callout--danger"><strong>Delivery failed</strong><p>HexForm could not reach the configured webhook.</p></div>
 	</div>
-	<p class="ds-stack"><span class="badge">Neutral</span><span class="badge badge--success">Verified</span><span class="badge badge--warning">Pending</span><span class="badge badge--danger">Failed</span></p>
+	<p class="ds-stack"><span>Neutral</span><span class="badge--success">Verified</span><span class="badge--warning">Pending</span><span class="badge--danger">Failed</span></p>
 </section>
 
 <section id="data" class="ds-section">
-	<header><p class="eyebrow">Composition</p><h2>Data display</h2><p>Tables remain readable on small screens through a deliberately scrollable container.</p></header>
-	<div class="table-scroll"><table><thead><tr><th>Endpoint</th><th>Status</th><th>Submissions</th><th>Last received</th><th></th></tr></thead><tbody><tr><td>contact</td><td><span class="badge badge--success">Active</span></td><td>428</td><td>4 minutes ago</td><td><button class="quiet small">Open</button></td></tr><tr><td>newsletter</td><td><span class="badge">Draft</span></td><td>0</td><td>Never</td><td><button class="quiet small">Open</button></td></tr><tr><td>support</td><td><span class="badge badge--danger">Paused</span></td><td>83</td><td>2 days ago</td><td><button class="quiet small">Open</button></td></tr></tbody></table></div>
+	<header><p>Composition</p><h2>Data display</h2><p>Tables remain readable on small screens through a deliberately scrollable container.</p></header>
+	<div class="table-scroll"><table><thead><tr><th>Endpoint</th><th>Status</th><th>Submissions</th><th>Last received</th><th></th></tr></thead><tbody><tr><td>contact</td><td><span class="badge--success">Active</span></td><td>428</td><td>4 minutes ago</td><td><button class="quiet small">Open</button></td></tr><tr><td>newsletter</td><td><span>Draft</span></td><td>0</td><td>Never</td><td><button class="quiet small">Open</button></td></tr><tr><td>support</td><td><span class="badge--danger">Paused</span></td><td>83</td><td>2 days ago</td><td><button class="quiet small">Open</button></td></tr></tbody></table></div>
 	<div class="ds-grid">
-		<div class="card"><h3>Monthly submissions</h3><p><strong>840</strong> of 1,000</p><progress value="840" max="1000">84%</progress></div>
-		<div class="card"><h3>Delivery health</h3><p><strong>98%</strong> successful</p><meter value=".98">98%</meter></div>
+		<div><h3>Monthly submissions</h3><p><strong>840</strong> of 1,000</p><progress value="840" max="1000">84%</progress></div>
+		<div><h3>Delivery health</h3><p><strong>98%</strong> successful</p><meter value=".98">98%</meter></div>
 	</div>
 </section>
 
 <section id="navigation" class="ds-section">
-	<header><p class="eyebrow">Composition</p><h2>Disclosure and navigation</h2><p>Native disclosure elements provide useful interaction without JavaScript.</p></header>
-	<div class="card">
+	<header><p>Composition</p><h2>Disclosure and navigation</h2><p>Native disclosure elements provide useful interaction without JavaScript.</p></header>
+	<div>
 		<details><summary><strong>Where should I put my endpoint URL?</strong></summary><p>Use it as the <code>action</code> attribute of your HTML form and set the method to <code>post</code>.</p></details>
 		<details><summary><strong>Does HexForm require JavaScript?</strong></summary><p>No. Standard browser form submission works without client-side scripting.</p></details>
 	</div>

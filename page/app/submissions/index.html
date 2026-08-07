@@ -1,6 +1,6 @@
 <header class="app-page-heading">
 	<div>
-		<p class="eyebrow">Inbox</p>
+		<p>Inbox</p>
 		<h1>Submissions</h1>
 		<p>Read and manage the entries received by your forms.</p>
 	</div>
@@ -15,7 +15,7 @@
 	</label>
 	<button class="secondary">Filter</button>
 </form>
-<div class="table-scroll card">
+<div class="table-scroll">
 	<table>
 		<thead>
 			<tr>
@@ -33,7 +33,7 @@
 				<td data-bind:text="submitter">Unknown</td>
 				<td data-bind:text="contents">Preview</td>
 				<td class="row-actions">
-					<a class="button quiet small" data-read>Read</a>
+					<a class="quiet small" data-read>Read</a>
 					<form method="post">
 						<input type="hidden" name="id" data-bind:value="id" />
 						<button

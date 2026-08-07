@@ -1,4 +1,11 @@
 @use "../variable/break";
+@use "../decorator/badge";
+@use "../decorator/brand";
+@use "../decorator/button";
+@use "../decorator/callout";
+@use "../decorator/card";
+@use "../decorator/eyebrow";
+@use "../decorator/form-fields";
 
 body.uri--digital-style {
 	>global-header {
@@ -14,7 +21,8 @@ body.uri--digital-style {
 		border-bottom: 1px solid var(--pal-line);
 		background: var(--pal-soft);
 
-		>.brand {
+		>a:first-child {
+			@extend %d-brand;
 			display: flex;
 			min-height: 4rem;
 			align-items: center;
@@ -44,6 +52,13 @@ body.uri--digital-style {
 			&:hover, &:focus {
 				background: var(--pal-paper);
 				color: var(--pal-ink);
+			}
+
+			&[aria-current="location"] {
+				background: var(--pal-accent-soft);
+				box-shadow: inset .2rem 0 0 var(--pal-accent);
+				color: var(--pal-ink);
+				font-weight: 700;
 			}
 		}
 
@@ -87,6 +102,68 @@ body.uri--digital-style {
 		}
 	}
 
+	.ds-header>p:first-child,
+	.ds-section>header>p:first-child {
+		@extend %d-eyebrow;
+	}
+
+	#typography>div,
+	#buttons>div,
+	#forms>form,
+	#choices>div:last-child,
+	#cards article,
+	#cards>a,
+	#data>.ds-grid>div,
+	#navigation>div {
+		@extend %d-card;
+	}
+
+	#cards article:nth-child(2) {
+		@extend %d-card-soft;
+	}
+
+	#cards>a {
+		@extend %d-card-interactive;
+	}
+
+	#forms>form,
+	#choices fieldset,
+	#choices>div:last-child,
+	#feedback>div {
+		@extend %d-form-fields;
+	}
+
+	#forms>form {
+		@extend %d-form-fields-card;
+	}
+
+	#cards article>div,
+	#feedback>div>div {
+		@extend %d-callout;
+	}
+
+	.callout--success { @extend %d-callout-success; }
+	.callout--warning { @extend %d-callout-warning; }
+	.callout--danger { @extend %d-callout-danger; }
+
+	#cards :is(article, a)>span:first-child,
+	#feedback span,
+	#data td>span {
+		@extend %d-badge;
+	}
+
+	#cards :is(article, a)>span:first-child {
+		margin-bottom: .75rem;
+	}
+
+	.badge--success { @extend %d-badge-success; }
+	.badge--warning { @extend %d-badge-warning; }
+	.badge--danger { @extend %d-badge-danger; }
+
+	#buttons a {
+		@extend %d-button;
+	}
+
 	.ds-section {
 		max-width: 64rem;
 		margin-bottom: 4rem;
@@ -123,7 +200,7 @@ body.uri--digital-style {
 		align-items: center;
 	}
 
-	.form-fields+.ds-stack,
+	#forms>form+.ds-stack,
 	.table-scroll+.ds-grid {
 		margin-top: 1rem;
 	}

@@ -1,4 +1,4 @@
-.badge {
+%d-badge {
 	--badge-colour: var(--pal-muted);
 	display: inline-block;
 	padding: .15rem .45rem;
@@ -10,7 +10,8 @@
 	font-weight: 700;
 	line-height: 1.4;
 
-	&--success { --badge-colour: var(--theme-success); }
-	&--warning { --badge-colour: var(--theme-warning); }
-	&--danger { --badge-colour: var(--theme-danger); }
 }
+
+%d-badge-success { --badge-colour: var(--theme-success); }
+%d-badge-warning { --badge-colour: var(--theme-warning); }
+%d-badge-danger { --badge-colour: var(--theme-danger); }

@@ -1,4 +1,5 @@
 @use "../variable/break";
+@use "../decorator/brand";
 
 global-header {
 	display: block;
@@ -9,7 +10,8 @@ global-header {
 	border-bottom: 1px solid var(--pal-line);
 	background: var(--pal-soft);
 
-	>.brand {
+	>a:first-child {
+		@extend %d-brand;
 		display: flex;
 		min-height: 4rem;
 		padding: 1rem;
@@ -66,9 +68,16 @@ global-header {
 			font-size: 1rem;
 			text-decoration: none;
 
-			&:hover, &:focus, &[aria-current="location"] {
+			&:hover, &:focus {
 				background: var(--pal-paper);
 				color: var(--pal-ink);
+			}
+
+			&[aria-current="location"] {
+				background: var(--pal-accent-soft);
+				box-shadow: inset .2rem 0 0 var(--pal-accent);
+				color: var(--pal-ink);
+				font-weight: 700;
 			}
 		}
 

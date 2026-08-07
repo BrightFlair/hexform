@@ -1,4 +1,11 @@
 @use "../variable/break";
+@use "../decorator/button";
+@use "../decorator/eyebrow";
+@use "../decorator/hex-fade";
+@use "../decorator/section";
+@use "../decorator/section-heading";
+@use "../decorator/shell";
+@use "../decorator/text-link";
 
 body.uri--index {
 	display: block;
@@ -13,7 +20,7 @@ body.uri--index {
 		border: 0;
 		background: transparent;
 
-		>.brand, summary, nav {
+		>a:first-child, summary, nav {
 			display: none;
 		}
 
@@ -33,6 +40,7 @@ body.uri--index {
 				margin: 0;
 
 				.homepage-dashboard {
+					@extend %d-button;
 					min-height: 2.15rem;
 					padding: .35rem .7rem;
 				}
@@ -53,6 +61,7 @@ body.uri--index {
 	}
 
 	.hero {
+		@extend %d-hex-fade;
 		overflow: hidden;
 		padding: clamp(5rem, 12vw, 8rem) 1rem 6rem;
 		text-align: center;
@@ -84,6 +93,14 @@ body.uri--index {
 			align-items: center;
 			justify-content: center;
 
+			>a:first-child {
+				@extend %d-button;
+			}
+
+			>a:last-child {
+				@extend %d-text-link;
+			}
+
 			@media(min-width: break.$desktop) {
 				flex-direction: row;
 			}
@@ -94,10 +111,39 @@ body.uri--index {
 		border-top: 1px solid var(--pal-line);
 	}
 
+	#how-it-works,
+	#pricing {
+		@extend %d-section;
+		@extend %d-shell;
+	}
+
+	#how-it-works>header,
+	.integrations header,
+	#pricing>header {
+		@extend %d-section-heading;
+	}
+
+	.integrations header,
+	#pricing>header {
+		@extend %d-section-heading-center;
+	}
+
+	#how-it-works>header>p:first-child,
+	.integrations header>p:first-child,
+	#pricing>header>p:first-child,
+	.signup__copy>p:first-child {
+		@extend %d-eyebrow;
+	}
+
 	.integrations {
+		@extend %d-hex-fade;
 		overflow: hidden;
 		padding-block: var(--size-section-space);
 		border-block: 1px solid var(--pal-line);
+
+		>div {
+			@extend %d-shell;
+		}
 	}
 
 	.pricing-list {
@@ -111,6 +157,7 @@ body.uri--index {
 	}
 
 	.signup {
+		@extend %d-hex-fade;
 		display: block;
 		overflow: hidden;
 		width: min(calc(100% - 2rem), var(--size-shell));

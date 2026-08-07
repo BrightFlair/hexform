@@ -1,0 +1,45 @@
+@use "callout";
+@use "eyebrow";
+
+%d-typography {
+	max-width: 48rem;
+	margin-inline: auto;
+
+	>header {
+		margin-bottom: 3rem;
+
+		>p:first-child {
+			@extend %d-eyebrow;
+		}
+
+		h1 {
+			margin-bottom: .5rem;
+		}
+
+		h1+p {
+			font-size: 1.25rem;
+		}
+
+		time {
+			color: var(--pal-muted);
+			font-size: 1rem;
+		}
+	}
+
+	>h2 {
+		margin-top: 3rem;
+		font-size: clamp(1.5rem, 4vw, 2rem);
+	}
+
+	>h3 {
+		margin-top: 2rem;
+	}
+
+	li+li {
+		margin-top: .75rem;
+	}
+
+	>aside {
+		@extend %d-callout;
+	}
+}

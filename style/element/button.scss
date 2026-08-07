@@ -1,4 +1,4 @@
-@use "../decoration/button";
+@use "../decorator/button";
 
 button {
 	@extend %d-button;
