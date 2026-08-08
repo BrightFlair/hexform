@@ -3,10 +3,12 @@
 	"description": "A minimal PHP.GT WebEngine homepage.",
 	"require": {
 		"php": ">=8.4",
+		"ext-mbstring": "*",
 		"phpgt/webengine": "^5.0",
 		"authwave/php-client": "dev-master"
 	},
 	"require-dev": {
+		"ext-pdo": "*",
 		"phpunit/phpunit": "^10.4",
 		"phpstan/phpstan": "^2.2",
 		"squizlabs/php_codesniffer": "^4.0",

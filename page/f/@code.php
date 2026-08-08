@@ -1,5 +1,6 @@
 <?php
 use Gt\Http\Response;
+use GT\Http\ResponseStatusException\ClientError\HttpNotFound;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 use Gt\Routing\Path\DynamicPath;
@@ -19,6 +20,7 @@ function go(
 	}
 	$endpoint = $endpoints->getByCode($path->get("code"));
 	if(!$endpoint) {
+// TODO: There's no setStatus - it should throw new HttpNotFound() - there needs to be a behat test for this!
 		$response->setStatus(404);
 		return;
 	}
