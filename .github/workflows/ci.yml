@@ -119,7 +119,7 @@ jobs:
         uses: php-actions/phpstan@v3
         with:
           php_version: ${{ matrix.php }}
-          path: src/
+          path: class/
           level: 6
           memory_limit: 256M
 
@@ -143,7 +143,7 @@ jobs:
         uses: php-actions/phpmd@v1
         with:
           php_version: ${{ matrix.php }}
-          path: src/
+          path: class/
           output: text
           ruleset: phpmd.xml
 
@@ -167,12 +167,15 @@ jobs:
         uses: php-actions/phpcs@v1
         with:
           php_version: ${{ matrix.php }}
-          path: src/
+          path: class/
           standard: phpcs.xml
 
   behat:
     runs-on: ubuntu-latest
     needs: [composer]
+    strategy:
+      matrix:
+        php: [ 8.4, 8.5 ]
 
     steps:
       - uses: actions/download-artifact@v4
