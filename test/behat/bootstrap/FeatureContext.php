@@ -13,6 +13,7 @@ class FeatureContext extends MinkContext {
 	private ?PDO $database = null;
 	private int $endpointSequence = 0;
 	private int $submissionSequence = 0;
+	private ?int $submissionResponseStatus = null;
 	/** @var array<string, array{id: string, code: string}> */
 	private array $endpointList = [];
 
@@ -22,6 +23,7 @@ class FeatureContext extends MinkContext {
 		$this->endpointSequence = 0;
 		$this->submissionSequence = 0;
 		$this->endpointList = [];
+		$this->submissionResponseStatus = null;
 		$this->deleteTestUser();
 	}
 
@@ -75,6 +77,70 @@ class FeatureContext extends MinkContext {
 		)->execute(["url" => $url, "id" => $endpoint["id"]]);
 	}
 
+	/** @Given the endpoint :title has a pending email forwarder :email with code :code */
+	public function endpointHasPendingEmailForwarder(
+		string $title,
+		string $email,
+		string $code,
+	):void {
+		$endpoint = $this->endpoint($title);
+		$this->database()->prepare(<<<'SQL'
+			insert into EmailForwarder (
+				id, endpointId, email, confirmationCode, confirmationCreatedAt
+			) values (:id, :endpointId, :email, :code, current_timestamp)
+		SQL)->execute([
+			"id" => "behat-forwarder-" . count($this->endpointList),
+			"endpointId" => $endpoint["id"],
+			"email" => $email,
+			"code" => $code,
+		]);
+	}
+
+	/** @Given the endpoint :title has a resendable email forwarder :email with code :code */
+	public function endpointHasResendableEmailForwarder(
+		string $title,
+		string $email,
+		string $code,
+	):void {
+		$this->endpointHasPendingEmailForwarder($title, $email, $code);
+		$this->database()->prepare(<<<'SQL'
+			update EmailForwarder
+			set confirmationCreatedAt=:createdAt
+			where email=:email
+		SQL)->execute([
+			"createdAt" => (new DateTimeImmutable("-3 minutes"))->format("Y-m-d H:i:s"),
+			"email" => $email,
+		]);
+	}
+
+	/** @Then the email forwarder :email should have a new confirmation code */
+	public function emailForwarderShouldHaveNewConfirmationCode(string $email):void {
+		$statement = $this->database()->prepare(
+			"select confirmationCode from EmailForwarder where email=:email",
+		);
+		$statement->execute(["email" => $email]);
+		if($statement->fetchColumn() === "12345") {
+			throw $this->expectation("The confirmation code was not regenerated.");
+		}
+	}
+
+	/** @When I delete the email forwarder :email */
+	public function deleteEmailForwarder(string $email):void {
+		$row = $this->findContaining("[data-email-forwarders] li", $email);
+		$this->acceptNextConfirmation();
+		$row->pressButton("Delete");
+	}
+
+	/** @Then the audit log should contain a successful :action for :email */
+	public function auditShouldContainSuccessfulAction(string $action, string $email):void {
+		$this->assertAuditEntry($action, "succeeded", $email);
+	}
+
+	/** @Then the audit log should contain a failed :action for :email */
+	public function auditShouldContainFailedAction(string $action, string $email):void {
+		$this->assertAuditEntry($action, "failed", $email);
+	}
+
 	/** @Given the endpoint :title has received a submission from :submitter saying :message */
 	public function theEndpointHasReceivedSubmission(
 		string $title,
@@ -100,6 +166,32 @@ class FeatureContext extends MinkContext {
 		string $submitter,
 	):void {
 		$this->postForm($title, ["email" => $submitter, "message" => $message]);
+	}
+
+	/** @When someone submits to an unknown endpoint */
+	public function someoneSubmitsToUnknownEndpoint():void {
+		$url = rtrim((string)getenv("BEHAT_BASE_URL"), "/") . "/f/unknown-endpoint/";
+		$context = stream_context_create(["http" => [
+			"method" => "POST",
+			"header" => "Content-Type: application/x-www-form-urlencoded",
+			"content" => "message=test",
+			"ignore_errors" => true,
+		]]);
+		file_get_contents($url, false, $context);
+		$this->submissionResponseStatus = (int)preg_replace(
+			'/^HTTP\/\S+\s+(\d+).*$/',
+			'$1',
+			$http_response_header[0] ?? "0",
+		);
+	}
+
+	/** @Then the submission response status should be :status */
+	public function submissionResponseStatusShouldBe(int $status):void {
+		if($this->submissionResponseStatus !== $status) {
+			throw $this->expectation(
+				"Submission response was {$this->submissionResponseStatus}, expected $status.",
+			);
+		}
 	}
 
 	/** @When a bot submits :message to :title as :submitter */
@@ -362,5 +454,22 @@ class FeatureContext extends MinkContext {
 
 	private function expectation(string $message):ExpectationException {
 		return new ExpectationException($message, $this->getSession()->getDriver());
+	}
+
+	private function assertAuditEntry(string $action, string $outcome, string $email):void {
+		$statement = $this->database()->prepare(<<<'SQL'
+			select count(*) from AuditLog
+			where actorUserId=:userId and action=:action and outcome=:outcome
+			and json_unquote(json_extract(context, '$.email'))=:email
+		SQL);
+		$statement->execute([
+			"userId" => self::TEST_USER_ID,
+			"action" => $action,
+			"outcome" => $outcome,
+			"email" => $email,
+		]);
+		if((int)$statement->fetchColumn() < 1) {
+			throw $this->expectation("No $outcome '$action' audit entry exists for $email.");
+		}
 	}
 }

@@ -12,6 +12,8 @@ use GT\ServiceContainer\Container;
 use GT\Session\Session;
 use GT\Session\SessionStore;
 use HexForm\Endpoint\EndpointRepository;
+use HexForm\Audit\AuditLog;
+use HexForm\Forwarding\EmailForwarderRepository;
 use HexForm\ServiceLoader;
 use HexForm\Submission\SubmissionRepository;
 use HexForm\User\User;
@@ -107,6 +109,33 @@ class ServiceLoaderTest extends TestCase {
 		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
 
 		self::assertInstanceOf(SubmissionRepository::class, $sut->loadSubmissionRepository());
+	}
+
+	public function testLoadEmailForwarderRepository():void {
+		$queryCollection = self::createMock(QueryCollection::class);
+		$database = self::createMock(Database::class);
+		$database->expects(self::once())
+			->method("queryCollection")
+			->with("EmailForwarder")
+			->willReturn($queryCollection);
+		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
+
+		self::assertInstanceOf(
+			EmailForwarderRepository::class,
+			$sut->loadEmailForwarderRepository(),
+		);
+	}
+
+	public function testLoadAuditLog():void {
+		$queryCollection = self::createMock(QueryCollection::class);
+		$database = self::createMock(Database::class);
+		$database->expects(self::once())
+			->method("queryCollection")
+			->with("AuditLog")
+			->willReturn($queryCollection);
+		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
+
+		self::assertInstanceOf(AuditLog::class, $sut->loadAuditLog());
 	}
 
 	private function createContainer(Database $database):Container {

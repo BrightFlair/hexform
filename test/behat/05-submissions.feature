@@ -40,3 +40,7 @@ Feature: Receive and manage form submissions
 		When I open "Submissions" from app navigation
 		And I delete the message from "delete@example.com"
 		Then the message list should not contain "delete@example.com"
+
+	Scenario: An unknown endpoint returns not found
+		When someone submits to an unknown endpoint
+		Then the submission response status should be 404

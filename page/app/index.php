@@ -5,6 +5,7 @@ use Gt\Input\Input;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
 use HexForm\User\User;
+use HexForm\Forwarding\EmailForwarderRepository;
 
 function go(
 	User $user,
@@ -13,6 +14,7 @@ function go(
 	Input $input,
 	Binder $binder,
 	HTMLDocument $document,
+	EmailForwarderRepository $forwarders,
 ): void {
 	$list = $endpoints->getForUser($user);
 	$endpointId = $input->getString("endpoint");
@@ -39,6 +41,8 @@ function go(
 		$steps["junk"]
 			= $steps["junk"] || ($endpoint->junkDetection && (bool)$endpoint->junkFieldName);
 		$steps["forwarder"] = $steps["forwarder"] || (bool)$endpoint->forwarderUrl;
+		$steps["forwarder"] = $steps["forwarder"]
+			|| !empty($forwarders->getConfirmedForEndpoint($endpoint));
 	}
 	foreach($steps as $name => $done) {
 		if($done) {

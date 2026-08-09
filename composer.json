@@ -5,7 +5,9 @@
 		"php": ">=8.4",
 		"ext-mbstring": "*",
 		"phpgt/webengine": "^5.0",
-		"authwave/php-client": "dev-master"
+		"authwave/php-client": "dev-master",
+		"symfony/mailer": "^7.1",
+		"league/commonmark": "^2.8"
 	},
 	"require-dev": {
 		"ext-pdo": "*",

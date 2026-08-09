@@ -29,3 +29,15 @@ Feature: See progress and usage at a glance
 		And the endpoint "Contact form" forwards submissions to "https://hooks.example.com/form"
 		And I am signed in
 		Then onboarding task "Set up a forwarder" should be complete
+
+	Scenario: Adding the first email forwarder leaves onboarding pending until confirmation
+		Given I have an endpoint named "Contact form"
+		And I am signed in
+		When I configure the endpoint "Contact form"
+		And I fill in "Email address" with "team@example.com"
+		And I press "Add email address"
+		Then I should see "team@example.com"
+		And I should see "Pending"
+		And the audit log should contain a successful "add" for "team@example.com"
+		When I open "Dashboard" from app navigation
+		And onboarding task "Set up a forwarder" should be incomplete

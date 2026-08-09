@@ -3,13 +3,19 @@ namespace HexForm;
 
 use Authwave\Authenticator;
 use HexForm\User\User;
+use HexForm\Audit\AuditLog;
 use HexForm\User\UserRepository;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
+use HexForm\Email\Emailer;
+use HexForm\Forwarding\EmailForwarderRepository;
 use GT\Database\Database;
 use GT\Http\Uri;
 use GT\Session\Session;
+use HexForm\UI\Flash;
 use GT\WebEngine\Service\DefaultServiceLoader;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
 
 class ServiceLoader extends DefaultServiceLoader {
 	public function loadAuthenticator():Authenticator {
@@ -52,5 +58,37 @@ class ServiceLoader extends DefaultServiceLoader {
 			$this->container->get(Database::class)
 				->queryCollection("Submission")
 		);
+	}
+
+	public function loadEmailForwarderRepository():EmailForwarderRepository {
+		return new EmailForwarderRepository(
+			$this->container->get(Database::class)->queryCollection("EmailForwarder"),
+		);
+	}
+
+	public function loadAuditLog():AuditLog {
+		return new AuditLog(
+			$this->container->get(Database::class)->queryCollection("AuditLog"),
+		);
+	}
+
+	public function loadFlash():Flash {
+		return new Flash(
+			$this->container->get(Session::class)->getStore("flash", true),
+		);
+	}
+
+	public function loadEmailer():Emailer {
+		return new Emailer($this->container->get(Mailer::class));
+	}
+
+	/** @SuppressWarnings("PHPMD.StaticAccess") */
+	public function loadSymfonyMailer():Mailer {
+		$host = $this->config->getString("email.host");
+		$port = $this->config->getString("email.port");
+		$username = rawurlencode($this->config->getString("email.username"));
+		$password = rawurlencode($this->config->getString("email.password"));
+		$credentials = $username === "" ? "" : "$username:$password@";
+		return new Mailer(Transport::fromDsn("smtp://$credentials$host:$port"));
 	}
 }

@@ -7,6 +7,9 @@ use Gt\Routing\Path\DynamicPath;
 use Gt\Ulid\Ulid;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
+use HexForm\Email\Emailer;
+use HexForm\Forwarding\EmailForwarderRepository;
+use HexForm\Audit\AuditLog;
 function go(
 	DynamicPath $path,
 	EndpointRepository $endpoints,
@@ -14,15 +17,16 @@ function go(
 	Input $input,
 	Response $response,
 	ServerInfo $serverInfo,
+	EmailForwarderRepository $forwarders,
+	Emailer $emailer,
+	AuditLog $audit,
 ): void {
 	if($serverInfo->getRequestMethod() !== "POST") {
 		return;
 	}
 	$endpoint = $endpoints->getByCode($path->get("code"));
 	if(!$endpoint) {
-// TODO: There's no setStatus - it should throw new HttpNotFound() - there needs to be a behat test for this!
-		$response->setStatus(404);
-		return;
+		throw new HttpNotFound();
 	}
 	$data = [];
 	foreach($input->getAll(Input::DATA_BODY) as $key => $value) {
@@ -33,6 +37,20 @@ function go(
 		$endpoint->junkFieldName &&
 		!empty($data[$endpoint->junkFieldName]);
 	$submissions->create((string)new Ulid("SUBMISSION"), $endpoint, $data, $isJunk);
+	if(!$isJunk) {
+		foreach($forwarders->getConfirmedForEndpoint($endpoint) as $forwarder) {
+			$emailSent = $emailer->sendSubmission($forwarder->email, $endpoint->title, $data);
+			$audit->record(
+				null,
+				$endpoint->id,
+				"email-forwarder",
+				$forwarder->id,
+				"forward-submission",
+				$emailSent ? "succeeded" : "failed",
+				["email" => $forwarder->email],
+			);
+		}
+	}
 	if($endpoint->confirmationUrl) {
 		$response->redirect($endpoint->confirmationUrl);
 	}

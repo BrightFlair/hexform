@@ -6,6 +6,13 @@
 	</div>
 	<a class="secondary" data-inbox>Open inbox</a>
 </header>
+<dialog class="flash-dialog" data-confirmation-error open>
+	<form method="dialog">
+		<h2>Could not confirm email</h2>
+		<p data-bind:text="confirmation-error-message">The confirmation code is incorrect. Please try again.</p>
+		<button>Close</button>
+	</form>
+</dialog>
 <section class="action-url">
 	<div>
 		<p>Action URL</p>
@@ -96,7 +103,7 @@
 			<small>Higher limits may require a plan upgrade.</small>
 		</label>
 	</div>
-	<h2>Forwarding</h2>
+	<h2>Webhook forwarding</h2>
 	<label>
 		<span>Forwarder URL</span>
 		<input
@@ -109,6 +116,49 @@
 	</label>
 	<div class="actions"><button name="do" value="save">Save changes</button></div>
 </form>
+<section class="email-forwarding">
+	<header>
+		<h2>Email forwarding</h2>
+		<p>Add one or more confirmed addresses to receive every new submission.</p>
+	</header>
+	<ul data-email-forwarders>
+		<li data-list>
+			<div class="forwarder-heading">
+				<span class="forwarder-status" aria-hidden="true"></span>
+				<div><strong data-bind:text="email">person@example.com</strong> <span class="forwarder-badge" data-bind:text="status">Pending</span></div>
+			</div>
+			<form method="post" class="confirm-forwarder" data-confirm-forwarder>
+				<input type="hidden" name="forwarderId" data-bind:value="id" />
+				<label>
+					<span>Confirmation code</span>
+					<input name="confirmationCode" inputmode="numeric" pattern="[0-9]{5}" maxlength="5" required />
+				</label>
+				<button name="do" value="confirm_email_forwarder">Confirm</button>
+			</form>
+			<form method="post" data-resend-forwarder>
+				<input type="hidden" name="forwarderId" data-bind:value="id" />
+				<button class="quiet small" name="do" value="resend_email_forwarder">Resend code</button>
+			</form>
+			<form method="post" class="delete-forwarder">
+				<input type="hidden" name="forwarderId" data-bind:value="id" />
+				<button
+					class="danger small"
+					name="do"
+					value="delete_email_forwarder"
+					onclick="return confirm('Remove this forwarding address?')"
+				>Delete</button>
+			</form>
+		</li>
+	</ul>
+	<p class="empty-state" data-no-email-forwarders>No forwarding addresses yet.</p>
+	<form method="post" class="add-forwarder">
+		<label>
+			<span>Email address</span>
+			<input type="email" name="email" placeholder="team@example.com" required />
+		</label>
+		<button name="do" value="add_email_forwarder">Add email address</button>
+	</form>
+</section>
 <section class="danger-zone">
 	<h2>Delete endpoint</h2>
 	<p>Permanently delete this endpoint and all its submissions. This cannot be undone.</p>

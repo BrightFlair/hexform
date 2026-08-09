@@ -45,6 +45,7 @@ body.dir--app {
 	.dashboard-chart,
 	.table-scroll,
 	.settings-form,
+	.email-forwarding,
 	.action-url,
 	.danger-zone,
 	.submission-detail,
@@ -282,6 +283,97 @@ body.dir--app {
 			gap: .75rem;
 			justify-content: flex-end;
 		}
+	}
+
+	.email-forwarding {
+		margin-bottom: 1.5rem;
+
+		>header {
+			border-bottom: 1px solid var(--pal-line);
+		}
+
+		ul {
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		li {
+			display: flex;
+			gap: 1rem;
+			padding: 1rem 0;
+			border-bottom: 1px solid var(--pal-line);
+			flex-wrap: wrap;
+			align-items: flex-end;
+		}
+
+		.forwarder-heading {
+			display: flex;
+			min-width: min(100%, 20rem);
+			gap: .75rem;
+			margin-right: auto;
+			align-items: center;
+		}
+
+		.forwarder-status {
+			display: flex;
+			width: 2.5rem;
+			height: 2.5rem;
+			border-radius: 50%;
+			align-items: center;
+			justify-content: center;
+		}
+
+		.pending .forwarder-status {
+			background: color-mix(in srgb, var(--theme-warning) 18%, transparent);
+			&::after { @include icon.icon("mail-question", var(--theme-warning)); }
+		}
+
+		.confirmed .forwarder-status {
+			background: color-mix(in srgb, var(--theme-success) 18%, transparent);
+			&::after { @include icon.icon("mail-check", var(--theme-success)); }
+		}
+
+		.forwarder-badge { @extend %d-badge; }
+		.pending .forwarder-badge { @extend %d-badge-warning; }
+		.confirmed .forwarder-badge { @extend %d-badge-success; }
+
+		.confirm-forwarder, .add-forwarder {
+			display: flex;
+			gap: .75rem;
+			align-items: flex-end;
+		}
+
+		.confirm-forwarder label {
+			max-width: 11rem;
+			margin: 0;
+		}
+
+		.add-forwarder {
+			margin-top: 1.25rem;
+		}
+	}
+
+	.flash-dialog {
+		max-width: min(32rem, calc(100% - 2rem));
+		padding: 1.5rem;
+		border: 1px solid var(--theme-danger);
+		border-radius: var(--size-radius);
+		background: var(--pal-card);
+		color: var(--pal-ink);
+
+		&::backdrop {
+			background: rgb(0 0 0 / 55%);
+		}
+
+		form {
+			display: flex;
+			gap: 1rem;
+			flex-direction: column;
+		}
+
+		h2, p { margin: 0; }
+		button { align-self: flex-end; }
 	}
 
 	.action-url {
