@@ -47,9 +47,6 @@ jobs:
       matrix:
         php: [ 8.4, 8.5 ]
 
-    outputs:
-      coverage: ${{ steps.store-coverage.outputs.coverage_text }}
-
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -177,6 +174,22 @@ jobs:
       matrix:
         php: [ 8.4, 8.5 ]
 
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: hexform
+          MYSQL_USER: hexform_user
+          MYSQL_PASSWORD: hexform_pass
+          MYSQL_ROOT_PASSWORD: root_pass
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --user=root --password=root_pass"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=12
+
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -189,6 +202,15 @@ jobs:
       - name: Run Behat
         uses: php-actions/behat@chrome
         with:
-          php_version: "8.5"
+          php_version: ${{ matrix.php }}
+          php_extensions: pdo_mysql mbstring
           vendored_behat_path: vendor/bin/behat
-          app_command: php -d display_errors=0 -S 0.0.0.0:8000 -t /app
+          app_command: >-
+            php vendor/bin/migrate
+            --host 127.0.0.1
+            --port 3306
+            --database hexform
+            --username hexform_user
+            --password hexform_pass
+            && exec php -d display_errors=0 -S 0.0.0.0:8000
+            -t /app/www /app/vendor/phpgt/webengine/go.php
