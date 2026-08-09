@@ -45,9 +45,12 @@ class FeatureContext extends MinkContext {
 
 	/** @Then I should be at the application root */
 	public function assertApplicationRoot():void {
-		$path = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH);
-		if(($path ?: "/") !== "/") {
-			throw $this->expectation("Current page is '$path', but '/' expected.");
+		$currentUrl = rtrim($this->getSession()->getCurrentUrl(), "/");
+		$applicationUrl = rtrim((string)getenv("BEHAT_BASE_URL"), "/");
+		if($currentUrl !== $applicationUrl) {
+			throw $this->expectation(
+				"Current page is '$currentUrl', but '$applicationUrl' expected.",
+			);
 		}
 	}
 
