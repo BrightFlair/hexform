@@ -13,5 +13,6 @@ function go(?User $user, Response $response, Input $input, Authenticator $authen
 	}
 	if (!$user) {
 		$response->redirect("/");
+		return;
 	}
 }
