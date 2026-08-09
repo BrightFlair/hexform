@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "build": "esbuild script/script.es6 --bundle --outfile=www/style.js --loader:.es6=js && sass style/style.scss www/style.css --no-source-map",
+    "build": "esbuild script/script.es6 --bundle --outfile=www/script.js --loader:.es6=js && sass style/style.scss www/style.css --no-source-map",
     "watch": "sass --watch style/style.scss:www/style.css"
   },
   "devDependencies": {
