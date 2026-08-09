@@ -43,6 +43,14 @@ class FeatureContext extends MinkContext {
 		$this->getSession()->reset();
 	}
 
+	/** @Then I should be at the application root */
+	public function assertApplicationRoot():void {
+		$path = parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH);
+		if(($path ?: "/") !== "/") {
+			throw $this->expectation("Current page is '$path', but '/' expected.");
+		}
+	}
+
 	/** @Given I have an endpoint named :title */
 	public function iHaveAnEndpointNamed(string $title):void {
 		$this->ensureTestUser();
