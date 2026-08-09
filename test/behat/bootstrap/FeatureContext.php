@@ -43,17 +43,6 @@ class FeatureContext extends MinkContext {
 		$this->getSession()->reset();
 	}
 
-	/** @Then I should be at the application root */
-	public function assertApplicationRoot():void {
-		$currentUrl = rtrim($this->getSession()->getCurrentUrl(), "/");
-		$applicationUrl = rtrim((string)getenv("BEHAT_BASE_URL"), "/");
-		if($currentUrl !== $applicationUrl) {
-			throw $this->expectation(
-				"Current page is '$currentUrl', but '$applicationUrl' expected.",
-			);
-		}
-	}
-
 	/** @Given I have an endpoint named :title */
 	public function iHaveAnEndpointNamed(string $title):void {
 		$this->ensureTestUser();
