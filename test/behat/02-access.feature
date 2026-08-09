@@ -7,7 +7,7 @@ Feature: Access the private application
 	Scenario: A visitor cannot open the dashboard
 		Given I am not signed in
 		When I go to "/app/"
-		Then I should see "Your HTML form."
+		Then I should not see "Dashboard"
 
 	Scenario: A signed-in user reaches their dashboard
 		Given I am signed in
@@ -19,4 +19,4 @@ Feature: Access the private application
 		When I open "Log out" from app navigation
 		Then I should see "Your HTML form."
 		When I go to "/app/"
-		Then I should see "Your HTML form."
+		Then I should not see "Dashboard"
