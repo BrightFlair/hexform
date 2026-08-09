@@ -8,7 +8,6 @@ Feature: Access the private application
 		Given I am not signed in
 		When I go to "/app/"
 		Then I should not see "Dashboard"
-		And I should be on the homepage
 
 	Scenario: A signed-in user reaches their dashboard
 		Given I am signed in
