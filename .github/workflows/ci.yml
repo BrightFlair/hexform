@@ -30,6 +30,9 @@ jobs:
           php_version: ${{ matrix.php }}
           php_extensions: pcntl
 
+      - name: Build frontend assets
+        run: npm ci && npm run build
+
       - name: Archive build
         run: mkdir /tmp/github-actions/ && tar --exclude=".git" -cvf /tmp/github-actions/build.tar ./
 
