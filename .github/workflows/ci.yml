@@ -180,7 +180,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: build-artifact-behat
+          name: build-artifact-${{ matrix.php }}
           path: /tmp/github-actions
 
       - name: Extract build archive
