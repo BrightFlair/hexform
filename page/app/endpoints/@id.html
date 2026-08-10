@@ -25,9 +25,10 @@
 		<code class="copy-value" data-bind:text="actionUrl">/f/code/</code>
 	</div>
 	<code-sample aria-label="Example form HTML">
-		<span class="code-line"><code>&lt;form action=&quot;<b data-bind:text="actionUrl">/f/code/</b>&quot; method=&quot;post&quot;&gt;</code></span>
-		<span class="code-line"><code>  &lt;input name=&quot;email&quot; type=&quot;email&quot;&gt;</code></span>
-		<span class="code-line"><code>  &lt;button&gt;Send&lt;/button&gt;</code></span>
+		<span class="code-line"><code>&lt;form action=&quot;<b data-bind:text="actionUrl">/</b>&quot; method=&quot;post&quot;&gt;</code></span>
+		<span class="code-line"><code> &lt;script src="<b>https://hexform.io/s/<span data-bind:text="code">000</span>.js</b>" defer&gt;&lt;/script&gt;</code></span>
+		<span class="code-line"><code> &lt;input name=&quot;email&quot; type=&quot;email&quot;&gt;</code></span>
+		<span class="code-line"><code> &lt;button&gt;Send&lt;/button&gt;</code></span>
 		<span class="code-line"><code>&lt;/form&gt;</code></span>
 	</code-sample>
 </section>
@@ -71,6 +72,11 @@
 			<small>Usually an email, name, or username field.</small>
 		</label>
 	</div>
+	<label>
+		<span>Ignored keys</span>
+		<input name="ignoredKeys" data-bind:value="ignoredKeys" />
+		<small>Comma-separated field names that will not be stored or forwarded.</small>
+	</label>
 	<h2>Junk protection</h2>
 	<label class="choice">
 		<input type="checkbox" name="junkDetection" value="1" data-junk-detection />
@@ -81,6 +87,7 @@
 		<input name="junkFieldName" data-bind:value="junkFieldName" placeholder="company" />
 		<small>A hidden honeypot field. A non-empty value marks the submission as junk.</small>
 	</label>
+	<p>For extra junk protection, include the <code>&lt;script&gt;</code> tag from the snippet above.</p>
 	<h2>Storage and limits</h2>
 	<div class="field-row">
 		<label>

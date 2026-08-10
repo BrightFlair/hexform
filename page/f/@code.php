@@ -29,7 +29,11 @@ function go(
 		throw new HttpNotFound();
 	}
 	$data = [];
+	$ignoredKeys = $endpoint->getIgnoredKeyList();
 	foreach($input->getAll(Input::DATA_BODY) as $key => $value) {
+		if(in_array($key, $ignoredKeys, true)) {
+			continue;
+		}
 		$data[$key] = $input->get($key, Input::DATA_BODY);
 	}
 	$isJunk
@@ -53,5 +57,8 @@ function go(
 	}
 	if($endpoint->confirmationUrl) {
 		$response->redirect($endpoint->confirmationUrl);
+	}
+	else {
+//		$serverInfo->header
 	}
 }

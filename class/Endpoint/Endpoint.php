@@ -5,6 +5,8 @@ use DateTimeInterface;
 use GT\DomTemplate\BindGetter;
 
 readonly class Endpoint {
+	public const string DEFAULT_IGNORED_KEYS = "do,csrf-token,__component";
+
 	/** @SuppressWarnings("PHPMD.ExcessiveParameterList") */
 	public function __construct(
 		public string $id,
@@ -20,13 +22,14 @@ readonly class Endpoint {
 		public ?int $retentionMonths,
 		public int $maximumSubmissionsPerMonth,
 		public ?string $forwarderUrl,
+		public string $ignoredKeys = self::DEFAULT_IGNORED_KEYS,
 		public int $submissionCount = 0,
 		public ?DateTimeInterface $lastSubmitted = null,
 	) {}
 
 	#[BindGetter]
 	public function getActionUrl():string {
-		return "/f/$this->code/";
+		return "https://hexform.io/f/$this->code";
 	}
 
 	#[BindGetter]
@@ -39,5 +42,14 @@ readonly class Endpoint {
 		return $this->retentionMonths === null
 			? "forever"
 			: (string)$this->retentionMonths;
+	}
+
+	/** @return list<string> */
+	public function getIgnoredKeyList():array {
+		$keys = str_getcsv($this->ignoredKeys, ",", '"', "");
+		return array_values(array_filter(
+			array_map(trim(...), $keys),
+			fn(string $key):bool => $key !== "",
+		));
 	}
 }

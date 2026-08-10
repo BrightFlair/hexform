@@ -275,6 +275,7 @@ function do_save(
 			$retention === "forever" ? null : (int)$retention,
 			$input->getInt("maximumSubmissionsPerMonth") ?? 50,
 			$input->getString("forwarderUrl"),
+			$input->getString("ignoredKeys"),
 		),
 	);
 	$response->reload();

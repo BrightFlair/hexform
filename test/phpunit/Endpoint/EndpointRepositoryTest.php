@@ -139,6 +139,7 @@ class EndpointRepositoryTest extends TestCase {
 		?int $retentionMonths = 6,
 		int $maximumSubmissionsPerMonth = 100,
 		?string $forwarderUrl = self::TEST_FORWARDER_URL,
+		string $ignoredKeys = Endpoint::DEFAULT_IGNORED_KEYS,
 		int $submissionCount = 7,
 		?DateTimeInterface $lastSubmitted = new DateTimeImmutable(self::TEST_LAST_SUBMITTED),
 	):Endpoint {
@@ -156,6 +157,7 @@ class EndpointRepositoryTest extends TestCase {
 			$retentionMonths,
 			$maximumSubmissionsPerMonth,
 			$forwarderUrl,
+			$ignoredKeys,
 			$submissionCount,
 			$lastSubmitted,
 		);
@@ -181,6 +183,7 @@ class EndpointRepositoryTest extends TestCase {
 			"retentionMonths" => $endpoint->retentionMonths,
 			"maximumSubmissionsPerMonth" => $endpoint->maximumSubmissionsPerMonth,
 			"forwarderUrl" => $endpoint->forwarderUrl,
+			"ignoredKeys" => $endpoint->ignoredKeys,
 		];
 	}
 

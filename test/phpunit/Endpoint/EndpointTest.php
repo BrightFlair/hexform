@@ -45,6 +45,15 @@ class EndpointTest extends TestCase {
 		self::assertSame("forever", $sut->getRetentionValue());
 	}
 
+	public function testGetIgnoredKeyList():void {
+		$sut = $this->createEndpoint(ignoredKeys: " do,csrf-token, ,__component ");
+
+		self::assertSame(
+			["do", "csrf-token", "__component"],
+			$sut->getIgnoredKeyList(),
+		);
+	}
+
 	private function createEndpoint(
 		string $id = self::TEST_ENDPOINT_ID,
 		string $userId = self::TEST_USER_ID,
@@ -59,6 +68,7 @@ class EndpointTest extends TestCase {
 		?int $retentionMonths = null,
 		int $maximumSubmissionsPerMonth = 50,
 		?string $forwarderUrl = null,
+		string $ignoredKeys = Endpoint::DEFAULT_IGNORED_KEYS,
 		int $submissionCount = 3,
 		?DateTimeInterface $lastSubmitted = null,
 	):Endpoint {
@@ -76,6 +86,7 @@ class EndpointTest extends TestCase {
 			$retentionMonths,
 			$maximumSubmissionsPerMonth,
 			$forwarderUrl,
+			$ignoredKeys,
 			$submissionCount,
 			$lastSubmitted,
 		);

@@ -22,11 +22,13 @@ Feature: Manage form endpoints
 		And I fill in "Title" with "Sales enquiries"
 		And I fill in "Main field" with "message"
 		And I fill in "Submitter identity field" with "email"
+		And I fill in "Ignored keys" with "do,csrf-token,__component,tracking-id"
 		And I select "6 months" from "Save submissions"
 		And I fill in "Maximum submissions per month" with "250"
 		And I press "Save changes"
 		Then the "Title" field should contain "Sales enquiries"
 		And the "Maximum submissions per month" field should contain "250"
+		And the "Ignored keys" field should contain "do,csrf-token,__component,tracking-id"
 		And the endpoint list should contain "Sales enquiries"
 
 	Scenario: Open an endpoint-specific inbox

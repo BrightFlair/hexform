@@ -22,6 +22,16 @@ Feature: Receive and manage form submissions
 		And I should see "reader@example.com"
 		And I should see "A detailed enquiry"
 
+	Scenario: Ignore WebEngine fields in submitted data
+		Given I have an endpoint named "Contact form"
+		And the endpoint "Contact form" ignores submission keys "do,csrf-token,__component,tracking-id"
+		When someone submits WebEngine fields to "Contact form"
+		Then the latest submission to "Contact form" should not contain key "do"
+		And the latest submission to "Contact form" should not contain key "csrf-token"
+		And the latest submission to "Contact form" should not contain key "__component"
+		And the latest submission to "Contact form" should not contain key "tracking-id"
+		And the latest submission to "Contact form" should contain key "message"
+
 	Scenario: Filter messages to one endpoint
 		Given I have an endpoint named "Contact form"
 		And I have an endpoint named "Newsletter"

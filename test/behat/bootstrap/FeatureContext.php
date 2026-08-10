@@ -77,6 +77,14 @@ class FeatureContext extends MinkContext {
 		)->execute(["url" => $url, "id" => $endpoint["id"]]);
 	}
 
+	/** @Given the endpoint :title ignores submission keys :keys */
+	public function endpointIgnoresSubmissionKeys(string $title, string $keys):void {
+		$endpoint = $this->endpoint($title);
+		$this->database()->prepare(
+			"update Endpoint set ignoredKeys = :keys where id = :id",
+		)->execute(["keys" => $keys, "id" => $endpoint["id"]]);
+	}
+
 	/** @Given the endpoint :title has a pending email forwarder :email with code :code */
 	public function endpointHasPendingEmailForwarder(
 		string $title,
@@ -166,6 +174,33 @@ class FeatureContext extends MinkContext {
 		string $submitter,
 	):void {
 		$this->postForm($title, ["email" => $submitter, "message" => $message]);
+	}
+
+	/** @When someone submits WebEngine fields to :title */
+	public function someoneSubmitsWebEngineFieldsTo(string $title):void {
+		$this->postForm($title, [
+			"message" => "Keep me",
+			"do" => "submit",
+			"csrf-token" => "token",
+			"__component" => "contact-form",
+			"tracking-id" => "internal-tracking-value",
+		]);
+	}
+
+	/** @Then the latest submission to :title should not contain key :key */
+	public function latestSubmissionShouldNotContainKey(string $title, string $key):void {
+		$data = $this->latestSubmissionData($title);
+		if(array_key_exists($key, $data)) {
+			throw $this->expectation("Latest submission unexpectedly contains '$key'.");
+		}
+	}
+
+	/** @Then the latest submission to :title should contain key :key */
+	public function latestSubmissionShouldContainKey(string $title, string $key):void {
+		$data = $this->latestSubmissionData($title);
+		if(!array_key_exists($key, $data)) {
+			throw $this->expectation("Latest submission does not contain '$key'.");
+		}
 	}
 
 	/** @When someone submits to an unknown endpoint */
@@ -421,6 +456,22 @@ class FeatureContext extends MinkContext {
 			"ignore_errors" => true,
 		]]);
 		file_get_contents($url, false, $context);
+	}
+
+	/** @return array<string, mixed> */
+	private function latestSubmissionData(string $title):array {
+		$endpoint = $this->endpoint($title);
+		$statement = $this->database()->prepare(
+			"select data from Submission where endpointId = ? order by createdAt desc limit 1",
+		);
+		$statement->execute([$endpoint["id"]]);
+		$data = $statement->fetchColumn();
+		if(!is_string($data)) {
+			throw $this->expectation("No submission found for '$title'.");
+		}
+
+		/** @var array<string, mixed> */
+		return json_decode($data, true, flags: JSON_THROW_ON_ERROR);
 	}
 
 	/** @return array{id: string, code: string} */

@@ -65,6 +65,7 @@ class EndpointRepository {
 			"retentionMonths" => $endpoint->retentionMonths,
 			"maximumSubmissionsPerMonth" => $endpoint->maximumSubmissionsPerMonth,
 			"forwarderUrl" => $endpoint->forwarderUrl,
+			"ignoredKeys" => $endpoint->ignoredKeys,
 		];
 	}
 
@@ -86,6 +87,7 @@ class EndpointRepository {
 			$row->getInt("retentionMonths"),
 			$row->getInt("maximumSubmissionsPerMonth"),
 			$row->getString("forwarderUrl"),
+			$row->getString("ignoredKeys") ?? Endpoint::DEFAULT_IGNORED_KEYS,
 			$row->getInt("submissionCount") ?? 0,
 			$row->getDateTime("lastSubmitted"),
 		);
