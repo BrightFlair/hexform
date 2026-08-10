@@ -8,7 +8,7 @@ pricing-card {
 	padding: 1.5rem;
 	border: 1px solid var(--pal-line);
 	border-radius: .55rem;
-	background: var(--pal-paper);
+	background: var(--pal-card);
 
 	@media(min-width: break.$desktop) {
 		width: 33.333%;
