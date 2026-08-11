@@ -4,15 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f62c653a41b70cc927d377654c6672e8",
+    "content-hash": "212a5c42c641ef016bb69d6857b69e31",
     "packages": [
         {
             "name": "authwave/php-client",
             "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Authwave/php-client.git",
+                "reference": "d582fd9247be1c82664309ebf270322038123176"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/g105b/Code/Authwave/php-client",
-                "reference": "dfc23245a6682a650f52bbfc6cc7f12ff4f66364"
+                "type": "zip",
+                "url": "https://api.github.com/repos/Authwave/php-client/zipball/d582fd9247be1c82664309ebf270322038123176",
+                "reference": "d582fd9247be1c82664309ebf270322038123176",
+                "shasum": ""
             },
             "require": {
                 "ext-openssl": "*",
@@ -26,22 +32,20 @@
                 "ext-sodium": "*",
                 "phpunit/phpunit": "8.*"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Authwave\\": "./src"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Authwave\\Test\\": "./test/phpunit"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "description": "PHP client library to implement Authwave in your application",
-            "transport-options": {
-                "symlink": true,
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/Authwave/php-client/issues",
+                "source": "https://github.com/Authwave/php-client/tree/master"
+            },
+            "time": "2026-08-11T11:23:39+00:00"
         },
         {
             "name": "composer/semver",
@@ -4853,20 +4857,20 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.13.4",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a"
+                "reference": "8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/07d290f0c47959fd5eed98c95ee5602db07e0b6a",
-                "reference": "07d290f0c47959fd5eed98c95ee5602db07e0b6a",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae",
+                "reference": "8680aa248f8e07bc8fb43f56f0f5fc77a0c96aae",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.1 || ^8.0"
+                "php": "^8.0"
             },
             "conflict": {
                 "doctrine/collections": "<1.6.8",
@@ -4901,15 +4905,15 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.4"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.14.0"
             },
             "funding": [
                 {
-                    "url": "https://tidelift.com/funding/github/packagist/myclabs/deep-copy",
-                    "type": "tidelift"
+                    "url": "https://github.com/mnapoli",
+                    "type": "github"
                 }
             ],
-            "time": "2025-08-01T08:46:24+00:00"
+            "time": "2026-08-11T10:17:44+00:00"
         },
         {
             "name": "nikic/php-parser",
