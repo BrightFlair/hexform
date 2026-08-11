@@ -4,21 +4,15 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "212a5c42c641ef016bb69d6857b69e31",
+    "content-hash": "f62c653a41b70cc927d377654c6672e8",
     "packages": [
         {
             "name": "authwave/php-client",
             "version": "dev-master",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/Authwave/php-client.git",
-                "reference": "dfc23245a6682a650f52bbfc6cc7f12ff4f66364"
-            },
             "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/Authwave/php-client/zipball/dfc23245a6682a650f52bbfc6cc7f12ff4f66364",
-                "reference": "dfc23245a6682a650f52bbfc6cc7f12ff4f66364",
-                "shasum": ""
+                "type": "path",
+                "url": "/home/g105b/Code/Authwave/php-client",
+                "reference": "dfc23245a6682a650f52bbfc6cc7f12ff4f66364"
             },
             "require": {
                 "ext-openssl": "*",
@@ -32,20 +26,22 @@
                 "ext-sodium": "*",
                 "phpunit/phpunit": "8.*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
                     "Authwave\\": "./src"
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "PHP client library to implement Authwave in your application",
-            "support": {
-                "issues": "https://github.com/Authwave/php-client/issues",
-                "source": "https://github.com/Authwave/php-client/tree/master"
+            "autoload-dev": {
+                "psr-4": {
+                    "Authwave\\Test\\": "./test/phpunit"
+                }
             },
-            "time": "2026-06-06T12:48:39+00:00"
+            "description": "PHP client library to implement Authwave in your application",
+            "transport-options": {
+                "symlink": true,
+                "relative": false
+            }
         },
         {
             "name": "composer/semver",
@@ -480,16 +476,16 @@
         },
         {
             "name": "league/commonmark",
-            "version": "2.9.0",
+            "version": "2.9.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/commonmark.git",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529"
+                "reference": "72e9a87efcf41a8e83be3ed0866b69d77565cb12"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
-                "reference": "5703d83ba3da3b2e356a5fedc848ed6d8ffb6529",
+                "url": "https://api.github.com/repos/thephpleague/commonmark/zipball/72e9a87efcf41a8e83be3ed0866b69d77565cb12",
+                "reference": "72e9a87efcf41a8e83be3ed0866b69d77565cb12",
                 "shasum": ""
             },
             "require": {
@@ -583,7 +579,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-08-03T13:42:31+00:00"
+            "time": "2026-08-11T00:58:45+00:00"
         },
         {
             "name": "league/config",
@@ -6767,16 +6763,16 @@
         },
         {
             "name": "sebastian/recursion-context",
-            "version": "5.0.1",
+            "version": "5.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/recursion-context.git",
-                "reference": "47e34210757a2f37a97dcd207d032e1b01e64c7a"
+                "reference": "5d32fe257a9b39cb63146924d6b4e32a22d4502a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/47e34210757a2f37a97dcd207d032e1b01e64c7a",
-                "reference": "47e34210757a2f37a97dcd207d032e1b01e64c7a",
+                "url": "https://api.github.com/repos/sebastianbergmann/recursion-context/zipball/5d32fe257a9b39cb63146924d6b4e32a22d4502a",
+                "reference": "5d32fe257a9b39cb63146924d6b4e32a22d4502a",
                 "shasum": ""
             },
             "require": {
@@ -6819,7 +6815,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/recursion-context/issues",
                 "security": "https://github.com/sebastianbergmann/recursion-context/security/policy",
-                "source": "https://github.com/sebastianbergmann/recursion-context/tree/5.0.1"
+                "source": "https://github.com/sebastianbergmann/recursion-context/tree/5.0.2"
             },
             "funding": [
                 {
@@ -6839,7 +6835,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-10T07:50:56+00:00"
+            "time": "2026-08-11T05:27:39+00:00"
         },
         {
             "name": "sebastian/type",

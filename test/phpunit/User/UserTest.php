@@ -8,12 +8,12 @@ class UserTest extends TestCase {
 	private const string TEST_USER_ID = "user-1";
 	private const string TEST_USER_EMAIL = "person@example.com";
 
-	public function testConstruct_defaultsToFreeSubscription():void {
+	public function testConstruct_defaultsToNoSubscription():void {
 		$sut = new User(self::TEST_USER_ID, self::TEST_USER_EMAIL);
 
 		self::assertSame(self::TEST_USER_ID, $sut->id);
 		self::assertSame(self::TEST_USER_EMAIL, $sut->email);
-		self::assertSame("free", $sut->subscriptionPlan);
+		self::assertNull($sut->subscriptionPlan);
 	}
 
 	public function testConstruct_acceptsSubscriptionPlan():void {

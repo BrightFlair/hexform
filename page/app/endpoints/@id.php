@@ -119,7 +119,16 @@ function do_add_email_forwarder(
 	}
 	$code = generateConfirmationCode();
 	$forwarderId = (string)new Ulid("FORWARDER");
-	$forwarders->create($forwarderId, $endpoint, $email, $code, new DateTimeImmutable());
+	$now = new DateTimeImmutable();
+	$isAccountEmail = $email === mb_strtolower(trim($user->email));
+	$forwarders->create(
+		$forwarderId,
+		$endpoint,
+		$email,
+		$code,
+		$now,
+		$isAccountEmail ? $now : null,
+	);
 	$audit->record(
 		$user->id,
 		$endpoint->id,
@@ -129,6 +138,19 @@ function do_add_email_forwarder(
 		"succeeded",
 		["email" => $email],
 	);
+	if($isAccountEmail) {
+		$audit->record(
+			$user->id,
+			$endpoint->id,
+			"email-forwarder",
+			$forwarderId,
+			"confirm",
+			"succeeded",
+			["email" => $email, "reason" => "account-email"],
+		);
+		$response->reload();
+		return;
+	}
 	$emailSent = $emailer->sendConfirmation($email, $code);
 	$audit->record(
 		$user->id,

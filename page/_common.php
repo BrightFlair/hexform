@@ -1,5 +1,6 @@
 <?php
 use Authwave\Authenticator;
+use GT\Http\Response;
 use Gt\Http\ServerInfo;
 use Gt\Input\Input;
 
@@ -7,7 +8,14 @@ function go(
 	Authenticator $authenticator,
 	Input $input,
 	ServerInfo $serverInfo,
+	Response $response,
 ):void {
+	if($input->contains("logout")) {
+		$authenticator->logout("/");
+		$response->redirect("/");
+		return;
+	}
+
 	if($authenticator->isLoggedIn()) {
 		return;
 	}

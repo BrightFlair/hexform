@@ -9,7 +9,7 @@ Feature: Understand HexForm before joining
 		Then I should see "Your HTML form."
 		And I should see "Our endpoint."
 		And I should see "Collect form data from any static website. No servers, no SDKs."
-		And I should see "Forms that stay yours"
+		And I should see "A static HTML form that POSTs to HexForm."
 
 	Scenario: The homepage describes integrations and plans
 		Given I am on the homepage

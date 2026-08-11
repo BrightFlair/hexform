@@ -34,13 +34,44 @@ class FeatureContext extends MinkContext {
 
 	/** @Given I am signed in */
 	public function iAmSignedIn():void {
-		$this->visitPath("/?debug-auth=" . self::TEST_USER_ID);
+		$this->visitPath("/?debug-auth=" . self::TEST_USER_ID . "&signup=free");
 		$this->assertSession()->addressEquals("/app/");
 	}
 
 	/** @Given I am not signed in */
 	public function iAmNotSignedIn():void {
 		$this->getSession()->reset();
+	}
+
+	/** @Given I sign in without choosing a subscription */
+	public function iSignInWithoutChoosingASubscription():void {
+		$this->visitPath("/?debug-auth=" . self::TEST_USER_ID);
+	}
+
+	/** @Given I sign up for the :plan subscription */
+	public function iSignUpForTheSubscription(string $plan):void {
+		$this->visitPath(
+			"/?debug-auth=" . self::TEST_USER_ID . "&signup=" . urlencode($plan),
+		);
+	}
+
+	/** @Then my subscription plan should be :plan */
+	public function mySubscriptionPlanShouldBe(string $plan):void {
+		$statement = $this->database()->prepare(
+			"select subscriptionPlan from User where id = ?",
+		);
+		$statement->execute([self::TEST_USER_ID]);
+		if($statement->fetchColumn() !== $plan) {
+			throw $this->expectation("The subscription plan is not '$plan'.");
+		}
+	}
+
+	/** @Then the :plan subscription should be selected */
+	public function theSubscriptionShouldBeSelected(string $plan):void {
+		$this->assertSession()->elementExists(
+			"css",
+			"input[name='subscriptionPlan'][value='$plan']:checked",
+		);
 	}
 
 	/** @Given I have an endpoint named :title */
@@ -139,6 +170,14 @@ class FeatureContext extends MinkContext {
 		$row->pressButton("Delete");
 	}
 
+	/** @Then the forwarding address :email should be confirmed */
+	public function forwardingAddressShouldBeConfirmed(string $email):void {
+		$row = $this->findContaining("[data-email-forwarders] li", $email);
+		if(!str_contains($row->getText(), "Confirmed")) {
+			throw $this->expectation("The forwarding address '$email' is not confirmed.");
+		}
+	}
+
 	/** @Then the audit log should contain a successful :action for :email */
 	public function auditShouldContainSuccessfulAction(string $action, string $email):void {
 		$this->assertAuditEntry($action, "succeeded", $email);
@@ -147,6 +186,19 @@ class FeatureContext extends MinkContext {
 	/** @Then the audit log should contain a failed :action for :email */
 	public function auditShouldContainFailedAction(string $action, string $email):void {
 		$this->assertAuditEntry($action, "failed", $email);
+	}
+
+	/** @Then the audit log should not contain :action for :email */
+	public function auditShouldNotContainAction(string $action, string $email):void {
+		$statement = $this->database()->prepare(<<<'SQL'
+			select count(*)
+			from AuditLog
+			where action=:action and json_unquote(json_extract(context, '$.email'))=:email
+			SQL);
+		$statement->execute(["action" => $action, "email" => $email]);
+		if((int)$statement->fetchColumn() !== 0) {
+			throw $this->expectation("Audit log unexpectedly contains '$action' for '$email'.");
+		}
 	}
 
 	/** @Given the endpoint :title has received a submission from :submitter saying :message */

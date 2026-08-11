@@ -60,6 +60,26 @@ class UserRepositoryTest extends TestCase {
 		self::assertNull($sut->getById("missing"));
 	}
 
+	public function testSetSubscriptionPlan():void {
+		$user = $this->createUser(subscriptionPlan: null);
+		$db = self::createMock(QueryCollection::class);
+		$db->expects(self::once())
+			->method("update")
+			->with("setSubscriptionPlan", [
+				"id" => $user->id,
+				"subscriptionPlan" => "free",
+			]);
+
+		(new UserRepository($db))->setSubscriptionPlan($user, "free");
+	}
+
+	public function testSetSubscriptionPlan_rejectsUnknownPlan():void {
+		$db = self::createStub(QueryCollection::class);
+		$this->expectException(\InvalidArgumentException::class);
+
+		(new UserRepository($db))->setSubscriptionPlan($this->createUser(), "ultimate");
+	}
+
 	private function createAuthUser(
 		string $id = self::TEST_USER_ID,
 		string $email = self::TEST_USER_EMAIL,
@@ -70,7 +90,7 @@ class UserRepositoryTest extends TestCase {
 	private function createUser(
 		string $id = self::TEST_USER_ID,
 		string $email = self::TEST_USER_EMAIL,
-		string $subscriptionPlan = self::TEST_SUBSCRIPTION_PLAN,
+		?string $subscriptionPlan = self::TEST_SUBSCRIPTION_PLAN,
 	):User {
 		return new User($id, $email, $subscriptionPlan);
 	}

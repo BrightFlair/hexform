@@ -22,6 +22,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 			"email" => self::EMAIL,
 			"confirmationCode" => "12345",
 			"confirmationCreatedAt" => "2026-08-08 12:00:00",
+			"confirmedAt" => null,
 		]);
 		$sut = new EmailForwarderRepository($db);
 
@@ -31,6 +32,29 @@ class EmailForwarderRepositoryTest extends TestCase {
 			self::EMAIL,
 			"12345",
 			new DateTimeImmutable("2026-08-08 12:00:00"),
+		);
+	}
+
+	public function testCreateCanStoreAutomaticConfirmation():void {
+		$db = self::createMock(QueryCollection::class);
+		$db->expects(self::once())->method("insert")->with("create", [
+			"id" => "forwarder-1",
+			"endpointId" => "endpoint-1",
+			"email" => "owner@example.com",
+			"confirmationCode" => "12345",
+			"confirmationCreatedAt" => "2026-08-08 12:00:00",
+			"confirmedAt" => "2026-08-08 12:00:00",
+		]);
+		$sut = new EmailForwarderRepository($db);
+		$now = new DateTimeImmutable("2026-08-08 12:00:00");
+
+		$sut->create(
+			"forwarder-1",
+			$this->endpoint(),
+			"owner@example.com",
+			"12345",
+			$now,
+			$now,
 		);
 	}
 

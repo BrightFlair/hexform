@@ -16,6 +16,7 @@ class EmailForwarderRepository {
 		string $email,
 		string $confirmationCode,
 		DateTimeInterface $confirmationCreatedAt,
+		?DateTimeInterface $confirmedAt = null,
 	):void {
 		$this->db->insert("create", [
 			"id" => $id,
@@ -23,6 +24,7 @@ class EmailForwarderRepository {
 			"email" => $email,
 			"confirmationCode" => $confirmationCode,
 			"confirmationCreatedAt" => $confirmationCreatedAt->format("Y-m-d H:i:s"),
+			"confirmedAt" => $confirmedAt?->format("Y-m-d H:i:s"),
 		]);
 	}
 

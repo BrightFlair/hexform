@@ -5,6 +5,13 @@
 		<p>Manage your identity and subscription.</p>
 	</div>
 </header>
+<dialog class="flash-dialog" data-subscription-message open>
+	<form method="dialog">
+		<h2>Choose a subscription</h2>
+		<p data-bind:text="subscription-message">Please choose a plan to continue.</p>
+		<button>Choose a plan</button>
+	</form>
+</dialog>
 <section class="account-grid">
 	<article>
 		<p>Profile</p>
@@ -13,16 +20,22 @@
 	</article>
 	<article>
 		<p>Billing</p>
-		<h2>Current plan</h2>
+		<h2>Subscription plan</h2>
 		<p class="account-value">
-			<span data-bind:text="subscriptionPlan">Free</span>
+			<span data-bind:text="subscriptionPlan">No active subscription</span>
 		</p>
 		<p>
 			Upgrade for higher submission limits and longer retention. Subscription changes are
 			managed securely by Stripe.
 		</p>
-		<div class="actions">
-			<button disabled title="Stripe is not configured">Manage billing with Stripe</button>
-		</div>
+		<form method="post">
+			<input type="hidden" name="do" value="choose-subscription" />
+			<label><input type="radio" name="subscriptionPlan" value="free" /> Free</label>
+			<label><input type="radio" name="subscriptionPlan" value="developer" /> Developer</label>
+			<label><input type="radio" name="subscriptionPlan" value="enterprise" /> Enterprise</label>
+			<div class="actions">
+				<button>Continue with selected plan</button>
+			</div>
+		</form>
 	</article>
 </section>

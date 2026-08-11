@@ -24,7 +24,7 @@ Feature: Find account information and help
 		When I open "Account" from app navigation
 		Then I should see "fakelogin@authwave.com"
 		And I should see "free"
-		And I should see "Manage billing with Stripe"
+		And I should see "Continue with selected plan"
 
 	Scenario: View the help placeholder
 		Given I am signed in

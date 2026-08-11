@@ -27,6 +27,17 @@ class UserRepository {
 		return $this->rowToUser($this->db->fetch("getById", $id));
 	}
 
+	public function setSubscriptionPlan(User $user, string $plan):void {
+		if(!in_array($plan, ["free", "developer", "enterprise"], true)) {
+			throw new \InvalidArgumentException("Unknown subscription plan: $plan");
+		}
+
+		$this->db->update("setSubscriptionPlan", [
+			"id" => $user->id,
+			"subscriptionPlan" => $plan,
+		]);
+	}
+
 	private function rowToUser(?Row $row):?User {
 		if(!$row) {
 			return null;

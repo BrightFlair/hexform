@@ -55,6 +55,17 @@ Feature: Manage form endpoints
 		And I should see "Confirmed"
 		And the audit log should contain a successful "confirm" for "team@example.com"
 
+	Scenario: Automatically confirm the account email forwarding address
+		Given I have an endpoint named "Contact form"
+		And I am signed in
+		When I configure the endpoint "Contact form"
+		And I fill in "Email address" with "behat@hexform.io"
+		And I press "Add email address"
+		Then I should see "behat@hexform.io"
+		And the forwarding address "behat@hexform.io" should be confirmed
+		And the audit log should contain a successful "confirm" for "behat@hexform.io"
+		And the audit log should not contain "send-confirmation" for "behat@hexform.io"
+
 	Scenario: Reject an incorrect email confirmation code with feedback
 		Given I have an endpoint named "Contact form"
 		And the endpoint "Contact form" has a pending email forwarder "team@example.com" with code "12345"

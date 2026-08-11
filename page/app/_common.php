@@ -1,17 +1,47 @@
 <?php
 use Authwave\Authenticator;
-use HexForm\User\User;
-use Gt\Http\Response;
+use GT\Http\Response;
+use GT\Http\Uri;
 use Gt\Input\Input;
+use HexForm\UI\Flash;
+use HexForm\User\User;
+use HexForm\User\UserRepository;
 
-function go(?User $user, Response $response, Input $input, Authenticator $authenticator): void
-{
-	if ($input->contains("logout")) {
-		$authenticator->logout();
-		$response->redirect("/");
+function go_before(
+	?User $user,
+	Authenticator $authenticator,
+	Input $input,
+	Response $response,
+	Uri $uri,
+	UserRepository $users,
+	Flash $flash,
+): void {
+	if (!$user) {
+		$authenticator->login();
 		return;
 	}
-	if (!$user) {
-		$response->redirect("/");
+
+	$signup = $input->getString("signup");
+	if(!$user->subscriptionPlan && $signup === "free") {
+		$users->setSubscriptionPlan($user, "free");
+		$response->redirect("/app/");
+		return;
+	}
+
+	if(
+		!$user->subscriptionPlan
+		&& $uri->getPath() !== "/app/account/"
+		&& in_array($signup, ["developer", "enterprise"], true)
+	) {
+		$response->redirect("/app/account/?signup=" . $signup);
+		return;
+	}
+
+	if(!$user->subscriptionPlan && $uri->getPath() !== "/app/account/") {
+		$flash->set(
+			"You currently do not have an active subscription. "
+			. "Please choose a plan to continue.",
+		);
+		$response->redirect("/app/account/");
 	}
 }
