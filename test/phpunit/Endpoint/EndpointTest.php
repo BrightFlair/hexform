@@ -16,7 +16,7 @@ class EndpointTest extends TestCase {
 	public function testGetActionUrl():void {
 		$sut = $this->createEndpoint();
 
-		self::assertSame("/f/$sut->code/", $sut->getActionUrl());
+		self::assertSame("https://hexform.io/f/$sut->code", $sut->getActionUrl());
 	}
 
 	public function testGetLastSubmittedDisplay():void {

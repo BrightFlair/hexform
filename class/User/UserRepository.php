@@ -4,6 +4,7 @@ namespace HexForm\User;
 use Authwave\User as AuthUser;
 use GT\Database\Query\QueryCollection;
 use GT\Database\Result\Row;
+use InvalidArgumentException;
 
 class UserRepository {
 	public function __construct(
@@ -29,7 +30,7 @@ class UserRepository {
 
 	public function setSubscriptionPlan(User $user, string $plan):void {
 		if(!in_array($plan, ["free", "developer", "enterprise"], true)) {
-			throw new \InvalidArgumentException("Unknown subscription plan: $plan");
+			throw new InvalidArgumentException("Unknown subscription plan: $plan");
 		}
 
 		$this->db->update("setSubscriptionPlan", [
