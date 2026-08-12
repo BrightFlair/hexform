@@ -167,6 +167,7 @@ jobs:
         uses: php-actions/phpcs@v1
         with:
           php_version: ${{ matrix.php }}
+          vendored_phpcs_path: vendor/bin/phpcs
           path: class/
           standard: phpcs.xml
 
@@ -209,7 +210,8 @@ jobs:
           php_extensions: pdo_mysql mbstring
           vendored_behat_path: vendor/bin/behat
           app_command: >-
-            php vendor/bin/migrate
+            cp test/behat/config.dev.ini config.dev.ini
+            && php vendor/bin/migrate
             --host 127.0.0.1
             --port 3306
             --database hexform
