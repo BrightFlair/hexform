@@ -34,12 +34,7 @@ class FeatureContext extends MinkContext {
 
 	/** @Given I am signed in */
 	public function iAmSignedIn():void {
-		$signInPath = "/?debug-auth=" . self::TEST_USER_ID . "&signup=free";
-		$this->visitPath($signInPath);
-		if(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH) !== "/app/") {
-			$this->getSession()->reset();
-			$this->visitPath($signInPath);
-		}
+		$this->authenticateTestUser("free");
 		$this->assertSession()->addressEquals("/app/");
 	}
 
@@ -50,14 +45,12 @@ class FeatureContext extends MinkContext {
 
 	/** @Given I sign in without choosing a subscription */
 	public function iSignInWithoutChoosingASubscription():void {
-		$this->visitPath("/?debug-auth=" . self::TEST_USER_ID);
+		$this->authenticateTestUser();
 	}
 
 	/** @Given I sign up for the :plan subscription */
 	public function iSignUpForTheSubscription(string $plan):void {
-		$this->visitPath(
-			"/?debug-auth=" . self::TEST_USER_ID . "&signup=" . urlencode($plan),
-		);
+		$this->authenticateTestUser($plan);
 	}
 
 	/** @Then my subscription plan should be :plan */
@@ -634,6 +627,19 @@ class FeatureContext extends MinkContext {
 			throw $this->expectation("No test endpoint named '$title' exists.");
 		}
 		return $this->endpointList[$title];
+	}
+
+	private function authenticateTestUser(?string $signupPlan = null):void {
+		$signInPath = "/?debug-auth=" . self::TEST_USER_ID;
+		if($signupPlan !== null) {
+			$signInPath .= "&signup=" . urlencode($signupPlan);
+		}
+
+		$this->visitPath($signInPath);
+		if(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH) === "/login/") {
+			$this->getSession()->reset();
+			$this->visitPath($signInPath);
+		}
 	}
 
 	private function findContaining(string $selector, string $text):NodeElement {
