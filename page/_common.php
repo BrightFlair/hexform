@@ -16,6 +16,10 @@ function go(
 		return;
 	}
 
+	if($authenticator->isLoggedIn()) {
+		return;
+	}
+
 	$serverHost = $serverInfo->getServerHost();
 	$debugAuthenticationEnabled = getenv("HEXFORM_BEHAT") === "1"
 		|| $serverHost === "localhost"
@@ -23,18 +27,11 @@ function go(
 		|| $serverHost === "::1"
 		|| str_starts_with($serverHost ?? "", "192.168.");
 
-	$debugAuthenticationRequested = $input->contains("debug-auth")
-		&& !$input->contains(Authenticator::RESPONSE_QUERY_PARAMETER);
-	if($debugAuthenticationEnabled && $debugAuthenticationRequested) {
+	if($debugAuthenticationEnabled && $input->contains("debug-auth")) {
 		$authenticator->fakeLogin(
 			$input->getString("debug-auth"),
 			$input->getString("email"),
 			"/app/",
 		);
-		return;
-	}
-
-	if($authenticator->isLoggedIn()) {
-		return;
 	}
 }

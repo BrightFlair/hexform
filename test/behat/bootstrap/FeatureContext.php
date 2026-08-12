@@ -34,7 +34,12 @@ class FeatureContext extends MinkContext {
 
 	/** @Given I am signed in */
 	public function iAmSignedIn():void {
-		$this->visitPath("/?debug-auth=" . self::TEST_USER_ID . "&signup=free");
+		$signInPath = "/?debug-auth=" . self::TEST_USER_ID . "&signup=free";
+		$this->visitPath($signInPath);
+		if(parse_url($this->getSession()->getCurrentUrl(), PHP_URL_PATH) !== "/app/") {
+			$this->getSession()->reset();
+			$this->visitPath($signInPath);
+		}
 		$this->assertSession()->addressEquals("/app/");
 	}
 
