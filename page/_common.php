@@ -23,7 +23,9 @@ function go(
 		|| $serverHost === "::1"
 		|| str_starts_with($serverHost ?? "", "192.168.");
 
-	if($debugAuthenticationEnabled && $input->contains("debug-auth")) {
+	$debugAuthenticationRequested = $input->contains("debug-auth")
+		&& !$input->contains(Authenticator::RESPONSE_QUERY_PARAMETER);
+	if($debugAuthenticationEnabled && $debugAuthenticationRequested) {
 		$authenticator->fakeLogin(
 			$input->getString("debug-auth"),
 			$input->getString("email"),
