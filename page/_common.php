@@ -16,10 +16,6 @@ function go(
 		return;
 	}
 
-	if($authenticator->isLoggedIn()) {
-		return;
-	}
-
 	$serverHost = $serverInfo->getServerHost();
 	$debugAuthenticationEnabled = getenv("HEXFORM_BEHAT") === "1"
 		|| $serverHost === "localhost"
@@ -33,5 +29,10 @@ function go(
 			$input->getString("email"),
 			"/app/",
 		);
+		return;
+	}
+
+	if($authenticator->isLoggedIn()) {
+		return;
 	}
 }
