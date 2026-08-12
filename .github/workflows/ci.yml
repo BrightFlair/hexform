@@ -209,9 +209,9 @@ jobs:
           php_version: ${{ matrix.php }}
           php_extensions: pdo_mysql mbstring
           vendored_behat_path: vendor/bin/behat
+          base_url: http://localhost:8000
           app_command: >-
-            cp test/behat/config.dev.ini config.dev.ini
-            && php vendor/bin/migrate
+            php vendor/bin/migrate
             --host 127.0.0.1
             --port 3306
             --database hexform
