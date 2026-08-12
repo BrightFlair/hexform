@@ -79,6 +79,7 @@ cd "$ROOT_DIR"
 
 export BEHAT_BASE_URL="http://${APP_HOST}:${APP_PORT}"
 export BEHAT_CHROME_API_URL="http://${CHROME_HOST}:${CHROME_PORT}"
+export HEXFORM_BEHAT=1
 export HEXFORM_STRIPE_API_BASE="http://127.0.0.1:${STRIPE_PORT}"
 php -S "127.0.0.1:${STRIPE_PORT}" "${ROOT_DIR}/test/behat/stripe-router.php" \
 	>/tmp/hexform-behat-stripe.log 2>&1 &

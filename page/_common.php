@@ -21,12 +21,13 @@ function go(
 	}
 
 	$serverHost = $serverInfo->getServerHost();
-	$isLocal = $serverHost === "localhost"
+	$debugAuthenticationEnabled = getenv("HEXFORM_BEHAT") === "1"
+		|| $serverHost === "localhost"
 		|| $serverHost === "127.0.0.1"
 		|| $serverHost === "::1"
 		|| str_starts_with($serverHost ?? "", "192.168.");
 
-	if($isLocal && $input->contains("debug-auth")) {
+	if($debugAuthenticationEnabled && $input->contains("debug-auth")) {
 		$authenticator->fakeLogin(
 			$input->getString("debug-auth"),
 			$input->getString("email"),
