@@ -160,15 +160,9 @@ class FeatureContext extends MinkContext {
 		$this->getSession()->executeScript(
 			"const option = document.querySelector("
 			. json_encode("input[name='subscriptionPlan'][value='$plan']")
-			. "); option.checked = true; const action = document.createElement('input');"
-			. " action.type = 'hidden'; action.name = 'do'; action.value = 'select_plan';"
-			. " option.form.appendChild(action);",
+			. "); option.checked = true;",
 		);
-		$form = $option->find("xpath", "ancestor::form");
-		if(!$form) {
-			throw $this->expectation("Subscription option has no form.");
-		}
-		$form->submit();
+		$this->pressButton("Continue with selected plan");
 	}
 
 	/** @Then I should have one billing subscription */
