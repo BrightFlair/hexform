@@ -211,7 +211,8 @@ jobs:
           vendored_behat_path: vendor/bin/behat
           base_url: http://localhost:8000
           app_command: >-
-            php vendor/bin/migrate
+            cp test/behat/config.ci.ini config.deploy.ini
+            && php vendor/bin/migrate
             --host 127.0.0.1
             --port 3306
             --database hexform
