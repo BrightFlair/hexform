@@ -23,12 +23,14 @@
 		<h2>Subscription plan</h2>
 		<p class="account-value">
 			<span data-bind:text="subscriptionPlan">No active subscription</span>
+			<span data-pending-plan> (downgrading to <span data-bind:text="pending-plan">Free</span>)</span>
 		</p>
 		<p>
 			Upgrade for higher submission limits and longer retention. Subscription changes are
 			managed securely by Stripe.
 		</p>
 		<dl data-payment-summary>
+			<div data-previous-payment><dt>Previous payment</dt><dd><span data-bind:text="previous-payment-amount">GBP 0.00</span> on <span data-bind:text="previous-payment-date">1 January 2026</span></dd></div>
 			<div><dt>Latest payment</dt><dd><span data-bind:text="latest-payment-amount">GBP 0.00</span> on <span data-bind:text="latest-payment-date">1 January 2026</span></dd></div>
 			<div data-next-payment><dt>Next payment</dt><dd><span data-bind:text="next-payment-amount">GBP 0.00</span> on <span data-bind:text="next-payment-date">1 February 2026</span></dd></div>
 		</dl>
@@ -38,9 +40,9 @@
 			You will not be charged again.
 		</p>
 		<form method="post">
-			<label><input type="radio" name="subscriptionPlan" value="free" /> Free</label>
-			<label><input type="radio" name="subscriptionPlan" value="developer" /> Developer</label>
-			<label><input type="radio" name="subscriptionPlan" value="enterprise" /> Enterprise</label>
+			<label><input type="radio" name="subscriptionPlan" value="free" required /> Free</label>
+			<label><input type="radio" name="subscriptionPlan" value="developer" required /> Developer</label>
+			<label><input type="radio" name="subscriptionPlan" value="enterprise" required /> Enterprise</label>
 			<div class="actions">
 				<button name="do" value="select_plan">Continue with selected plan</button>
 			</div>

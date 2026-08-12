@@ -8,63 +8,6 @@ use HexForm\User\User;
 use HexForm\Audit\AuditLog;
 use HexForm\Billing\BillingService;
 use GT\Http\Uri;
-use Throwable;
-
-function do_select_plan(
-	User $user,
-	BillingService $billing,
-	Input $input,
-	Response $response,
-	Flash $flash,
-	Uri $uri,
-	AuditLog $audit,
-):void {
-	$plan = $input->getString("subscriptionPlan");
-	if($plan === "free") {
-		try {
-			$billing->selectFreePlan($user);
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
-			$flash->set("Your subscription will change to Free after your current paid period ends.");
-			$response->redirect("/app/account/");
-		}
-		catch(Throwable) {
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
-			$flash->set("Your paid subscription could not be cancelled. Your plan has not changed.");
-			$response->redirect("/app/account/");
-		}
-		return;
-	}
-
-	if(in_array($plan, ["developer", "enterprise"], true)) {
-		$origin = $uri->getScheme() . "://" . $uri->getAuthority();
-		try {
-			$checkoutUrl = $billing->selectPaidPlan(
-				$user,
-				$plan,
-				$origin . "/app/account/?checkout=success&session_id={CHECKOUT_SESSION_ID}",
-				$origin . "/app/account/?checkout=cancelled&signup=" . $plan,
-			);
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
-			if($checkoutUrl) {
-				$response->redirect($checkoutUrl);
-			}
-			else {
-				$flash->set("Your subscription plan is now " . ucfirst($plan) . ".");
-				$response->redirect("/app/account/");
-			}
-		}
-		catch(Throwable) {
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
-			$flash->set("Your subscription could not be changed. Your existing plan remains active.");
-			$response->redirect("/app/account/?signup=" . $plan);
-		}
-		return;
-	}
-
-	$audit->record($user->id, null, "subscription", $user->id, "select-plan", "rejected", ["plan" => $plan]);
-	$flash->set("Please choose a valid subscription plan.");
-	$response->redirect("/app/account/");
-}
 
 function go(
 	User $user,
@@ -89,7 +32,7 @@ function go(
 			$audit->record($user->id, null, "subscription", $user->id, "checkout", "succeeded");
 			$flash->set("Payment successful. Your subscription is active.");
 		}
-		catch(Throwable) {
+		catch(\Throwable) {
 			$audit->record($user->id, null, "subscription", $user->id, "checkout", "failed");
 			$flash->set("We could not verify your payment. Please contact support if you were charged.");
 		}
@@ -101,7 +44,7 @@ function go(
 	try {
 		$subscription = $billing->refreshIfDue($user);
 	}
-	catch(Throwable) {
+	catch(\Throwable) {
 		$flash->set("Billing information is temporarily unavailable. Please try again later.");
 	}
 	$binder->bindData($user);
@@ -113,6 +56,13 @@ function go(
 		$document->querySelector("[data-subscription-message]")?->remove();
 	}
 	if($subscription) {
+		if($subscription->previousPaymentAmount !== null) {
+			$binder->bindKeyValue("previous-payment-amount", $subscription->formatAmount($subscription->previousPaymentAmount));
+			$binder->bindKeyValue("previous-payment-date", $subscription->previousPaymentAt?->format("j F Y") ?? "Not available");
+		}
+		else {
+			$document->querySelector("[data-previous-payment]")?->remove();
+		}
 		$binder->bindKeyValue("latest-payment-amount", $subscription->formatAmount($subscription->latestPaymentAmount));
 		$binder->bindKeyValue("latest-payment-date", $subscription->latestPaymentAt?->format("j F Y") ?? "Not available");
 		$binder->bindKeyValue("next-payment-amount", $subscription->formatAmount($subscription->nextPaymentAmount));
@@ -127,19 +77,90 @@ function go(
 		else {
 			$document->querySelector("[data-subscription-cancellation]")?->remove();
 		}
+		if($subscription->pendingPlan) {
+			$binder->bindKeyValue("pending-plan", ucfirst($subscription->pendingPlan));
+		}
+		else {
+			$document->querySelector("[data-pending-plan]")?->remove();
+		}
 	}
 	else {
 		$document->querySelector("[data-payment-summary]")?->remove();
 		$document->querySelector("[data-subscription-cancellation]")?->remove();
+		$document->querySelector("[data-pending-plan]")?->remove();
 	}
 
 	$signup = $input->getString("signup");
 	$selectedPlan = in_array($signup, ["free", "developer", "enterprise"], true)
 		? $signup
-		: ($user->subscriptionPlan ?: "free");
+		: ($subscription?->pendingPlan ?? $user->subscriptionPlan);
+
 	foreach($document->querySelectorAll("[name='subscriptionPlan']") as $option) {
 		if($option->getAttribute("value") === $selectedPlan) {
 			$option->setAttribute("checked", "checked");
 		}
 	}
+}
+
+function do_select_plan(
+	User $user,
+	BillingService $billing,
+	Input $input,
+	Response $response,
+	Flash $flash,
+	Uri $uri,
+	AuditLog $audit,
+):void {
+	$plan = $input->getString("subscriptionPlan");
+	if($plan === "free") {
+		try {
+			$cancellationScheduled = $billing->selectFreePlan($user);
+			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
+		}
+		catch(\Throwable) {
+			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
+			$flash->set("Your paid subscription could not be cancelled. Your plan has not changed.");
+			$response->redirect("/app/account/");
+			return;
+		}
+		$flash->set($cancellationScheduled
+			? "Your subscription will change to Free after your current paid period ends."
+			: "Your subscription plan is now Free.");
+		$response->redirect("/app/account/");
+		return;
+	}
+
+	if(in_array($plan, ["developer", "enterprise"], true)) {
+		$origin = $uri->getScheme() . "://" . $uri->getAuthority();
+		try {
+			$checkoutUrl = $billing->selectPaidPlan(
+				$user,
+				$plan,
+				$origin . "/app/account/?checkout=success&session_id={CHECKOUT_SESSION_ID}",
+				$origin . "/app/account/?checkout=cancelled&signup=" . $plan,
+			);
+			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
+		}
+		catch(\Throwable) {
+			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
+			$flash->set("Your subscription could not be changed. Your existing plan remains active.");
+			$response->redirect("/app/account/?signup=" . $plan);
+			return;
+		}
+		if($checkoutUrl) {
+			$response->redirect($checkoutUrl);
+		}
+		else {
+			$current = $billing->getSubscription($user);
+			$flash->set($current?->pendingPlan === $plan
+				? "Your subscription will change to " . ucfirst($plan) . " at the next renewal."
+				: "Your subscription plan is now " . ucfirst($plan) . ".");
+			$response->redirect("/app/account/");
+		}
+		return;
+	}
+
+	$audit->record($user->id, null, "subscription", $user->id, "select-plan", "rejected", ["plan" => $plan]);
+	$flash->set("Please choose a valid subscription plan.");
+	$response->redirect("/app/account/");
 }

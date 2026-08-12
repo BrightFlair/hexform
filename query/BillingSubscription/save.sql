@@ -1,11 +1,13 @@
 insert into BillingSubscription (
 	userId, stripeCustomerId, stripeSubscriptionId, plan, status,
 	latestPaymentAmount, latestPaymentAt, nextPaymentAmount, nextPaymentAt,
-	currency, checkedAt, cancelAtPeriodEnd
+	currency, checkedAt, cancelAtPeriodEnd, pendingPlan,
+	previousPaymentAmount, previousPaymentAt
 ) values (
 	:userId, :stripeCustomerId, :stripeSubscriptionId, :plan, :status,
 	:latestPaymentAmount, :latestPaymentAt, :nextPaymentAmount, :nextPaymentAt,
-	:currency, :checkedAt, :cancelAtPeriodEnd
+	:currency, :checkedAt, :cancelAtPeriodEnd, :pendingPlan,
+	:previousPaymentAmount, :previousPaymentAt
 )
 on duplicate key update
 	stripeCustomerId = values(stripeCustomerId),
@@ -18,4 +20,7 @@ on duplicate key update
 	nextPaymentAt = values(nextPaymentAt),
 	currency = values(currency),
 	checkedAt = values(checkedAt),
-	cancelAtPeriodEnd = values(cancelAtPeriodEnd)
+	cancelAtPeriodEnd = values(cancelAtPeriodEnd),
+	pendingPlan = values(pendingPlan),
+	previousPaymentAmount = values(previousPaymentAmount),
+	previousPaymentAt = values(previousPaymentAt)

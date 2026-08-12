@@ -34,6 +34,10 @@ class BillingService {
 		);
 	}
 
+	public function getSubscription(User $user):?BillingSubscription {
+		return $this->subscriptions->getForUser($user->id);
+	}
+
 	public function selectPaidPlan(
 		User $user,
 		string $plan,
@@ -48,12 +52,39 @@ class BillingService {
 		if(!$current || !$current->isActive()) {
 			return $this->startCheckout($user, $plan, $successUrl, $cancelUrl);
 		}
-		if($current->plan === $plan && !$current->cancelAtPeriodEnd) {
-			return null;
+		if($current->pendingPlan) {
+			if($current->pendingPlan === $plan) {
+				return null;
+			}
+			$current = $this->gateway->clearScheduledChange($current);
+			$this->store($user, $current);
 		}
-
-		$updated = $this->gateway->changeSubscription($current, $plan);
-		if($updated->plan !== $plan || !$updated->isActive()) {
+		if($current->plan === $plan) {
+			if(!$current->cancelAtPeriodEnd) {
+				return null;
+			}
+			$updated = $this->gateway->resumeSubscription($current);
+		}
+		elseif($this->isDowngrade($current->plan, $plan)) {
+			$updated = $this->gateway->scheduleSubscriptionChange($current, $plan);
+		}
+		else {
+			$updated = $this->gateway->changeSubscription($current, $plan);
+			if(
+				$updated->plan === $plan
+				&& $updated->isActive()
+				&& $updated->cancelAtPeriodEnd
+			) {
+				$updated = $this->gateway->resumeSubscription($updated);
+			}
+		}
+		if(
+			$updated->plan !== $plan
+			&& $updated->pendingPlan !== $plan
+		) {
+			throw new RuntimeException("Stripe did not complete the subscription change.");
+		}
+		if(!$updated->isActive() || $updated->cancelAtPeriodEnd) {
 			throw new RuntimeException("Stripe did not complete the subscription change.");
 		}
 
@@ -61,17 +92,27 @@ class BillingService {
 		return null;
 	}
 
-	public function selectFreePlan(User $user):void {
+	private function isDowngrade(string $currentPlan, string $newPlan):bool {
+		$rank = ["developer" => 1, "enterprise" => 2];
+		return ($rank[$newPlan] ?? 0) < ($rank[$currentPlan] ?? 0);
+	}
+
+	public function selectFreePlan(User $user):bool {
 		$current = $this->subscriptions->getForUser($user->id);
+		if($current?->pendingPlan) {
+			$current = $this->gateway->clearScheduledChange($current);
+			$this->store($user, $current);
+		}
 		if($current && $current->isActive()) {
-			$cancelled = $this->gateway->cancelSubscription($current);
+			$cancelled = $this->gateway->cancelSubscription($current)->withPendingPlan("free");
 			if(!$cancelled->cancelAtPeriodEnd) {
 				throw new RuntimeException("Stripe did not schedule the subscription cancellation.");
 			}
 			$this->subscriptions->save($cancelled);
-			return;
+			return true;
 		}
 		$this->users->setSubscriptionPlan($user, "free");
+		return false;
 	}
 
 	public function completeCheckout(string $sessionId, User $user):BillingSubscription {

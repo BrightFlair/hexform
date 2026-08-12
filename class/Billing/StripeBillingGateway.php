@@ -72,7 +72,6 @@ class StripeBillingGateway implements BillingGateway {
 			$stripeSubscription->id,
 			[
 				"items" => [["id" => $item->id, "price" => $price->id, "quantity" => 1]],
-				"cancel_at_period_end" => false,
 				"payment_behavior" => "pending_if_incomplete",
 				"proration_behavior" => "always_invoice",
 			],
@@ -85,11 +84,96 @@ class StripeBillingGateway implements BillingGateway {
 		);
 	}
 
+	public function scheduleSubscriptionChange(
+		BillingSubscription $subscription,
+		string $plan,
+	):BillingSubscription {
+		$price = $this->findPrice($plan);
+		$stripeSubscription = $this->stripe->subscriptions->retrieve(
+			$subscription->stripeSubscriptionId,
+		);
+		$item = $stripeSubscription->items->data[0] ?? null;
+		if(!$item) {
+			throw new RuntimeException("Stripe subscription has no price item.");
+		}
+		$schedule = $this->stripe->subscriptionSchedules->create([
+			"from_subscription" => $stripeSubscription->id,
+		]);
+		$currentPhase = $schedule->current_phase;
+		if(!$currentPhase) {
+			throw new RuntimeException("Stripe did not create an active subscription schedule.");
+		}
+		$this->stripe->subscriptionSchedules->update($schedule->id, [
+			"end_behavior" => "release",
+			"phases" => [
+				[
+					"start_date" => $currentPhase->start_date,
+					"end_date" => $currentPhase->end_date,
+					"items" => [["price" => $this->getId($item->price), "quantity" => 1]],
+				],
+				[
+					"start_date" => $currentPhase->end_date,
+					"duration" => ["interval" => "month", "interval_count" => 1],
+					"items" => [["price" => $price->id, "quantity" => 1]],
+				],
+			],
+		]);
+
+		return new BillingSubscription(
+			$subscription->userId,
+			$subscription->stripeCustomerId,
+			$subscription->stripeSubscriptionId,
+			$subscription->plan,
+			$subscription->status,
+			$subscription->latestPaymentAmount,
+			$subscription->latestPaymentAt,
+			$price->unit_amount,
+			$subscription->nextPaymentAt,
+			$price->currency,
+			new DateTimeImmutable(),
+			false,
+			$plan,
+			$subscription->previousPaymentAmount,
+			$subscription->previousPaymentAt,
+		);
+	}
+
 	public function cancelSubscription(BillingSubscription $subscription):BillingSubscription {
 		$stripeSubscription = $this->stripe->subscriptions->update(
 			$subscription->stripeSubscriptionId,
 			["cancel_at_period_end" => true],
 		);
+
+		return $this->createSnapshot(
+			$stripeSubscription,
+			$subscription->userId,
+			$subscription,
+		);
+	}
+
+	public function resumeSubscription(BillingSubscription $subscription):BillingSubscription {
+		$stripeSubscription = $this->stripe->subscriptions->update(
+			$subscription->stripeSubscriptionId,
+			["cancel_at_period_end" => false],
+		);
+
+		return $this->createSnapshot(
+			$stripeSubscription,
+			$subscription->userId,
+			$subscription,
+		);
+	}
+
+	public function clearScheduledChange(BillingSubscription $subscription):BillingSubscription {
+		$stripeSubscription = $this->stripe->subscriptions->retrieve(
+			$subscription->stripeSubscriptionId,
+			["expand" => ["schedule"]],
+		);
+		if($stripeSubscription->schedule) {
+			$this->stripe->subscriptionSchedules->release(
+				$this->getId($stripeSubscription->schedule),
+			);
+		}
 
 		return $this->createSnapshot(
 			$stripeSubscription,
@@ -133,7 +217,9 @@ class StripeBillingGateway implements BillingGateway {
 			throw new RuntimeException("Stripe subscription uses an unknown price.");
 		}
 
-		$latestInvoice = $this->getLatestInvoice($subscription, $fallback !== null);
+		$paymentInvoices = $this->getPaymentInvoices($subscription, $fallback !== null);
+		$latestInvoice = $paymentInvoices[0] ?? null;
+		$previousInvoice = $paymentInvoices[1] ?? null;
 		$cancelAtPeriodEnd = (bool)$subscription->cancel_at_period_end;
 		$nextInvoice = $cancelAtPeriodEnd
 			? null
@@ -153,6 +239,9 @@ class StripeBillingGateway implements BillingGateway {
 			$this->getCurrency($nextInvoice, $latestInvoice, $item, $fallback),
 			new DateTimeImmutable(),
 			$cancelAtPeriodEnd,
+			null,
+			$this->getPreviousPaymentAmount($previousInvoice, $fallback),
+			$this->getPreviousPaymentDate($previousInvoice, $fallback),
 		);
 	}
 
@@ -176,10 +265,11 @@ class StripeBillingGateway implements BillingGateway {
 		return $price;
 	}
 
-	private function getLatestInvoice(
+	/** @return list<Invoice> */
+	private function getPaymentInvoices(
 		Subscription $subscription,
 		bool $allowFailure,
-	):?Invoice {
+	):array {
 		try {
 			$paidInvoices = $this->stripe->invoices->all([
 				"subscription" => $subscription->id,
@@ -187,13 +277,13 @@ class StripeBillingGateway implements BillingGateway {
 				"limit" => 100,
 			]);
 			$finder = $this->latestPaidInvoiceFinder ?? new LatestPaidInvoiceFinder();
-			return $finder->find($paidInvoices->autoPagingIterator());
+			return $finder->findMany($paidInvoices->autoPagingIterator(), 2);
 		}
 		catch(ApiErrorException $exception) {
 			if(!$allowFailure) {
 				throw $exception;
 			}
-			return null;
+			return [];
 		}
 	}
 
@@ -244,6 +334,24 @@ class StripeBillingGateway implements BillingGateway {
 		return $latestInvoice
 			? $latestInvoice->amount_paid
 			: $fallback?->latestPaymentAmount;
+	}
+
+	private function getPreviousPaymentAmount(
+		?Invoice $invoice,
+		?BillingSubscription $fallback,
+	):?int {
+		return $invoice
+			? $invoice->amount_paid
+			: $fallback?->previousPaymentAmount;
+	}
+
+	private function getPreviousPaymentDate(
+		?Invoice $invoice,
+		?BillingSubscription $fallback,
+	):?\DateTimeInterface {
+		return $invoice
+			? $this->dateFromTimestamp($invoice->status_transitions->paid_at)
+			: $fallback?->previousPaymentAt;
 	}
 
 	private function getNextPaymentAmount(

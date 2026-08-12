@@ -13,6 +13,7 @@ pick_port() {
 
 APP_PORT="${BEHAT_APP_PORT:-$(pick_port)}"
 CHROME_PORT="${BEHAT_CHROME_PORT:-$(pick_port)}"
+STRIPE_PORT="${BEHAT_STRIPE_PORT:-$(pick_port)}"
 APP_COMMAND="${BEHAT_APP_COMMAND:-php -d display_errors=0 -S ${APP_HOST}:${APP_PORT} -t ${ROOT_DIR}/www ${ROOT_DIR}/vendor/phpgt/webengine/go.php}"
 
 if [[ -z "$CHROME_BIN" ]]; then
@@ -63,6 +64,10 @@ cleanup() {
 		kill "$CHROME_PID" >/dev/null 2>&1 || true
 		wait "$CHROME_PID" 2>/dev/null || true
 	fi
+	if [[ -n "${STRIPE_PID:-}" ]]; then
+		kill "$STRIPE_PID" >/dev/null 2>&1 || true
+		wait "$STRIPE_PID" 2>/dev/null || true
+	fi
 	if [[ -n "${CHROME_PROFILE_DIR:-}" && -d "${CHROME_PROFILE_DIR:-}" ]]; then
 		rm -rf "$CHROME_PROFILE_DIR" 2>/dev/null || true
 	fi
@@ -74,6 +79,11 @@ cd "$ROOT_DIR"
 
 export BEHAT_BASE_URL="http://${APP_HOST}:${APP_PORT}"
 export BEHAT_CHROME_API_URL="http://${CHROME_HOST}:${CHROME_PORT}"
+export HEXFORM_STRIPE_API_BASE="http://127.0.0.1:${STRIPE_PORT}"
+php -S "127.0.0.1:${STRIPE_PORT}" "${ROOT_DIR}/test/behat/stripe-router.php" \
+	>/tmp/hexform-behat-stripe.log 2>&1 &
+STRIPE_PID=$!
+wait_for_port "127.0.0.1" "$STRIPE_PORT" "Stripe test endpoint"
 $APP_COMMAND >/tmp/hexform-behat-app.log 2>&1 &
 APP_PID=$!
 wait_for_port "$APP_HOST" "$APP_PORT" "PHP application"

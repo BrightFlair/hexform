@@ -29,6 +29,9 @@ class BillingSubscriptionRepository {
 			"currency" => $subscription->currency,
 			"checkedAt" => $subscription->checkedAt->format("Y-m-d H:i:s"),
 			"cancelAtPeriodEnd" => $subscription->cancelAtPeriodEnd ? 1 : 0,
+			"pendingPlan" => $subscription->pendingPlan,
+			"previousPaymentAmount" => $subscription->previousPaymentAmount,
+			"previousPaymentAt" => $subscription->previousPaymentAt?->format("Y-m-d H:i:s"),
 		]);
 	}
 
@@ -50,6 +53,9 @@ class BillingSubscriptionRepository {
 			$row->getString("currency"),
 			$row->getDateTime("checkedAt"),
 			$row->getBool("cancelAtPeriodEnd"),
+			$row->getString("pendingPlan") ?: null,
+			$row->getInt("previousPaymentAmount"),
+			$row->getDateTime("previousPaymentAt"),
 		);
 	}
 }

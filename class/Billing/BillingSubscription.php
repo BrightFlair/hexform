@@ -19,6 +19,9 @@ readonly class BillingSubscription {
 		public string $currency,
 		public DateTimeInterface $checkedAt,
 		public bool $cancelAtPeriodEnd = false,
+		public ?string $pendingPlan = null,
+		public ?int $previousPaymentAmount = null,
+		public ?DateTimeInterface $previousPaymentAt = null,
 	) {}
 
 	public function isActive():bool {
@@ -37,5 +40,25 @@ readonly class BillingSubscription {
 		}
 
 		return strtoupper($this->currency) . " " . number_format($amount / 100, 2);
+	}
+
+	public function withPendingPlan(?string $plan):self {
+		return new self(
+			$this->userId,
+			$this->stripeCustomerId,
+			$this->stripeSubscriptionId,
+			$this->plan,
+			$this->status,
+			$this->latestPaymentAmount,
+			$this->latestPaymentAt,
+			$this->nextPaymentAmount,
+			$this->nextPaymentAt,
+			$this->currency,
+			$this->checkedAt,
+			$this->cancelAtPeriodEnd,
+			$plan,
+			$this->previousPaymentAmount,
+			$this->previousPaymentAt,
+		);
 	}
 }

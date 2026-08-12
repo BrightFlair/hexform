@@ -17,7 +17,16 @@ interface BillingGateway {
 		string $plan,
 	):BillingSubscription;
 
+	public function scheduleSubscriptionChange(
+		BillingSubscription $subscription,
+		string $plan,
+	):BillingSubscription;
+
 	public function cancelSubscription(BillingSubscription $subscription):BillingSubscription;
+
+	public function resumeSubscription(BillingSubscription $subscription):BillingSubscription;
+
+	public function clearScheduledChange(BillingSubscription $subscription):BillingSubscription;
 
 	public function completeCheckout(string $sessionId, User $user):BillingSubscription;
 

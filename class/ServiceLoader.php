@@ -86,8 +86,15 @@ class ServiceLoader extends DefaultServiceLoader {
 	}
 
 	public function loadBillingGateway():BillingGateway {
+		$stripeConfig = [
+			"api_key" => $this->config->getString("stripe.secret_key"),
+		];
+		$testApiBase = getenv("HEXFORM_STRIPE_API_BASE");
+		if($testApiBase) {
+			$stripeConfig["api_base"] = $testApiBase;
+		}
 		return new StripeBillingGateway(
-			new StripeClient($this->config->getString("stripe.secret_key")),
+			new StripeClient($stripeConfig),
 			$this->config->getString("stripe.product"),
 			[
 				"developer" => $this->config->getString("stripe.developer_price_lookup_key"),

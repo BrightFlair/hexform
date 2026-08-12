@@ -22,4 +22,17 @@ class LatestPaidInvoiceFinderTest extends TestCase {
 
 		self::assertNull($result);
 	}
+
+	public function testItReturnsSeveralActualPaymentsInInvoiceOrder():void {
+		$latest = Invoice::constructFrom(["id" => "in_latest", "amount_paid" => 2000]);
+		$bookkeeping = Invoice::constructFrom(["id" => "in_zero", "amount_paid" => 0]);
+		$original = Invoice::constructFrom(["id" => "in_original", "amount_paid" => 500]);
+
+		$result = (new LatestPaidInvoiceFinder())->findMany(
+			[$latest, $bookkeeping, $original],
+			2,
+		);
+
+		self::assertSame([$latest, $original], $result);
+	}
 }

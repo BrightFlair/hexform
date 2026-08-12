@@ -37,6 +37,9 @@ class BillingSubscriptionRepositoryTest extends TestCase {
 			"currency" => "gbp",
 			"checkedAt" => "2026-08-01 12:05:00",
 			"cancelAtPeriodEnd" => 0,
+			"pendingPlan" => null,
+			"previousPaymentAmount" => null,
+			"previousPaymentAt" => null,
 		]);
 
 		(new BillingSubscriptionRepository($db))->save($subscription);

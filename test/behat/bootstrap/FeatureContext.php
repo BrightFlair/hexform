@@ -96,6 +96,27 @@ class FeatureContext extends MinkContext {
 		SQL)->execute(["userId" => self::TEST_USER_ID, "plan" => $plan]);
 	}
 
+	/** @Given I have a changeable active :plan billing subscription */
+	public function iHaveAChangeableActiveBillingSubscription(string $plan):void {
+		$this->iHaveAnActiveBillingSubscription($plan);
+		$this->database()->prepare(<<<'SQL'
+			update BillingSubscription
+			set stripeCustomerId = 'cus_behat_success',
+				stripeSubscriptionId = 'sub_success'
+			where userId = :userId
+		SQL)->execute(["userId" => self::TEST_USER_ID]);
+	}
+
+	/** @Given my changeable :plan subscription is cancelled at the end of the period */
+	public function myChangeableSubscriptionIsCancelledAtPeriodEnd(string $plan):void {
+		$this->iHaveAChangeableActiveBillingSubscription($plan);
+		$this->database()->prepare(<<<'SQL'
+			update BillingSubscription
+			set cancelAtPeriodEnd = true
+			where userId = :userId
+		SQL)->execute(["userId" => self::TEST_USER_ID]);
+	}
+
 	/** @Given my :plan billing subscription is cancelled at the end of the period */
 	public function myBillingSubscriptionIsCancelledAtPeriodEnd(string $plan):void {
 		$this->iHaveAnActiveBillingSubscription($plan);

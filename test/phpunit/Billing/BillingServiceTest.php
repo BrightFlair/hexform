@@ -96,7 +96,8 @@ class BillingServiceTest extends TestCase {
 			->with($current)->willReturn($cancelled);
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
 		$subscriptions->method("getForUser")->willReturn($current);
-		$subscriptions->expects(self::once())->method("save")->with($cancelled);
+		$subscriptions->expects(self::once())->method("save")
+			->with($cancelled->withPendingPlan("free"));
 		$users = self::createMock(UserRepository::class);
 		$users->expects(self::never())->method("setSubscriptionPlan");
 
@@ -108,8 +109,9 @@ class BillingServiceTest extends TestCase {
 		$current = $this->subscription(cancelAtPeriodEnd: true);
 		$resumed = $this->subscription();
 		$gateway = self::createMock(BillingGateway::class);
-		$gateway->expects(self::once())->method("changeSubscription")
-			->with($current, "developer")->willReturn($resumed);
+		$gateway->expects(self::never())->method("changeSubscription");
+		$gateway->expects(self::once())->method("resumeSubscription")
+			->with($current)->willReturn($resumed);
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
 		$subscriptions->method("getForUser")->willReturn($current);
 		$subscriptions->expects(self::once())->method("save")->with($resumed);
@@ -120,6 +122,52 @@ class BillingServiceTest extends TestCase {
 		(new BillingService($gateway, $subscriptions, $users))->selectPaidPlan(
 			$user,
 			"developer",
+			"success",
+			"cancel",
+		);
+	}
+
+	public function testPaidDowngradeIsScheduledForTheNextBillingPeriod():void {
+		$user = new User("user-1", "person@example.com", "enterprise");
+		$current = $this->subscription(plan: "enterprise");
+		$scheduled = $this->subscription(plan: "enterprise", pendingPlan: "developer");
+		$gateway = self::createMock(BillingGateway::class);
+		$gateway->expects(self::never())->method("changeSubscription");
+		$gateway->expects(self::once())->method("scheduleSubscriptionChange")
+			->with($current, "developer")->willReturn($scheduled);
+		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
+		$subscriptions->method("getForUser")->willReturn($current);
+		$subscriptions->expects(self::once())->method("save")->with($scheduled);
+		$users = self::createMock(UserRepository::class);
+		$users->expects(self::once())->method("setSubscriptionPlan")
+			->with($user, "enterprise");
+
+		(new BillingService($gateway, $subscriptions, $users))->selectPaidPlan(
+			$user,
+			"developer",
+			"success",
+			"cancel",
+		);
+	}
+
+	public function testSelectingCurrentPlanWithdrawsAPendingDowngrade():void {
+		$user = new User("user-1", "person@example.com", "enterprise");
+		$scheduled = $this->subscription(plan: "enterprise", pendingPlan: "developer");
+		$current = $this->subscription(plan: "enterprise");
+		$gateway = self::createMock(BillingGateway::class);
+		$gateway->expects(self::once())->method("clearScheduledChange")
+			->with($scheduled)->willReturn($current);
+		$gateway->expects(self::never())->method("changeSubscription");
+		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
+		$subscriptions->method("getForUser")->willReturn($scheduled);
+		$subscriptions->expects(self::once())->method("save")->with($current);
+		$users = self::createMock(UserRepository::class);
+		$users->expects(self::once())->method("setSubscriptionPlan")
+			->with($user, "enterprise");
+
+		(new BillingService($gateway, $subscriptions, $users))->selectPaidPlan(
+			$user,
+			"enterprise",
 			"success",
 			"cancel",
 		);
@@ -259,11 +307,13 @@ class BillingServiceTest extends TestCase {
 		string $status = "active",
 		string $plan = "developer",
 		bool $cancelAtPeriodEnd = false,
+		?string $pendingPlan = null,
 	):BillingSubscription {
 		return new BillingSubscription(
 			"user-1", "cus_1", "sub_1", $plan, $status,
 			1200, new DateTimeImmutable("first day of this month"),
 			1200, $nextPaymentAt, "gbp", new DateTimeImmutable(), $cancelAtPeriodEnd,
+			$pendingPlan,
 		);
 	}
 }

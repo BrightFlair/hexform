@@ -60,6 +60,46 @@ Feature: Choose a subscription after signing in
 		And I should not see "Next payment"
 		And my subscription plan should be "developer"
 
+	Scenario: Upgrade an active subscription
+		Given I have a changeable active "developer" billing subscription
+		And I am signed in
+		When I choose the "enterprise" subscription plan
+		Then I should see "Your subscription plan is now Enterprise."
+		And my subscription plan should be "enterprise"
+		And I should see "GBP 5.00"
+		And I should see "GBP 20.00"
+		And I should see "GBP 25.00"
+		And I should have one billing subscription
+
+	Scenario: Cancel an active subscription at the end of its paid period
+		Given I have a changeable active "developer" billing subscription
+		And I am signed in
+		When I choose the "free" subscription plan
+		Then I should see "Your subscription will change to Free after your current paid period ends."
+		And I should see "Your subscription is cancelled and will change to Free on"
+		And I should see "You will not be charged again."
+		And my subscription plan should be "developer"
+		And the "free" subscription should be selected
+
+	Scenario: Downgrade an active subscription at the next renewal
+		Given I have a changeable active "enterprise" billing subscription
+		And I am signed in
+		When I choose the "developer" subscription plan
+		Then I should see "Your subscription will change to Developer at the next renewal."
+		And I should see "enterprise (downgrading to Developer)"
+		And I should see "GBP 5.00"
+		And the "developer" subscription should be selected
+		And my subscription plan should be "enterprise"
+
+	Scenario: Resume a subscription before its cancellation date
+		Given my changeable "developer" subscription is cancelled at the end of the period
+		And I am signed in
+		When I choose the "developer" subscription plan
+		Then I should see "Your subscription plan is now Developer."
+		And I should not see "Your subscription is cancelled"
+		And I should see "Next payment"
+		And my subscription plan should be "developer"
+
 	Scenario: A failed paid tier change preserves the existing subscription
 		Given I have an active "developer" billing subscription
 		And I am signed in
