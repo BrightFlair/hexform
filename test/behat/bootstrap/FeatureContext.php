@@ -66,12 +66,94 @@ class FeatureContext extends MinkContext {
 		}
 	}
 
+	/** @Then my subscription plan should not be set */
+	public function mySubscriptionPlanShouldNotBeSet():void {
+		$statement = $this->database()->prepare(
+			"select subscriptionPlan from User where id = ?",
+		);
+		$statement->execute([self::TEST_USER_ID]);
+		if($statement->fetchColumn() !== null) {
+			throw $this->expectation("Expected the subscription plan not to be set.");
+		}
+	}
+
+	/** @Given I have an active :plan billing subscription */
+	public function iHaveAnActiveBillingSubscription(string $plan):void {
+		$this->ensureTestUser();
+		$this->database()->prepare(
+			"update User set subscriptionPlan = :plan where id = :id",
+		)->execute(["plan" => $plan, "id" => self::TEST_USER_ID]);
+		$this->database()->prepare(<<<'SQL'
+			insert into BillingSubscription (
+				userId, stripeCustomerId, stripeSubscriptionId, plan, status,
+				latestPaymentAmount, latestPaymentAt, nextPaymentAmount,
+				nextPaymentAt, currency, checkedAt
+			) values (
+				:userId, 'cus_behat', 'sub_behat', :plan, 'active',
+				1200, '2026-08-01 12:00:00', 1200,
+				'2026-09-01 12:00:00', 'gbp', current_timestamp
+			)
+		SQL)->execute(["userId" => self::TEST_USER_ID, "plan" => $plan]);
+	}
+
+	/** @Given my :plan billing subscription is cancelled at the end of the period */
+	public function myBillingSubscriptionIsCancelledAtPeriodEnd(string $plan):void {
+		$this->iHaveAnActiveBillingSubscription($plan);
+		$this->database()->prepare(<<<'SQL'
+			update BillingSubscription
+			set cancelAtPeriodEnd = true
+			where userId = :userId
+		SQL)->execute(["userId" => self::TEST_USER_ID]);
+	}
+
 	/** @Then the :plan subscription should be selected */
 	public function theSubscriptionShouldBeSelected(string $plan):void {
 		$this->assertSession()->elementExists(
 			"css",
 			"input[name='subscriptionPlan'][value='$plan']:checked",
 		);
+	}
+
+	/** @When I submit an unsupported subscription plan */
+	public function iSubmitAnUnsupportedSubscriptionPlan():void {
+		$this->getSession()->executeScript(<<<'JS'
+			const option = document.querySelector("input[name='subscriptionPlan'][value='developer']");
+			option.value = "unsupported";
+			option.checked = true;
+		JS);
+		$this->pressButton("Continue with selected plan");
+	}
+
+	/** @When I choose the :plan subscription plan */
+	public function iChooseTheSubscriptionPlan(string $plan):void {
+		$this->visitPath("/app/account/");
+		$option = $this->requireElement(
+			"input[name='subscriptionPlan'][value='$plan']",
+			"$plan subscription option",
+		);
+		$this->getSession()->executeScript(
+			"const option = document.querySelector("
+			. json_encode("input[name='subscriptionPlan'][value='$plan']")
+			. "); option.checked = true; const action = document.createElement('input');"
+			. " action.type = 'hidden'; action.name = 'do'; action.value = 'select_plan';"
+			. " option.form.appendChild(action);",
+		);
+		$form = $option->find("xpath", "ancestor::form");
+		if(!$form) {
+			throw $this->expectation("Subscription option has no form.");
+		}
+		$form->submit();
+	}
+
+	/** @Then I should have one billing subscription */
+	public function iShouldHaveOneBillingSubscription():void {
+		$statement = $this->database()->prepare(
+			"select count(*) from BillingSubscription where userId = ?",
+		);
+		$statement->execute([self::TEST_USER_ID]);
+		if((int)$statement->fetchColumn() !== 1) {
+			throw $this->expectation("Expected exactly one billing subscription.");
+		}
 	}
 
 	/** @Given I have an endpoint named :title */

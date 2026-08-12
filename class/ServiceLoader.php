@@ -16,7 +16,14 @@ use HexForm\UI\Flash;
 use GT\WebEngine\Service\DefaultServiceLoader;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
+use HexForm\Billing\BillingGateway;
+use HexForm\Billing\BillingService;
+use HexForm\Billing\BillingSubscriptionRepository;
+use HexForm\Billing\StripeBillingGateway;
+use Stripe\StripeClient;
+use HexForm\Billing\StripeWebhookService;
 
+/** @SuppressWarnings("PHPMD.TooManyPublicMethods") */
 class ServiceLoader extends DefaultServiceLoader {
 	public function loadAuthenticator():Authenticator {
 		$authwaveConfig = $this->config->getSection("authwave");
@@ -69,6 +76,38 @@ class ServiceLoader extends DefaultServiceLoader {
 	public function loadAuditLog():AuditLog {
 		return new AuditLog(
 			$this->container->get(Database::class)->queryCollection("AuditLog"),
+		);
+	}
+
+	public function loadBillingSubscriptionRepository():BillingSubscriptionRepository {
+		return new BillingSubscriptionRepository(
+			$this->container->get(Database::class)->queryCollection("BillingSubscription"),
+		);
+	}
+
+	public function loadBillingGateway():BillingGateway {
+		return new StripeBillingGateway(
+			new StripeClient($this->config->getString("stripe.secret_key")),
+			$this->config->getString("stripe.product"),
+			[
+				"developer" => $this->config->getString("stripe.developer_price_lookup_key"),
+				"enterprise" => $this->config->getString("stripe.enterprise_price_lookup_key"),
+			],
+		);
+	}
+
+	public function loadBillingService():BillingService {
+		return new BillingService(
+			$this->container->get(BillingGateway::class),
+			$this->container->get(BillingSubscriptionRepository::class),
+			$this->container->get(UserRepository::class),
+		);
+	}
+
+	public function loadStripeWebhookService():StripeWebhookService {
+		return new StripeWebhookService(
+			$this->container->get(BillingService::class),
+			$this->config->getString("stripe.webhook_secret"),
 		);
 	}
 

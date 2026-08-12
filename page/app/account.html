@@ -28,13 +28,21 @@
 			Upgrade for higher submission limits and longer retention. Subscription changes are
 			managed securely by Stripe.
 		</p>
+		<dl data-payment-summary>
+			<div><dt>Latest payment</dt><dd><span data-bind:text="latest-payment-amount">GBP 0.00</span> on <span data-bind:text="latest-payment-date">1 January 2026</span></dd></div>
+			<div data-next-payment><dt>Next payment</dt><dd><span data-bind:text="next-payment-amount">GBP 0.00</span> on <span data-bind:text="next-payment-date">1 February 2026</span></dd></div>
+		</dl>
+		<p data-subscription-cancellation>
+			Your subscription is cancelled and will change to Free on
+			<strong data-bind:text="subscription-end-date">1 February 2026</strong>.
+			You will not be charged again.
+		</p>
 		<form method="post">
-			<input type="hidden" name="do" value="choose-subscription" />
 			<label><input type="radio" name="subscriptionPlan" value="free" /> Free</label>
 			<label><input type="radio" name="subscriptionPlan" value="developer" /> Developer</label>
 			<label><input type="radio" name="subscriptionPlan" value="enterprise" /> Enterprise</label>
 			<div class="actions">
-				<button>Continue with selected plan</button>
+				<button name="do" value="select_plan">Continue with selected plan</button>
 			</div>
 		</form>
 	</article>

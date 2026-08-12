@@ -6,6 +6,7 @@ use Gt\Input\Input;
 use HexForm\UI\Flash;
 use HexForm\User\User;
 use HexForm\User\UserRepository;
+use HexForm\Billing\BillingService;
 
 function go_before(
 	?User $user,
@@ -15,10 +16,20 @@ function go_before(
 	Uri $uri,
 	UserRepository $users,
 	Flash $flash,
+	BillingService $billing,
 ): void {
 	if (!$user) {
 		$authenticator->login();
 		return;
+	}
+
+	if(in_array($user->subscriptionPlan, ["developer", "enterprise"], true)) {
+		try {
+			$billing->refreshIfDue($user);
+		}
+		catch(Throwable) {
+			$flash->set("Billing information is temporarily unavailable. Please try again later.");
+		}
 	}
 
 	$signup = $input->getString("signup");

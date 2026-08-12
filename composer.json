@@ -7,7 +7,8 @@
 		"phpgt/webengine": "^5.0",
 		"authwave/php-client": "dev-master",
 		"symfony/mailer": "^7.1",
-		"league/commonmark": "^2.8"
+		"league/commonmark": "^2.8",
+		"stripe/stripe-php": "^19.0"
 	},
 	"require-dev": {
 		"ext-pdo": "*",
