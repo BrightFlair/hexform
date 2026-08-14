@@ -12,6 +12,11 @@ Feature: Receive and manage form submissions
 		Then the message list should contain "buyer@example.com"
 		And the message list should contain "I need a quote"
 
+	Scenario: Redirect to the client host without a confirmation URL
+		Given I have an endpoint named "Contact form"
+		When someone submits "Please reply" to "Contact form" as "visitor@example.com"
+		Then the submission response should redirect to "https://example.com"
+
 	Scenario: Read all submitted fields
 		Given I have an endpoint named "Contact form"
 		And the endpoint "Contact form" has received a submission from "reader@example.com" saying "A detailed enquiry"

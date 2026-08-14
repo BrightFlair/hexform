@@ -14,6 +14,7 @@ class FeatureContext extends MinkContext {
 	private int $endpointSequence = 0;
 	private int $submissionSequence = 0;
 	private ?int $submissionResponseStatus = null;
+	private ?string $submissionResponseLocation = null;
 	/** @var array<string, array{id: string, code: string}> */
 	private array $endpointList = [];
 
@@ -24,6 +25,7 @@ class FeatureContext extends MinkContext {
 		$this->submissionSequence = 0;
 		$this->endpointList = [];
 		$this->submissionResponseStatus = null;
+		$this->submissionResponseLocation = null;
 		$this->deleteTestUser();
 	}
 
@@ -376,6 +378,15 @@ class FeatureContext extends MinkContext {
 		}
 	}
 
+	/** @Then the submission response should redirect to :url */
+	public function submissionResponseShouldRedirectTo(string $url):void {
+		if($this->submissionResponseLocation !== $url) {
+			throw $this->expectation(
+				"Submission redirected to '{$this->submissionResponseLocation}', expected '$url'.",
+			);
+		}
+	}
+
 	/** @When a bot submits :message to :title as :submitter */
 	public function aBotSubmitsToAs(
 		string $message,
@@ -601,8 +612,15 @@ class FeatureContext extends MinkContext {
 			"header" => "Content-Type: application/x-www-form-urlencoded",
 			"content" => http_build_query($data),
 			"ignore_errors" => true,
+			"follow_location" => false,
 		]]);
 		file_get_contents($url, false, $context);
+		foreach($http_response_header ?? [] as $header) {
+			if(str_starts_with(strtolower($header), "location:")) {
+				$this->submissionResponseLocation = trim(substr($header, strlen("location:")));
+				break;
+			}
+		}
 	}
 
 	/** @return array<string, mixed> */

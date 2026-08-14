@@ -36,7 +36,7 @@
 	"scripts": {
 		"behat": "test/behat/start-behat",
 		"phpunit": "vendor/bin/phpunit -c phpunit.xml",
-		"phpstan": "vendor/bin/phpstan analyse --level 6 class",
+		"phpstan": "vendor/bin/phpstan analyse --level 6 class --memory-limit 256M",
 		"phpcs": "vendor/bin/phpcs class/ --standard=phpcs.xml",
 		"phpmd": "vendor/bin/phpmd class/ text phpmd.xml",
 		"test": [
