@@ -58,7 +58,5 @@ function go(
 	if($endpoint->confirmationUrl) {
 		$response->redirect($endpoint->confirmationUrl);
 	}
-	else {
-//		$serverInfo->header
-	}
+	$response->redirect($endpoint->clientHost);
 }
