@@ -2,7 +2,7 @@ const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 if(!reduceMotion.matches) {
 	document.querySelectorAll(".hex-fade").forEach(hexField => {
-		function twinkle() {
+		function createHex() {
 			const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
 			const rowHeight = rootSize * 1.296875;
 			const columnWidth = rootSize * 4.5;
@@ -14,17 +14,25 @@ if(!reduceMotion.matches) {
 			hexagon.className = `hex-twinkle hex-twinkle--d${derivative}`;
 			hexagon.style.left = `${column * columnWidth + (row % 2 ? 0 : columnWidth / 2)}px`;
 			hexagon.style.top = `${row * rowHeight}px`;
-			hexagon.addEventListener("animationend", () => hexagon.remove());
+			hexagon.addEventListener("animationend", removeHex);
+			setTimeout(() => {removeHex.call(hexagon);}, 10000);
 			hexField.append(hexagon);
 
-			window.setTimeout(twinkle, 100 + Math.random() * 100);
+			window.setTimeout(createHex, 100 + Math.random() * 100);
 		}
 
-		twinkle();
-		twinkle();
-		twinkle();
-		twinkle();
-		twinkle();
-		twinkle();
+		function removeHex() {
+			let hexagon = this;
+			if(hexagon.parentElement) {
+				hexagon.remove();
+			}
+		}
+
+		createHex();
+		createHex();
+		createHex();
+		createHex();
+		createHex();
+		createHex();
 	});
 }
