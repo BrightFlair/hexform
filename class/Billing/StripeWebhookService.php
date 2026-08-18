@@ -4,7 +4,7 @@ namespace HexForm\Billing;
 use Stripe\Event;
 use Stripe\Webhook;
 
-class StripeWebhookService {
+readonly class StripeWebhookService {
 	public function __construct(
 		private BillingService $billing,
 		private string $signingSecret,

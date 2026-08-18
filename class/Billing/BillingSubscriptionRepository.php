@@ -4,7 +4,7 @@ namespace HexForm\Billing;
 use GT\Database\Query\QueryCollection;
 use GT\Database\Result\Row;
 
-class BillingSubscriptionRepository {
+readonly class BillingSubscriptionRepository {
 	public function __construct(private QueryCollection $db) {}
 
 	public function getForUser(string $userId):?BillingSubscription {

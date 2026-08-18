@@ -6,7 +6,7 @@ use GT\Database\Result\Row;
 use HexForm\Endpoint\Endpoint;
 use HexForm\User\User;
 
-class SubmissionRepository {
+readonly class SubmissionRepository {
 	public function __construct(private QueryCollection $db) {}
 
 	/** @param array<string, mixed> $data */
@@ -22,15 +22,14 @@ class SubmissionRepository {
 	/** @return array<Submission> */
 	public function getForUser(User $user, bool $junk = false, ?string $endpointId = null):array {
 		$list = [];
-		foreach(
-			$this->db->fetchAll("getForUser", [
-				"userId" => $user->id,
-				"isJunk" => $junk,
-				"endpointId" => $endpointId,
-			])
-			as $row
-		) {
-			$list[] = $this->rowToSubmission($row);
+		$resultSet = $this->db->fetchAll("getForUser", [
+			"userId" => $user->id,
+			"isJunk" => $junk,
+			"endpointId" => $endpointId,
+		]);
+
+		foreach($resultSet as $row) {
+			array_push($list, $this->rowToSubmission($row));
 		}
 		return $list;
 	}
@@ -69,6 +68,7 @@ class SubmissionRepository {
 		return true;
 	}
 
+// TODO: The return type from this function should be a model class.
 	/**
 	 * @return array{
 	 *     total: int,

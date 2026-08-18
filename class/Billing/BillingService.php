@@ -7,7 +7,7 @@ use HexForm\User\UserRepository;
 use InvalidArgumentException;
 use RuntimeException;
 
-class BillingService {
+readonly class BillingService {
 	public function __construct(
 		private BillingGateway $gateway,
 		private BillingSubscriptionRepository $subscriptions,

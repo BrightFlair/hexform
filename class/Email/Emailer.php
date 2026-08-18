@@ -7,9 +7,9 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
-class Emailer {
-	private const FROM_ADDRESS = "forms@hexform.io";
-	private const FROM_NAME = "HexForm";
+readonly class Emailer {
+	private const string FROM_ADDRESS = "forms@hexform.io";
+	private const string FROM_NAME = "HexForm";
 
 	public function __construct(
 		private Mailer $mailer,
@@ -24,9 +24,12 @@ class Emailer {
 	public function sendSubmission(string $email, string $endpointTitle, array $submission):bool {
 		$rows = [];
 		foreach($submission as $key => $value) {
-			$rows[] = "| " . $this->escapeTableValue((string)$key)
-				. " | " . $this->escapeTableValue($this->stringify($value)) . " |";
+			array_push($rows,
+				"| " . $this->escapeTableValue($key)
+				. " | " . $this->escapeTableValue($this->stringify($value)) . " |"
+			);
 		}
+
 		return $this->send($email, "submission", [
 			"endpointSubject" => $endpointTitle,
 			"endpointTitle" => $this->escapeMarkdown($endpointTitle),
@@ -51,9 +54,9 @@ class Emailer {
 		$markdown = preg_replace('/{{[^}]+}}/', '', $markdown) ?? "";
 		$subject = trim(ltrim($subjectLine, "# "));
 		$markdown = ltrim($markdown);
-		$html = (string)(new GithubFlavoredMarkdownConverter())->convert($markdown);
+		$html = (string)new GithubFlavoredMarkdownConverter()->convert($markdown);
 
-		return (new Email())
+		return new Email()
 			->from(new Address(self::FROM_ADDRESS, self::FROM_NAME))
 			->to($emailAddress)
 			->subject($subject)

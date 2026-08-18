@@ -2,9 +2,9 @@
 namespace HexForm\Billing;
 
 use DateTimeImmutable;
+use DateTimeInterface;
 use HexForm\User\User;
 use RuntimeException;
-use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
 use Stripe\Invoice;
 use Stripe\Price;
@@ -12,7 +12,7 @@ use Stripe\StripeClient;
 use Stripe\Subscription;
 use Stripe\SubscriptionItem;
 
-class StripeBillingGateway implements BillingGateway {
+readonly class StripeBillingGateway implements BillingGateway {
 	/** @param array<string, string> $priceLookupKeys */
 	public function __construct(
 		private StripeClient $stripe,
@@ -68,6 +68,7 @@ class StripeBillingGateway implements BillingGateway {
 			throw new RuntimeException("Stripe subscription has no price item.");
 		}
 
+		/** @noinspection PhpArrayKeyDoesNotMatchArrayShapeInspection */
 		$stripeSubscription = $this->stripe->subscriptions->update(
 			$stripeSubscription->id,
 			[
@@ -103,6 +104,7 @@ class StripeBillingGateway implements BillingGateway {
 		if(!$currentPhase) {
 			throw new RuntimeException("Stripe did not create an active subscription schedule.");
 		}
+		/** @noinspection PhpArrayKeyDoesNotMatchArrayShapeInspection */
 		$this->stripe->subscriptionSchedules->update($schedule->id, [
 			"end_behavior" => "release",
 			"phases" => [
@@ -183,7 +185,6 @@ class StripeBillingGateway implements BillingGateway {
 	}
 
 	public function completeCheckout(string $sessionId, User $user):BillingSubscription {
-		/** @var Session $session */
 		$session = $this->stripe->checkout->sessions->retrieve($sessionId, [
 			"expand" => ["subscription"],
 		]);
@@ -220,7 +221,7 @@ class StripeBillingGateway implements BillingGateway {
 		$paymentInvoices = $this->getPaymentInvoices($subscription, $fallback !== null);
 		$latestInvoice = $paymentInvoices[0] ?? null;
 		$previousInvoice = $paymentInvoices[1] ?? null;
-		$cancelAtPeriodEnd = (bool)$subscription->cancel_at_period_end;
+		$cancelAtPeriodEnd = $subscription->cancel_at_period_end;
 		$nextInvoice = $cancelAtPeriodEnd
 			? null
 			: $this->getNextInvoice($subscription, $fallback !== null);
@@ -348,7 +349,7 @@ class StripeBillingGateway implements BillingGateway {
 	private function getPreviousPaymentDate(
 		?Invoice $invoice,
 		?BillingSubscription $fallback,
-	):?\DateTimeInterface {
+	):?DateTimeInterface {
 		return $invoice
 			? $this->dateFromTimestamp($invoice->status_transitions->paid_at)
 			: $fallback?->previousPaymentAt;
@@ -368,6 +369,6 @@ class StripeBillingGateway implements BillingGateway {
 	}
 
 	private function dateFromTimestamp(?int $timestamp):?DateTimeImmutable {
-		return $timestamp ? (new DateTimeImmutable())->setTimestamp($timestamp) : null;
+		return $timestamp ? new DateTimeImmutable()->setTimestamp($timestamp) : null;
 	}
 }

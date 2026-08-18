@@ -7,7 +7,7 @@ use DateTimeInterface;
 use GT\DomTemplate\BindGetter;
 
 readonly class EmailForwarder {
-	private const RESEND_DELAY = "PT2M";
+	private const string RESEND_DELAY = "PT2M";
 
 	public function __construct(
 		public string $id,

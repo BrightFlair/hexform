@@ -18,6 +18,7 @@ use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Transport;
 use HexForm\Billing\BillingGateway;
 use HexForm\Billing\BillingService;
+use HexForm\Billing\PlanSelector;
 use HexForm\Billing\BillingSubscriptionRepository;
 use HexForm\Billing\StripeBillingGateway;
 use Stripe\StripeClient;
@@ -108,6 +109,13 @@ class ServiceLoader extends DefaultServiceLoader {
 			$this->container->get(BillingGateway::class),
 			$this->container->get(BillingSubscriptionRepository::class),
 			$this->container->get(UserRepository::class),
+		);
+	}
+
+	public function loadPlanSelector():PlanSelector {
+		return new PlanSelector(
+			$this->container->get(BillingService::class),
+			$this->container->get(AuditLog::class),
 		);
 	}
 

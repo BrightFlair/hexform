@@ -3,8 +3,8 @@ namespace HexForm\UI;
 
 use GT\Session\SessionStoreInterface;
 
-class Flash {
-	private const KEY = "message";
+readonly class Flash {
+	private const string KEY = "message";
 
 	public function __construct(private SessionStoreInterface $session) {}
 

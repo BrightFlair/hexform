@@ -3,7 +3,7 @@ namespace HexForm\Audit;
 
 use GT\Database\Query\QueryCollection;
 
-class AuditLog {
+readonly class AuditLog {
 	public function __construct(private QueryCollection $db) {}
 
 	/** @param array<string, bool|int|string|null> $context */

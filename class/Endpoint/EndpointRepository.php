@@ -5,7 +5,7 @@ use GT\Database\Query\QueryCollection;
 use GT\Database\Result\Row;
 use HexForm\User\User;
 
-class EndpointRepository {
+readonly class EndpointRepository {
 	public function __construct(private QueryCollection $db) {}
 
 	public function create(Endpoint $endpoint):void {

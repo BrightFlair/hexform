@@ -7,7 +7,7 @@ use GT\Database\Result\Row;
 use HexForm\Endpoint\Endpoint;
 use HexForm\User\User;
 
-class EmailForwarderRepository {
+readonly class EmailForwarderRepository {
 	public function __construct(private QueryCollection $db) {}
 
 	public function create(
@@ -86,7 +86,7 @@ class EmailForwarderRepository {
 	private function mapRows(iterable $rows):array {
 		$list = [];
 		foreach($rows as $row) {
-			$list[] = $this->rowToForwarder($row);
+			array_push($list, $this->rowToForwarder($row));
 		}
 		return $list;
 	}

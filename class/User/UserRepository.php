@@ -6,7 +6,7 @@ use GT\Database\Query\QueryCollection;
 use GT\Database\Result\Row;
 use InvalidArgumentException;
 
-class UserRepository {
+readonly class UserRepository {
 	public function __construct(
 		private QueryCollection $db,
 	) {}
