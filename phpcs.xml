@@ -21,8 +21,8 @@
 	<rule ref="Generic.Files.LineEndings" />
 	<rule ref="Generic.Files.LineLength">
 		<properties>
-			<property name="lineLimit" value="100" />
-			<property name="absoluteLineLimit" value="100" />
+			<property name="lineLimit" value="120" />
+			<property name="absoluteLineLimit" value="120" />
 		</properties>
 	</rule>
 	<rule ref="Generic.Files.OneClassPerFile" />
@@ -61,6 +61,6 @@
 	<rule ref="Generic.WhiteSpace.LanguageConstructSpacing" />
 
 	<rule ref="Generic.NamingConventions.CamelCapsFunctionName">
-		<exclude-pattern>*/src/PartialContent.php</exclude-pattern>
+		<exclude-pattern>*/page/*</exclude-pattern>
 	</rule>
 </ruleset>

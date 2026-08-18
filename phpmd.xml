@@ -47,7 +47,7 @@
 	</rule>
 	<rule ref="rulesets/naming.xml/ShortMethodName">
 		<properties>
-			<property name="exceptions" value="or,do" />
+			<property name="exceptions" value="go,or" />
 		</properties>
 	</rule>
 </ruleset>
