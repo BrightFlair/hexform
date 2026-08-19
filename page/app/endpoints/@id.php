@@ -287,7 +287,7 @@ function do_delete_email_forwarder(
 	$response->reload();
 }
 
-function do_save(
+function do_save_general(
 	EndpointRepository $repository,
 	DynamicPath $path,
 	User $user,
@@ -297,11 +297,12 @@ function do_save(
 	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
 	if(!$endpoint) {
 		$response->redirect("/app/endpoints/");
+		return;
 	}
 
 	$retention = $input->getString("retentionMonths");
 
-	$repository->update(
+	$repository->updateGeneral(
 		new Endpoint(
 			$endpoint->id,
 			$endpoint->userId,
@@ -315,9 +316,30 @@ function do_save(
 			$input->getString("submitterIdentityField"),
 			$retention === "forever" ? null : (int)$retention,
 			$input->getInt("maximumSubmissionsPerMonth") ?? 50,
-			$input->getString("forwarderUrl"),
+			$endpoint->forwarderUrl,
 			$input->getString("ignoredKeys"),
 		),
+	);
+	$response->reload();
+}
+
+function do_save_webhook(
+	EndpointRepository $repository,
+	DynamicPath $path,
+	User $user,
+	Response $response,
+	Input $input,
+):void {
+	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
+		$response->redirect("/app/endpoints/");
+		return;
+	}
+
+	$forwarderUrl = trim($input->getString("forwarderUrl"));
+	$repository->updateForwarderUrl(
+		$endpoint,
+		$forwarderUrl === "" ? null : $forwarderUrl,
 	);
 	$response->reload();
 }

@@ -36,29 +36,30 @@
 </section>
 
 <form class="settings-form" method="post">
-	<h2>General</h2>
+	<section class="settings-panel">
+		<h2>General</h2>
 
-	<div class="field-row">
+		<div class="field-row">
+			<label>
+				<span>Title</span>
+				<input name="title" data-bind:value="title" required />
+			</label>
+			<label>
+				<span>Client host</span>
+				<input type="url" name="clientHost" data-bind:value="clientHost" required />
+				<small>The website that will submit to this endpoint.</small>
+			</label>
+		</div>
 		<label>
-			<span>Title</span>
-			<input name="title" data-bind:value="title" required />
+			<span>Confirmation URL</span>
+			<input
+				type="url"
+				name="confirmationUrl"
+				data-bind:value="confirmationUrl"
+				placeholder="https://example.com/thanks"
+			/>
+			<small>Where the visitor is sent after a successful submission.</small>
 		</label>
-		<label>
-			<span>Client host</span>
-			<input type="url" name="clientHost" data-bind:value="clientHost" required />
-			<small>The website that will submit to this endpoint.</small>
-		</label>
-	</div>
-	<label>
-		<span>Confirmation URL</span>
-		<input
-			type="url"
-			name="confirmationUrl"
-			data-bind:value="confirmationUrl"
-			placeholder="https://example.com/thanks"
-		/>
-		<small>Where the visitor is sent after a successful submission.</small>
-	</label>
 
 	<h2>Submission display</h2>
 	<div class="field-row">
@@ -121,29 +122,49 @@
 		</label>
 	</div>
 
-	<h2>Webhook forwarding</h2>
-	<label>
-		<span>Forwarder URL</span>
-		<input
-			type="url"
-			name="forwarderUrl"
-			data-bind:value="forwarderUrl"
-			placeholder="https://hooks.example.com/..."
-		/>
-		<small>HexForm will POST each accepted submission to this webhook.</small>
-	</label>
-
-	<div class="actions">
-		<button name="do" value="save">Save changes</button>
-	</div>
+		<div class="actions">
+			<button name="do" value="save_general">Save changes</button>
+		</div>
+	</section>
 </form>
 
-<section class="email-forwarding">
-	<header>
-		<h2>Email forwarding</h2>
-		<p>Add one or more confirmed addresses to receive every new submission.</p>
-	</header>
-	<ul data-email-forwarders>
+<h2>Forwarding rules</h2>
+
+<form class="forwarding-form" method="post">
+	<details class="expandable-card webhook-forwarding">
+		<summary>
+			<span>
+				<strong>Webhook forwarding</strong>
+				<small>POST each accepted submission to an external HTTPS endpoint.</small>
+			</span>
+		</summary>
+		<div class="expandable-card-content">
+			<label>
+				<span>Forwarder URL</span>
+				<input
+					type="url"
+					name="forwarderUrl"
+					data-bind:value="forwarderUrl"
+					placeholder="https://hooks.example.com/..."
+				/>
+				<small>HexForm will POST each accepted submission to this webhook.</small>
+			</label>
+			<div class="actions">
+				<button name="do" value="save_webhook">Save webhook changes</button>
+			</div>
+		</div>
+	</details>
+</form>
+
+<details class="expandable-card email-forwarding">
+	<summary>
+		<span>
+			<strong>Email forwarding</strong>
+			<small>Add confirmed addresses to receive every new submission.</small>
+		</span>
+	</summary>
+	<div class="expandable-card-content">
+		<ul data-email-forwarders>
 		<li data-list>
 			<div class="forwarder-heading">
 				<span class="forwarder-status" aria-hidden="true"></span>
@@ -169,18 +190,19 @@
 				</button>
 			</form>
 		</li>
-	</ul>
+		</ul>
 
-	<p class="empty-state" data-no-email-forwarders>No forwarding addresses yet.</p>
+		<p class="empty-state" data-no-email-forwarders>No forwarding addresses yet.</p>
 
-	<form method="post" class="add-forwarder">
-		<label>
-			<span>Email address</span>
-			<input type="email" name="email" placeholder="team@example.com" required />
-		</label>
-		<button name="do" value="add_email_forwarder">Add email address</button>
-	</form>
-</section>
+		<form method="post" class="add-forwarder">
+			<label>
+				<span>Email address</span>
+				<input type="email" name="email" placeholder="team@example.com" required />
+			</label>
+			<button name="do" value="add_email_forwarder">Add email address</button>
+		</form>
+	</div>
+</details>
 
 <section class="danger-zone">
 	<h2>Delete endpoint</h2>

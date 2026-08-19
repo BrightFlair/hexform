@@ -31,6 +31,16 @@ Feature: Manage form endpoints
 		And the "Ignored keys" field should contain "do,csrf-token,__component,tracking-id"
 		And the endpoint list should contain "Sales enquiries"
 
+	Scenario: Configure webhook forwarding independently
+		Given I have an endpoint named "Contact form"
+		And I am signed in
+		When I configure the endpoint "Contact form"
+		And I expand "Webhook forwarding"
+		And I fill in "Forwarder URL" with "https://hooks.example.com/contact"
+		And I press "Save webhook changes"
+		Then the "Forwarder URL" field should contain "https://hooks.example.com/contact"
+		And the "Title" field should contain "Contact form"
+
 	Scenario: Open an endpoint-specific inbox
 		Given I have an endpoint named "Contact form"
 		And I am signed in
@@ -49,8 +59,10 @@ Feature: Manage form endpoints
 		And the endpoint "Contact form" has a pending email forwarder "team@example.com" with code "12345"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I fill in "Confirmation code" with "12345"
 		And I press "Confirm"
+		And I expand "Email forwarding"
 		Then I should see "team@example.com"
 		And I should see "Confirmed"
 		And the audit log should contain a successful "confirm" for "team@example.com"
@@ -59,8 +71,10 @@ Feature: Manage form endpoints
 		Given I have an endpoint named "Contact form"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I fill in "Email address" with "behat@hexform.io"
 		And I press "Add email address"
+		And I expand "Email forwarding"
 		Then I should see "behat@hexform.io"
 		And the forwarding address "behat@hexform.io" should be confirmed
 		And the audit log should contain a successful "confirm" for "behat@hexform.io"
@@ -71,6 +85,7 @@ Feature: Manage form endpoints
 		And the endpoint "Contact form" has a pending email forwarder "team@example.com" with code "12345"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I fill in "Confirmation code" with "99999"
 		And I press "Confirm"
 		Then I should see "The confirmation code is incorrect. Please try again."
@@ -81,6 +96,7 @@ Feature: Manage form endpoints
 		And the endpoint "Contact form" has a pending email forwarder "team@example.com" with code "12345"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		Then I should not see "Resend code"
 
 	Scenario: An expired confirmation code can be resent
@@ -88,6 +104,7 @@ Feature: Manage form endpoints
 		And the endpoint "Contact form" has a resendable email forwarder "team@example.com" with code "12345"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I press "Resend code"
 		Then the email forwarder "team@example.com" should have a new confirmation code
 		And the audit log should contain a successful "resend-confirmation" for "team@example.com"
@@ -97,6 +114,7 @@ Feature: Manage form endpoints
 		And the endpoint "Contact form" has a pending email forwarder "remove@example.com" with code "12345"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I delete the email forwarder "remove@example.com"
 		Then I should not see "remove@example.com"
 		And the audit log should contain a successful "delete" for "remove@example.com"

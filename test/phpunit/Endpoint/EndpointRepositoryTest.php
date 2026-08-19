@@ -36,15 +36,32 @@ class EndpointRepositoryTest extends TestCase {
 		$sut->create($endpoint);
 	}
 
-	public function testUpdate():void {
+	public function testUpdateGeneral_doesNotUpdateForwarderUrl():void {
+		$endpoint = $this->createEndpoint();
+		$expected = $this->expectedParameters($endpoint);
+		unset($expected["forwarderUrl"]);
+		$db = self::createMock(QueryCollection::class);
+		$db->expects(self::once())
+			->method("update")
+			->with("updateGeneral", $expected);
+		$sut = new EndpointRepository($db);
+
+		$sut->updateGeneral($endpoint);
+	}
+
+	public function testUpdateForwarderUrl_doesNotUpdateGeneralSettings():void {
 		$endpoint = $this->createEndpoint();
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())
 			->method("update")
-			->with("update", $this->expectedParameters($endpoint));
+			->with("updateForwarderUrl", [
+				"id" => $endpoint->id,
+				"userId" => $endpoint->userId,
+				"forwarderUrl" => "https://example.com/new-hook",
+			]);
 		$sut = new EndpointRepository($db);
 
-		$sut->update($endpoint);
+		$sut->updateForwarderUrl($endpoint, "https://example.com/new-hook");
 	}
 
 	public function testDelete():void {

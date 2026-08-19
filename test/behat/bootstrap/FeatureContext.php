@@ -18,6 +18,22 @@ class FeatureContext extends MinkContext {
 	/** @var array<string, array{id: string, code: string}> */
 	private array $endpointList = [];
 
+	/** @When I expand :heading */
+	public function iExpand(string $heading):void {
+		$encodedHeading = json_encode($heading, JSON_THROW_ON_ERROR);
+		$this->getSession()->executeScript(<<<JS
+			const heading = $encodedHeading;
+			const summary = [...document.querySelectorAll("details > summary")]
+				.find(element => element.textContent.includes(heading));
+			if(!summary) {
+				throw new Error("Could not find expandable section.");
+			}
+			if(!summary.parentElement.open) {
+				summary.click();
+			}
+		JS);
+	}
+
 	/** @BeforeScenario */
 	public function prepareScenario():void {
 		$this->getSession()->reset();

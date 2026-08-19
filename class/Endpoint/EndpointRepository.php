@@ -12,8 +12,18 @@ readonly class EndpointRepository {
 		$this->db->insert("create", $this->toParams($endpoint));
 	}
 
-	public function update(Endpoint $endpoint):void {
-		$this->db->update("update", $this->toParams($endpoint));
+	public function updateGeneral(Endpoint $endpoint):void {
+		$params = $this->toParams($endpoint);
+		unset($params["forwarderUrl"]);
+		$this->db->update("updateGeneral", $params);
+	}
+
+	public function updateForwarderUrl(Endpoint $endpoint, ?string $forwarderUrl):void {
+		$this->db->update("updateForwarderUrl", [
+			"id" => $endpoint->id,
+			"userId" => $endpoint->userId,
+			"forwarderUrl" => $forwarderUrl,
+		]);
 	}
 
 	public function delete(Endpoint $endpoint):void {

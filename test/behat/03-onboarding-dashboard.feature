@@ -34,8 +34,10 @@ Feature: See progress and usage at a glance
 		Given I have an endpoint named "Contact form"
 		And I am signed in
 		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
 		And I fill in "Email address" with "team@example.com"
 		And I press "Add email address"
+		And I expand "Email forwarding"
 		Then I should see "team@example.com"
 		And I should see "Pending"
 		And the audit log should contain a successful "add" for "team@example.com"
