@@ -6,7 +6,7 @@ use HexForm\Audit\AuditLog;
 use PHPUnit\Framework\TestCase;
 
 class AuditLogTest extends TestCase {
-	public function testRecordStoresActorSubjectOutcomeAndContext():void {
+	public function testRecord_storesActorSubjectOutcomeAndContext():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("insert")->with("create", [
 			"actorUserId" => "user-1",

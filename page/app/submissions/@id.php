@@ -1,4 +1,5 @@
 <?php
+
 use Gt\DomTemplate\Binder;
 use Gt\Http\Response;
 use Gt\Routing\Path\DynamicPath;
@@ -7,16 +8,16 @@ use HexForm\User\User;
 
 function go(
 	User $user,
-	SubmissionRepository $repository,
+	SubmissionRepository $submissionRepository,
 	DynamicPath $path,
 	Response $response,
 	Binder $binder,
 ): void {
-	$s = $repository->getByIdForUser($path->get("id"), $user);
-	if(!$s) {
+	$submission = $submissionRepository->getByIdForUser($path->get("id"), $user);
+	if(!$submission) {
 		$response->redirect("/app/submissions/");
-		return;
 	}
-	$binder->bindData($s);
-	$binder->bindList($s->getDataRows(), ".submission-detail dl");
+
+	$binder->bindData($submission);
+	$binder->bindList($submission->getDataRows(), ".submission-detail dl");
 }

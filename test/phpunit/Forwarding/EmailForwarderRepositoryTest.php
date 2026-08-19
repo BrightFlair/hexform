@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 class EmailForwarderRepositoryTest extends TestCase {
 	private const EMAIL = "team@example.com";
 
-	public function testCreateStoresPendingConfirmation():void {
+	public function testCreate_storesPendingConfirmation():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("insert")->with("create", [
 			"id" => "forwarder-1",
@@ -35,7 +35,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		);
 	}
 
-	public function testCreateCanStoreAutomaticConfirmation():void {
+	public function testCreate_canStoreAutomaticConfirmation():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("insert")->with("create", [
 			"id" => "forwarder-1",
@@ -58,7 +58,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		);
 	}
 
-	public function testGetForEndpointIsScopedToUser():void {
+	public function testGetForEndpointByUser_isScopedToUser():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("fetchAll")
 			->with("getForEndpointByUser", ["endpointId" => "endpoint-1", "userId" => "user-1"])
@@ -72,7 +72,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		self::assertFalse($list[0]->isConfirmed());
 	}
 
-	public function testConfirmRejectsWrongCodeWithoutWriting():void {
+	public function testConfirm_rejectsWrongCodeWithoutWriting():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::never())->method("update");
 		$sut = new EmailForwarderRepository($db);
@@ -80,7 +80,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		self::assertFalse($sut->confirm($this->forwarder(), "99999"));
 	}
 
-	public function testConfirmWritesMatchingCode():void {
+	public function testConfirm_writesMatchingCode():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("update")->with("confirm", [
 			"id" => "forwarder-1",
@@ -91,7 +91,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		self::assertTrue($sut->confirm($this->forwarder(), "12345"));
 	}
 
-	public function testDeleteRemovesForwarder():void {
+	public function testDelete_removesForwarder():void {
 		$forwarder = $this->forwarder();
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())->method("delete")->with("delete", $forwarder->id);
@@ -100,7 +100,7 @@ class EmailForwarderRepositoryTest extends TestCase {
 		$sut->delete($forwarder);
 	}
 
-	public function testResendRejectsRequestBeforeDelay():void {
+	public function testResend_rejectsRequestBeforeDelay():void {
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::never())->method("update");
 		$sut = new EmailForwarderRepository($db);

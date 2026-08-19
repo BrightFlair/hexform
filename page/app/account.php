@@ -7,6 +7,7 @@ use HexForm\UI\Flash;
 use HexForm\User\User;
 use HexForm\Audit\AuditLog;
 use HexForm\Billing\BillingService;
+use HexForm\Billing\PlanSelector;
 use GT\Http\Uri;
 
 function go(
@@ -32,7 +33,7 @@ function go(
 			$audit->record($user->id, null, "subscription", $user->id, "checkout", "succeeded");
 			$flash->set("Payment successful. Your subscription is active.");
 		}
-		catch(\Throwable) {
+		catch(Throwable) {
 			$audit->record($user->id, null, "subscription", $user->id, "checkout", "failed");
 			$flash->set("We could not verify your payment. Please contact support if you were charged.");
 		}
@@ -41,14 +42,17 @@ function go(
 	}
 
 	$subscription = null;
+
 	try {
 		$subscription = $billing->refreshIfDue($user);
 	}
-	catch(\Throwable) {
+	catch(Throwable) {
 		$flash->set("Billing information is temporarily unavailable. Please try again later.");
 	}
+
 	$binder->bindData($user);
 	$message = $flash->consume();
+
 	if($message) {
 		$binder->bindKeyValue("subscription-message", $message);
 	}
@@ -57,8 +61,14 @@ function go(
 	}
 	if($subscription) {
 		if($subscription->previousPaymentAmount !== null) {
-			$binder->bindKeyValue("previous-payment-amount", $subscription->formatAmount($subscription->previousPaymentAmount));
-			$binder->bindKeyValue("previous-payment-date", $subscription->previousPaymentAt?->format("j F Y") ?? "Not available");
+			$binder->bindKeyValue(
+				"previous-payment-amount",
+				$subscription->formatAmount($subscription->previousPaymentAmount)
+			);
+			$binder->bindKeyValue(
+				"previous-payment-date",
+				$subscription->previousPaymentAt?->format("j F Y") ?? "Not available"
+			);
 		}
 		else {
 			$document->querySelector("[data-previous-payment]")?->remove();
@@ -104,63 +114,19 @@ function go(
 
 function do_select_plan(
 	User $user,
-	BillingService $billing,
+	PlanSelector $plans,
 	Input $input,
 	Response $response,
 	Flash $flash,
 	Uri $uri,
-	AuditLog $audit,
 ):void {
 	$plan = $input->getString("subscriptionPlan");
-	if($plan === "free") {
-		try {
-			$cancellationScheduled = $billing->selectFreePlan($user);
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
-		}
-		catch(\Throwable) {
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
-			$flash->set("Your paid subscription could not be cancelled. Your plan has not changed.");
-			$response->redirect("/app/account/");
-			return;
-		}
-		$flash->set($cancellationScheduled
-			? "Your subscription will change to Free after your current paid period ends."
-			: "Your subscription plan is now Free.");
-		$response->redirect("/app/account/");
-		return;
+	$origin = $uri->getScheme() . "://" . $uri->getAuthority();
+	$result = $plans->select($user, $plan, $origin);
+
+	if($result->message !== "") {
+		$flash->set($result->message);
 	}
 
-	if(in_array($plan, ["developer", "enterprise"], true)) {
-		$origin = $uri->getScheme() . "://" . $uri->getAuthority();
-		try {
-			$checkoutUrl = $billing->selectPaidPlan(
-				$user,
-				$plan,
-				$origin . "/app/account/?checkout=success&session_id={CHECKOUT_SESSION_ID}",
-				$origin . "/app/account/?checkout=cancelled&signup=" . $plan,
-			);
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "succeeded", ["plan" => $plan]);
-		}
-		catch(\Throwable) {
-			$audit->record($user->id, null, "subscription", $user->id, "change-plan", "failed", ["plan" => $plan]);
-			$flash->set("Your subscription could not be changed. Your existing plan remains active.");
-			$response->redirect("/app/account/?signup=" . $plan);
-			return;
-		}
-		if($checkoutUrl) {
-			$response->redirect($checkoutUrl);
-		}
-		else {
-			$current = $billing->getSubscription($user);
-			$flash->set($current?->pendingPlan === $plan
-				? "Your subscription will change to " . ucfirst($plan) . " at the next renewal."
-				: "Your subscription plan is now " . ucfirst($plan) . ".");
-			$response->redirect("/app/account/");
-		}
-		return;
-	}
-
-	$audit->record($user->id, null, "subscription", $user->id, "select-plan", "rejected", ["plan" => $plan]);
-	$flash->set("Please choose a valid subscription plan.");
-	$response->redirect("/app/account/");
+	$response->redirect($result->redirectUrl);
 }

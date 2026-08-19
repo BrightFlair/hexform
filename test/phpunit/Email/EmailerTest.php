@@ -13,7 +13,7 @@ class EmailerTest extends TestCase {
 		$this->sut = new Emailer(new Mailer(new NullTransport()));
 	}
 
-	public function testConfirmationEmailRendersMarkdownAsTextAndHtml():void {
+	public function testSendConfirmation_rendersMarkdownAsTextAndHtml():void {
 		$email = $this->sut->createEmail(
 			"team@example.com",
 			"confirm-forwarder",
@@ -25,7 +25,7 @@ class EmailerTest extends TestCase {
 		self::assertStringContainsString("<h2>12345</h2>", $email->getHtmlBody());
 	}
 
-	public function testSubmissionTemplateContainsAllKeyValuePairs():void {
+	public function testSendSubmission_containsAllKeyValuePairs():void {
 		self::assertTrue($this->sut->sendSubmission(
 			"team@example.com",
 			"Contact form",

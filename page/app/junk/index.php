@@ -1,4 +1,5 @@
 <?php
+
 use Gt\Dom\Element;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\Binder;

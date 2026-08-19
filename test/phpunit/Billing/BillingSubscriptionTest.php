@@ -6,13 +6,13 @@ use HexForm\Billing\BillingSubscription;
 use PHPUnit\Framework\TestCase;
 
 class BillingSubscriptionTest extends TestCase {
-	public function testActiveStatuses():void {
+	public function testIsActive_statuses():void {
 		self::assertTrue($this->subscription(status: "active")->isActive());
 		self::assertTrue($this->subscription(status: "trialing")->isActive());
 		self::assertFalse($this->subscription(status: "past_due")->isActive());
 	}
 
-	public function testNeedsRefreshAtNextPaymentDate():void {
+	public function testNeedsRefresh_atNextPaymentDate():void {
 		$now = new DateTimeImmutable("2026-09-01 12:00:00");
 
 		self::assertFalse($this->subscription(nextPaymentAt: $now->modify("+1 second"))->needsRefresh($now));

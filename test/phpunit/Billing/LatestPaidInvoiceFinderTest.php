@@ -6,7 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Stripe\Invoice;
 
 class LatestPaidInvoiceFinderTest extends TestCase {
-	public function testItIgnoresZeroValuePlanChangeInvoices():void {
+	public function testFindMany_ignoresZeroValuePlanChangeInvoices():void {
 		$planChange = Invoice::constructFrom(["id" => "in_plan_change", "amount_paid" => 0]);
 		$payment = Invoice::constructFrom(["id" => "in_payment", "amount_paid" => 2000]);
 
@@ -15,7 +15,7 @@ class LatestPaidInvoiceFinderTest extends TestCase {
 		self::assertSame($payment, $result);
 	}
 
-	public function testItReturnsNullWhenNoMoneyWasCollected():void {
+	public function testFind_returnsNullWhenNoMoneyWasCollected():void {
 		$invoice = Invoice::constructFrom(["id" => "in_free", "amount_paid" => 0]);
 
 		$result = (new LatestPaidInvoiceFinder())->find([$invoice]);
@@ -23,7 +23,7 @@ class LatestPaidInvoiceFinderTest extends TestCase {
 		self::assertNull($result);
 	}
 
-	public function testItReturnsSeveralActualPaymentsInInvoiceOrder():void {
+	public function testFindMany_returnsActualPaymentsInInvoiceOrder():void {
 		$latest = Invoice::constructFrom(["id" => "in_latest", "amount_paid" => 2000]);
 		$bookkeeping = Invoice::constructFrom(["id" => "in_zero", "amount_paid" => 0]);
 		$original = Invoice::constructFrom(["id" => "in_original", "amount_paid" => 500]);

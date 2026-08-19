@@ -24,7 +24,7 @@ class BillingServiceTest extends TestCase {
 		self::assertSame("https://checkout.stripe.test/session", $url);
 	}
 
-	public function testSelectPaidPlanChangesExistingSubscriptionInsteadOfCreatingAnother():void {
+	public function testSelectPaidPlan_changesExistingSubscriptionInsteadOfCreatingAnother():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$current = $this->subscription();
 		$changed = $this->subscription(plan: "enterprise");
@@ -49,7 +49,7 @@ class BillingServiceTest extends TestCase {
 		self::assertNull($result);
 	}
 
-	public function testSelectPaidPlanDoesNothingWhenPlanIsAlreadyActive():void {
+	public function testSelectPaidPlan_doesNothingWhenPlanIsAlreadyActive():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$gateway = self::createMock(BillingGateway::class);
 		$gateway->expects(self::never())->method("createCheckout");
@@ -67,7 +67,7 @@ class BillingServiceTest extends TestCase {
 		self::assertNull($result);
 	}
 
-	public function testSelectPaidPlanDoesNotClaimSuccessForPendingStripeUpdate():void {
+	public function testSelectPaidPlan_doesNotClaimSuccessForPendingStripeUpdate():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$current = $this->subscription();
 		$gateway = self::createStub(BillingGateway::class);
@@ -87,7 +87,7 @@ class BillingServiceTest extends TestCase {
 		);
 	}
 
-	public function testSelectFreePlanSchedulesCancellationAndKeepsPaidAccess():void {
+	public function testSelectFreePlan_schedulesCancellationAndKeepsPaidAccess():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$current = $this->subscription();
 		$cancelled = $this->subscription(cancelAtPeriodEnd: true);
@@ -104,7 +104,7 @@ class BillingServiceTest extends TestCase {
 		(new BillingService($gateway, $subscriptions, $users))->selectFreePlan($user);
 	}
 
-	public function testSelectingCurrentPlanWithdrawsScheduledCancellation():void {
+	public function testSelectPaidPlan_withdrawsScheduledCancellationForCurrentPlan():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$current = $this->subscription(cancelAtPeriodEnd: true);
 		$resumed = $this->subscription();
@@ -127,7 +127,7 @@ class BillingServiceTest extends TestCase {
 		);
 	}
 
-	public function testPaidDowngradeIsScheduledForTheNextBillingPeriod():void {
+	public function testSelectPaidPlan_schedulesPaidDowngradeForNextBillingPeriod():void {
 		$user = new User("user-1", "person@example.com", "enterprise");
 		$current = $this->subscription(plan: "enterprise");
 		$scheduled = $this->subscription(plan: "enterprise", pendingPlan: "developer");
@@ -150,7 +150,7 @@ class BillingServiceTest extends TestCase {
 		);
 	}
 
-	public function testSelectingCurrentPlanWithdrawsAPendingDowngrade():void {
+	public function testSelectPaidPlan_withdrawsPendingDowngradeForCurrentPlan():void {
 		$user = new User("user-1", "person@example.com", "enterprise");
 		$scheduled = $this->subscription(plan: "enterprise", pendingPlan: "developer");
 		$current = $this->subscription(plan: "enterprise");
@@ -173,7 +173,7 @@ class BillingServiceTest extends TestCase {
 		);
 	}
 
-	public function testSelectFreePlanKeepsPaidPlanWhenStripeCancellationFails():void {
+	public function testSelectFreePlan_keepsPaidPlanWhenStripeCancellationFails():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$gateway = self::createStub(BillingGateway::class);
 		$gateway->method("cancelSubscription")->willThrowException(new \RuntimeException());
@@ -186,7 +186,7 @@ class BillingServiceTest extends TestCase {
 		(new BillingService($gateway, $subscriptions, $users))->selectFreePlan($user);
 	}
 
-	public function testStartCheckoutRejectsUnknownPlan():void {
+	public function testStartCheckout_rejectsUnknownPlan():void {
 		$gateway = self::createStub(BillingGateway::class);
 		$this->expectException(InvalidArgumentException::class);
 
@@ -198,7 +198,7 @@ class BillingServiceTest extends TestCase {
 		);
 	}
 
-	public function testCompleteCheckoutStoresActivePlan():void {
+	public function testCompleteCheckout_storesActivePlan():void {
 		$user = new User("user-1", "person@example.com");
 		$subscription = $this->subscription();
 		$gateway = self::createMock(BillingGateway::class);
@@ -216,7 +216,7 @@ class BillingServiceTest extends TestCase {
 		self::assertSame($subscription, $result);
 	}
 
-	public function testCompleteCheckoutRemovesAccessForInactiveSubscription():void {
+	public function testCompleteCheckout_removesAccessForInactiveSubscription():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$subscription = $this->subscription(status: "past_due");
 		$gateway = self::createMock(BillingGateway::class);
@@ -228,7 +228,7 @@ class BillingServiceTest extends TestCase {
 		(new BillingService($gateway, $subscriptions, $users))->completeCheckout("cs_1", $user);
 	}
 
-	public function testRefreshIfDueUsesCacheBeforePaymentDate():void {
+	public function testRefreshIfDue_usesCacheBeforePaymentDate():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$subscription = $this->subscription(nextPaymentAt: new DateTimeImmutable("tomorrow"));
 		$gateway = self::createMock(BillingGateway::class);
@@ -241,7 +241,7 @@ class BillingServiceTest extends TestCase {
 		self::assertSame($subscription, $result);
 	}
 
-	public function testCompleteWebhookCheckoutStoresSubscriptionWithoutBrowserReturn():void {
+	public function testCompleteWebhookCheckout_storesSubscriptionWithoutBrowserReturn():void {
 		$user = new User("user-1", "person@example.com");
 		$subscription = $this->subscription();
 		$gateway = self::createMock(BillingGateway::class);
@@ -257,7 +257,7 @@ class BillingServiceTest extends TestCase {
 			->completeWebhookCheckout($user->id, "sub_1");
 	}
 
-	public function testWebhookRefreshRemovesPaidAccessForCancelledSubscription():void {
+	public function testRefreshByCustomerId_removesPaidAccessForCancelledSubscription():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$current = $this->subscription();
 		$cancelled = $this->subscription(status: "canceled");
@@ -273,7 +273,7 @@ class BillingServiceTest extends TestCase {
 		(new BillingService($gateway, $subscriptions, $users))->refreshByCustomerId("cus_1");
 	}
 
-	public function testRefreshIfDueRetrievesAndStoresNewPaymentPeriod():void {
+	public function testRefreshIfDue_retrievesAndStoresNewPaymentPeriod():void {
 		$user = new User("user-1", "person@example.com", "developer");
 		$stale = $this->subscription(nextPaymentAt: new DateTimeImmutable("yesterday"));
 		$fresh = $this->subscription(nextPaymentAt: new DateTimeImmutable("next month"));

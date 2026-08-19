@@ -45,7 +45,6 @@ function go_before(
 		&& in_array($signup, ["developer", "enterprise"], true)
 	) {
 		$response->redirect("/app/account/?signup=" . $signup);
-		return;
 	}
 
 	if(!$user->subscriptionPlan && $uri->getPath() !== "/app/account/") {
@@ -53,6 +52,7 @@ function go_before(
 			"You currently do not have an active subscription. "
 			. "Please choose a plan to continue.",
 		);
+
 		$response->redirect("/app/account/");
 	}
 }

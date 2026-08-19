@@ -1,4 +1,5 @@
 <?php
+
 use Gt\Dom\Element;
 use Gt\Dom\HTMLDocument;
 use Gt\DomTemplate\Binder;
@@ -10,7 +11,7 @@ function go(
 	EndpointRepository $repository,
 	Binder $binder,
 	HTMLDocument $document,
-): void {
+):void {
 	$list = $repository->getForUser($user);
 	if($list) {
 		$document->querySelector(".empty-state")?->remove();

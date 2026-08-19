@@ -6,7 +6,7 @@ use HexForm\Forwarding\EmailForwarder;
 use PHPUnit\Framework\TestCase;
 
 class EmailForwarderTest extends TestCase {
-	public function testPendingForwarderCanBeResentAfterTwoMinutes():void {
+	public function testCanResend_pendingAfterTwoMinutes():void {
 		$sut = $this->createForwarder();
 
 		self::assertSame("Pending", $sut->getStatus());
@@ -14,7 +14,7 @@ class EmailForwarderTest extends TestCase {
 		self::assertTrue($sut->canResend(new DateTimeImmutable("2026-08-08 12:02:00")));
 	}
 
-	public function testConfirmedForwarderCanNeverBeResent():void {
+	public function testCanResend_confirmedForwarder():void {
 		$sut = $this->createForwarder(new DateTimeImmutable("2026-08-08 12:01:00"));
 
 		self::assertSame("Confirmed", $sut->getStatus());

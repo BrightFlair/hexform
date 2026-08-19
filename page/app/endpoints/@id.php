@@ -1,10 +1,12 @@
 <?php
+
 use Gt\Dom\HTMLDocument;
 use Gt\Dom\Element;
 use Gt\DomTemplate\Binder;
 use Gt\Http\Response;
 use Gt\Input\Input;
 use Gt\Routing\Path\DynamicPath;
+use HexForm\Email\ConfirmationCode;
 use HexForm\Endpoint\Endpoint;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Audit\AuditLog;
@@ -15,7 +17,7 @@ use Gt\Ulid\Ulid;
 use HexForm\UI\Flash;
 
 function go(
-	EndpointRepository $repository,
+	EndpointRepository $endpointRepository,
 	DynamicPath $path,
 	User $user,
 	Response $response,
@@ -24,34 +26,40 @@ function go(
 	EmailForwarderRepository $forwarders,
 	Flash $flash,
 ): void {
-	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
+	$endpoint = $endpointRepository->getByIdForUser($path->get("id"), $user);
 	if(!$endpoint) {
 		$response->redirect("/app/endpoints/");
 		return;
 	}
+
 	$binder->bindData($endpoint);
 	$confirmationError = $flash->consume();
+
 	if($confirmationError) {
 		$binder->bindKeyValue("confirmation-error-message", $confirmationError);
 	}
 	else {
 		$document->querySelector("[data-confirmation-error]")?->remove();
 	}
-	$document
-		->querySelector("[data-inbox]")
+
+	$document->querySelector("[data-inbox]")
 		?->setAttribute("href", "/app/submissions/?endpoint=" . urlencode($endpoint->id));
-	if ($endpoint->junkDetection) {
+
+	if($endpoint->junkDetection) {
 		$document->querySelector("[data-junk-detection]")?->setAttribute("checked", "checked");
 	}
-	foreach ($document->querySelectorAll("[data-retention] option") as $option) {
-		if ($option->getAttribute("value") === $endpoint->getRetentionValue()) {
+
+	foreach($document->querySelectorAll("[data-retention] option") as $option) {
+		if($option->getAttribute("value") === $endpoint->getRetentionValue()) {
 			$option->setAttribute("selected", "selected");
 		}
 	}
+
 	$list = $forwarders->getForEndpointByUser($endpoint, $user);
 	if($list) {
 		$document->querySelector("[data-no-email-forwarders]")?->remove();
 	}
+
 	$binder->bindListCallback(
 		array_map(
 			fn($forwarder):array => [
@@ -71,6 +79,7 @@ function go(
 			elseif(!$data["canResend"]) {
 				$row->querySelector("[data-resend-forwarder]")?->remove();
 			}
+
 			return $data;
 		},
 		$document->querySelector("[data-email-forwarders]"),
@@ -78,19 +87,20 @@ function go(
 }
 
 function do_add_email_forwarder(
-	EndpointRepository $endpoints,
-	EmailForwarderRepository $forwarders,
+	EndpointRepository $endpointRepository,
+	EmailForwarderRepository $emailForwarderRepository,
 	Emailer $emailer,
-	DynamicPath $path,
+	DynamicPath $dynamicPath,
 	User $user,
 	Response $response,
 	Input $input,
-	AuditLog $audit,
+	AuditLog $auditLog,
 ):void {
-	$endpoint = $endpoints->getByIdForUser($path->get("id"), $user);
+	$endpoint = $endpointRepository->getByIdForUser($dynamicPath->get("id"), $user);
 	$email = mb_strtolower(trim($input->getString("email")));
+
 	if(!$endpoint || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		$audit->record(
+		$auditLog->record(
 			$user->id,
 			$endpoint?->id,
 			"email-forwarder",
@@ -100,11 +110,11 @@ function do_add_email_forwarder(
 			["email" => $email, "reason" => $endpoint ? "invalid-email" : "endpoint-not-found"],
 		);
 		$response->reload();
-		return;
 	}
-	foreach($forwarders->getForEndpointByUser($endpoint, $user) as $forwarder) {
+
+	foreach($emailForwarderRepository->getForEndpointByUser($endpoint, $user) as $forwarder) {
 		if($forwarder->email === $email) {
-			$audit->record(
+			$auditLog->record(
 				$user->id,
 				$endpoint->id,
 				"email-forwarder",
@@ -113,15 +123,17 @@ function do_add_email_forwarder(
 				"rejected",
 				["email" => $email, "reason" => "duplicate"],
 			);
+
 			$response->reload();
-			return;
 		}
 	}
-	$code = generateConfirmationCode();
-	$forwarderId = (string)new Ulid("FORWARDER");
+
+	$code = new ConfirmationCode();
+	$forwarderId = new Ulid("FORWARDER");
 	$now = new DateTimeImmutable();
+
 	$isAccountEmail = $email === mb_strtolower(trim($user->email));
-	$forwarders->create(
+	$emailForwarderRepository->create(
 		$forwarderId,
 		$endpoint,
 		$email,
@@ -129,7 +141,8 @@ function do_add_email_forwarder(
 		$now,
 		$isAccountEmail ? $now : null,
 	);
-	$audit->record(
+
+	$auditLog->record(
 		$user->id,
 		$endpoint->id,
 		"email-forwarder",
@@ -138,8 +151,9 @@ function do_add_email_forwarder(
 		"succeeded",
 		["email" => $email],
 	);
+
 	if($isAccountEmail) {
-		$audit->record(
+		$auditLog->record(
 			$user->id,
 			$endpoint->id,
 			"email-forwarder",
@@ -149,10 +163,10 @@ function do_add_email_forwarder(
 			["email" => $email, "reason" => "account-email"],
 		);
 		$response->reload();
-		return;
 	}
+
 	$emailSent = $emailer->sendConfirmation($email, $code);
-	$audit->record(
+	$auditLog->record(
 		$user->id,
 		$endpoint->id,
 		"email-forwarder",
@@ -165,17 +179,18 @@ function do_add_email_forwarder(
 }
 
 function do_confirm_email_forwarder(
-	EmailForwarderRepository $forwarders,
+	EmailForwarderRepository $emailForwarderRepository,
 	User $user,
 	Response $response,
 	Input $input,
 	Flash $flash,
-	AuditLog $audit,
+	AuditLog $auditLog,
 ):void {
-	$forwarder = $forwarders->getByIdForUser($input->getString("forwarderId"), $user);
+	$forwarder = $emailForwarderRepository->getByIdForUser($input->getString("forwarderId"), $user);
 	$confirmed = $forwarder
-		&& $forwarders->confirm($forwarder, trim($input->getString("confirmationCode")));
-	$audit->record(
+		&& $emailForwarderRepository->confirm($forwarder, trim($input->getString("confirmationCode")));
+
+	$auditLog->record(
 		$user->id,
 		$forwarder?->endpointId,
 		"email-forwarder",
@@ -196,20 +211,21 @@ function do_confirm_email_forwarder(
 }
 
 function do_resend_email_forwarder(
-	EmailForwarderRepository $forwarders,
+	EmailForwarderRepository $emailForwarderRepository,
 	Emailer $emailer,
 	User $user,
 	Response $response,
 	Input $input,
-	AuditLog $audit,
+	AuditLog $auditLog,
 ):void {
-	$forwarder = $forwarders->getByIdForUser($input->getString("forwarderId"), $user);
+	$forwarder = $emailForwarderRepository->getByIdForUser($input->getString("forwarderId"), $user);
 	$outcome = "rejected";
 	$reason = "forwarder-not-found";
 	$emailSent = null;
+
 	if($forwarder) {
-		$code = generateConfirmationCode();
-		if($forwarders->resend($forwarder, $code, new DateTimeImmutable())) {
+		$code = new ConfirmationCode();
+		if($emailForwarderRepository->resend($forwarder, $code, new DateTimeImmutable())) {
 			$emailSent = $emailer->sendConfirmation($forwarder->email, $code);
 			$outcome = "succeeded";
 			$reason = "code-regenerated";
@@ -218,7 +234,8 @@ function do_resend_email_forwarder(
 			$reason = $forwarder->isConfirmed() ? "already-confirmed" : "cooldown";
 		}
 	}
-	$audit->record(
+
+	$auditLog->record(
 		$user->id,
 		$forwarder?->endpointId,
 		"email-forwarder",
@@ -227,8 +244,9 @@ function do_resend_email_forwarder(
 		$outcome,
 		["email" => $forwarder?->email, "reason" => $reason],
 	);
+
 	if($emailSent !== null && $forwarder) {
-		$audit->record(
+		$auditLog->record(
 			$user->id,
 			$forwarder->endpointId,
 			"email-forwarder",
@@ -238,22 +256,25 @@ function do_resend_email_forwarder(
 			["email" => $forwarder->email, "reason" => "resend"],
 		);
 	}
+
 	$response->reload();
 }
 
 function do_delete_email_forwarder(
-	EmailForwarderRepository $forwarders,
+	EmailForwarderRepository $emailForwarderRepository,
 	User $user,
 	Response $response,
 	Input $input,
-	AuditLog $audit,
+	AuditLog $auditLog,
 ):void {
 	$requestedId = $input->getString("forwarderId");
-	$forwarder = $forwarders->getByIdForUser($requestedId, $user);
+	$forwarder = $emailForwarderRepository->getByIdForUser($requestedId, $user);
+
 	if($forwarder) {
-		$forwarders->delete($forwarder);
+		$emailForwarderRepository->delete($forwarder);
 	}
-	$audit->record(
+
+	$auditLog->record(
 		$user->id,
 		$forwarder?->endpointId,
 		"email-forwarder",
@@ -265,10 +286,6 @@ function do_delete_email_forwarder(
 	$response->reload();
 }
 
-function generateConfirmationCode():string {
-	return (string)random_int(11111, 99999);
-}
-
 function do_save(
 	EndpointRepository $repository,
 	DynamicPath $path,
@@ -276,17 +293,18 @@ function do_save(
 	Response $response,
 	Input $input,
 ): void {
-	$e = $repository->getByIdForUser($path->get("id"), $user);
-	if(!$e) {
+	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
 		$response->redirect("/app/endpoints/");
-		return;
 	}
+
 	$retention = $input->getString("retentionMonths");
+
 	$repository->update(
 		new Endpoint(
-			$e->id,
-			$e->userId,
-			$e->code,
+			$endpoint->id,
+			$endpoint->userId,
+			$endpoint->code,
 			$input->getString("title"),
 			$input->getString("clientHost"),
 			$input->getString("confirmationUrl"),

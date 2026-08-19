@@ -18,12 +18,15 @@ function go(Element $element, Uri $uri, ?User $user):void {
 		$element->querySelector(".app-navigation")?->remove();
 		$element->querySelector(".app-only")?->remove();
 	}
+
 	$currentPath = rtrim($uri->getPath(), "/") . "/";
+
 	foreach($element->querySelectorAll("nav a") as $link) {
 		$href = $link->getAttribute("href");
 		$isAppSection = $href !== "/app/"
 			&& str_starts_with($href, "/app/")
 			&& str_starts_with($currentPath, $href);
+
 		if($href === $currentPath || $isAppSection) {
 			$link->setAttribute("aria-current", "location");
 		}

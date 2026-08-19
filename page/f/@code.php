@@ -10,6 +10,7 @@ use HexForm\Submission\SubmissionRepository;
 use HexForm\Email\Emailer;
 use HexForm\Forwarding\EmailForwarderRepository;
 use HexForm\Audit\AuditLog;
+
 function go(
 	DynamicPath $path,
 	EndpointRepository $endpoints,
@@ -28,6 +29,7 @@ function go(
 	if(!$endpoint) {
 		throw new HttpNotFound();
 	}
+
 	$data = [];
 	$ignoredKeys = $endpoint->getIgnoredKeyList();
 	foreach($input->getAll(Input::DATA_BODY) as $key => $value) {
@@ -36,14 +38,27 @@ function go(
 		}
 		$data[$key] = $input->get($key, Input::DATA_BODY);
 	}
-	$isJunk
-		= $endpoint->junkDetection &&
+
+	$isJunk	=
+		$endpoint->junkDetection &&
 		$endpoint->junkFieldName &&
 		!empty($data[$endpoint->junkFieldName]);
-	$submissions->create((string)new Ulid("SUBMISSION"), $endpoint, $data, $isJunk);
+
+	$submissions->create(
+		new Ulid("SUBMISSION"),
+		$endpoint,
+		$data,
+		$isJunk,
+	);
+
 	if(!$isJunk) {
 		foreach($forwarders->getConfirmedForEndpoint($endpoint) as $forwarder) {
-			$emailSent = $emailer->sendSubmission($forwarder->email, $endpoint->title, $data);
+			$emailSent = $emailer->sendSubmission(
+				$forwarder->email,
+				$endpoint->title,
+				$data,
+			);
+
 			$audit->record(
 				null,
 				$endpoint->id,
@@ -55,6 +70,7 @@ function go(
 			);
 		}
 	}
+
 	if($endpoint->confirmationUrl) {
 		$response->redirect($endpoint->confirmationUrl);
 	}

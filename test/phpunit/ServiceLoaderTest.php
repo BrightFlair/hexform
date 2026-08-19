@@ -13,6 +13,8 @@ use GT\Session\Session;
 use GT\Session\SessionStore;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Audit\AuditLog;
+use HexForm\Billing\BillingService;
+use HexForm\Billing\PlanSelector;
 use HexForm\Forwarding\EmailForwarderRepository;
 use HexForm\ServiceLoader;
 use HexForm\Submission\SubmissionRepository;
@@ -136,6 +138,17 @@ class ServiceLoaderTest extends TestCase {
 		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
 
 		self::assertInstanceOf(AuditLog::class, $sut->loadAuditLog());
+	}
+
+	public function testLoadPlanSelector():void {
+		$container = new Container();
+		$container->set(
+			self::createStub(BillingService::class),
+			self::createStub(AuditLog::class),
+		);
+		$sut = new ServiceLoader(new Config(), $container);
+
+		self::assertInstanceOf(PlanSelector::class, $sut->loadPlanSelector());
 	}
 
 	private function createContainer(Database $database):Container {

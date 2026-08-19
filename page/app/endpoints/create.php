@@ -1,4 +1,5 @@
 <?php
+
 use Gt\Http\Response;
 use Gt\Input\Input;
 use Gt\Ulid\Ulid;
@@ -12,8 +13,14 @@ function do_create(
 	Input $input,
 	Response $response,
 ): void {
-	$id = (string) new Ulid("ENDPOINT");
-	$code = strtolower(substr(str_replace("_", "", (string) new Ulid()), -16));
+	$id = new Ulid("ENDPOINT");
+	$code = strtolower(
+		substr(
+			str_replace("_", "", new Ulid()),
+			-16
+		)
+	);
+
 	$repository->create(
 		new Endpoint(
 			$id,
@@ -31,5 +38,6 @@ function do_create(
 			null,
 		),
 	);
+
 	$response->redirect("/app/endpoints/$id/");
 }
