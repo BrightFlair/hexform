@@ -33,7 +33,7 @@ class ServiceLoaderTest extends TestCase {
 			"key" => "deployment_secret",
 			"host" => "login.example.com",
 		]));
-		$sessionStore = self::createMock(SessionStore::class);
+		$sessionStore = self::createStub(SessionStore::class);
 		$session = self::createMock(Session::class);
 		$session->expects(self::once())
 			->method("getStore")
@@ -78,7 +78,7 @@ class ServiceLoaderTest extends TestCase {
 	}
 
 	public function testLoadUserRepository():void {
-		$queryCollection = self::createMock(QueryCollection::class);
+		$queryCollection = self::createStub(QueryCollection::class);
 		$database = self::createMock(Database::class);
 		$database->expects(self::once())
 			->method("queryCollection")
@@ -90,7 +90,7 @@ class ServiceLoaderTest extends TestCase {
 	}
 
 	public function testLoadEndpointRepository():void {
-		$queryCollection = self::createMock(QueryCollection::class);
+		$queryCollection = self::createStub(QueryCollection::class);
 		$database = self::createMock(Database::class);
 		$database->expects(self::once())
 			->method("queryCollection")
@@ -102,7 +102,7 @@ class ServiceLoaderTest extends TestCase {
 	}
 
 	public function testLoadSubmissionRepository():void {
-		$queryCollection = self::createMock(QueryCollection::class);
+		$queryCollection = self::createStub(QueryCollection::class);
 		$database = self::createMock(Database::class);
 		$database->expects(self::once())
 			->method("queryCollection")
@@ -114,7 +114,7 @@ class ServiceLoaderTest extends TestCase {
 	}
 
 	public function testLoadEmailForwarderRepository():void {
-		$queryCollection = self::createMock(QueryCollection::class);
+		$queryCollection = self::createStub(QueryCollection::class);
 		$database = self::createMock(Database::class);
 		$database->expects(self::once())
 			->method("queryCollection")
@@ -129,7 +129,7 @@ class ServiceLoaderTest extends TestCase {
 	}
 
 	public function testLoadAuditLog():void {
-		$queryCollection = self::createMock(QueryCollection::class);
+		$queryCollection = self::createStub(QueryCollection::class);
 		$database = self::createMock(Database::class);
 		$database->expects(self::once())
 			->method("queryCollection")

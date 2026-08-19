@@ -3,7 +3,7 @@ namespace HexForm\Billing;
 
 use Stripe\Invoice;
 
-class LatestPaidInvoiceFinder {
+readonly class LatestPaidInvoiceFinder {
 	/** @param iterable<Invoice> $invoices */
 	public function find(iterable $invoices):?Invoice {
 		return $this->findMany($invoices, 1)[0] ?? null;

@@ -1,5 +1,6 @@
 <?php
 
+use DateTimeImmutable;
 use Gt\Dom\HTMLDocument;
 use Gt\Dom\Element;
 use Gt\DomTemplate\Binder;

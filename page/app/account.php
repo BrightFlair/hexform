@@ -1,4 +1,5 @@
 <?php
+use Throwable;
 use Gt\DomTemplate\Binder;
 use Gt\Dom\HTMLDocument;
 use GT\Http\Response;

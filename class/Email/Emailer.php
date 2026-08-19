@@ -54,9 +54,10 @@ readonly class Emailer {
 		$markdown = preg_replace('/{{[^}]+}}/', '', $markdown) ?? "";
 		$subject = trim(ltrim($subjectLine, "# "));
 		$markdown = ltrim($markdown);
-		$html = (string)new GithubFlavoredMarkdownConverter()->convert($markdown);
+		$html = (string)(new GithubFlavoredMarkdownConverter())->convert($markdown);
 
-		return new Email()
+		$email = new Email();
+		return $email
 			->from(new Address(self::FROM_ADDRESS, self::FROM_NAME))
 			->to($emailAddress)
 			->subject($subject)

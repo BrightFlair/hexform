@@ -1,4 +1,5 @@
 <?php
+use Throwable;
 use Authwave\Authenticator;
 use GT\Http\Response;
 use GT\Http\Uri;

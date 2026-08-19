@@ -220,8 +220,10 @@ class BillingServiceTest extends TestCase {
 		$user = new User("user-1", "person@example.com", "developer");
 		$subscription = $this->subscription(status: "past_due");
 		$gateway = self::createMock(BillingGateway::class);
-		$gateway->method("completeCheckout")->willReturn($subscription);
+		$gateway->expects(self::once())->method("completeCheckout")
+			->with("cs_1", $user)->willReturn($subscription);
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
+		$subscriptions->expects(self::once())->method("save")->with($subscription);
 		$users = self::createMock(UserRepository::class);
 		$users->expects(self::once())->method("setSubscriptionPlan")->with($user, null);
 
@@ -234,7 +236,8 @@ class BillingServiceTest extends TestCase {
 		$gateway = self::createMock(BillingGateway::class);
 		$gateway->expects(self::never())->method("retrieveSubscription");
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
-		$subscriptions->method("getForUser")->with($user->id)->willReturn($subscription);
+		$subscriptions->expects(self::once())->method("getForUser")
+			->with($user->id)->willReturn($subscription);
 
 		$result = $this->service($gateway, $subscriptions)->refreshIfDue($user);
 
@@ -250,7 +253,8 @@ class BillingServiceTest extends TestCase {
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
 		$subscriptions->expects(self::once())->method("save")->with($subscription);
 		$users = self::createMock(UserRepository::class);
-		$users->method("getById")->with($user->id)->willReturn($user);
+		$users->expects(self::once())->method("getById")
+			->with($user->id)->willReturn($user);
 		$users->expects(self::once())->method("setSubscriptionPlan")->with($user, "developer");
 
 		(new BillingService($gateway, $subscriptions, $users))
@@ -262,12 +266,16 @@ class BillingServiceTest extends TestCase {
 		$current = $this->subscription();
 		$cancelled = $this->subscription(status: "canceled");
 		$gateway = self::createMock(BillingGateway::class);
-		$gateway->method("retrieveSubscription")->willReturn($cancelled);
+		$gateway->expects(self::once())->method("retrieveSubscription")
+			->with($current->stripeSubscriptionId, $current->userId)
+			->willReturn($cancelled);
 		$subscriptions = self::createMock(BillingSubscriptionRepository::class);
-		$subscriptions->method("getByStripeCustomerId")->with("cus_1")->willReturn($current);
+		$subscriptions->expects(self::once())->method("getByStripeCustomerId")
+			->with("cus_1")->willReturn($current);
 		$subscriptions->expects(self::once())->method("save")->with($cancelled);
 		$users = self::createMock(UserRepository::class);
-		$users->method("getById")->with($user->id)->willReturn($user);
+		$users->expects(self::once())->method("getById")
+			->with($user->id)->willReturn($user);
 		$users->expects(self::once())->method("setSubscriptionPlan")->with($user, null);
 
 		(new BillingService($gateway, $subscriptions, $users))->refreshByCustomerId("cus_1");

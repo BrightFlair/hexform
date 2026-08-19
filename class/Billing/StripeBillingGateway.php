@@ -369,6 +369,6 @@ readonly class StripeBillingGateway implements BillingGateway {
 	}
 
 	private function dateFromTimestamp(?int $timestamp):?DateTimeImmutable {
-		return $timestamp ? new DateTimeImmutable()->setTimestamp($timestamp) : null;
+		return $timestamp ? (new DateTimeImmutable())->setTimestamp($timestamp) : null;
 	}
 }

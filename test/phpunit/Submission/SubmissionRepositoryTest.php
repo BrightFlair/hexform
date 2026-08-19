@@ -84,7 +84,7 @@ class SubmissionRepositoryTest extends TestCase {
 
 	public function testGetByIdForUser_returnsNullWhenMissing():void {
 		$user = $this->createUser();
-		$db = self::createMock(QueryCollection::class);
+		$db = self::createStub(QueryCollection::class);
 		$db->method("fetch")->willReturn(null);
 		$sut = new SubmissionRepository($db);
 
@@ -188,7 +188,7 @@ class SubmissionRepositoryTest extends TestCase {
 
 	public function testGetDashboard_defaultsMissingSummaryToZero():void {
 		$user = $this->createUser();
-		$db = self::createMock(QueryCollection::class);
+		$db = self::createStub(QueryCollection::class);
 		$db->method("fetch")->willReturn(null);
 		$db->method("fetchAll")->willReturn(DatabaseTestHelper::resultSet());
 		$sut = new SubmissionRepository($db);
