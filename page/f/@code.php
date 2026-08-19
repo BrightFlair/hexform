@@ -23,8 +23,9 @@ function go(
 	AuditLog $audit,
 ): void {
 	if($serverInfo->getRequestMethod() !== "POST") {
-		return;
+		$response->redirect("/");
 	}
+
 	$endpoint = $endpoints->getByCode($path->get("code"));
 	if(!$endpoint) {
 		throw new HttpNotFound();
@@ -32,11 +33,13 @@ function go(
 
 	$data = [];
 	$ignoredKeys = $endpoint->getIgnoredKeyList();
+
 	foreach($input->getAll(Input::DATA_BODY) as $key => $value) {
 		if(in_array($key, $ignoredKeys, true)) {
 			continue;
 		}
-		$data[$key] = $input->get($key, Input::DATA_BODY);
+
+		$data[$key] = $value;
 	}
 
 	$isJunk	=
