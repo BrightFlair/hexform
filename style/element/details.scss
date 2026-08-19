@@ -1,3 +1,5 @@
+@use "../decorator/expandable-card";
+
 details {
 	border-bottom: 1px solid var(--pal-line);
 
@@ -12,5 +14,9 @@ details {
 
 	>p {
 		padding: 0 1rem .85rem;
+	}
+
+	&.expandable-card {
+		@extend %d-expandable-card;
 	}
 }

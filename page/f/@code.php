@@ -34,7 +34,7 @@ function go(
 	$data = [];
 	$ignoredKeys = $endpoint->getIgnoredKeyList();
 
-	foreach($input->getAll(Input::DATA_BODY) as $key => $value) {
+	foreach($input->getAll(Input::DATA_BODY)->asArray() as $key => $value) {
 		if(in_array($key, $ignoredKeys, true)) {
 			continue;
 		}

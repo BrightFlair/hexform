@@ -153,6 +153,7 @@ body.uri--digital-style {
 	#forms>form,
 	#choices fieldset,
 	#choices>div:last-child,
+	#expandable-cards .expandable-card-content,
 	#feedback>div {
 		@extend %d-form-fields;
 	}

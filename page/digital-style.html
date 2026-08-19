@@ -16,6 +16,7 @@
 			<li><a href="#forms">Form fields</a></li>
 			<li><a href="#choices">Choices</a></li>
 			<li><a href="#cards">Cards</a></li>
+			<li><a href="#expandable-cards">Expandable cards</a></li>
 			<li><a href="#feedback">Feedback</a></li>
 			<li><a href="#data">Data display</a></li>
 			<li><a href="#navigation">Navigation</a></li>
@@ -113,6 +114,27 @@
 		<article><span class="badge--success">Active</span><h3>Contact form</h3><p>Receives submissions from example.com.</p><div class="callout--success"><strong>All systems operational</strong><p>Last submission received 4 minutes ago.</p></div></article>
 		<article><span>Draft</span><h3>Newsletter</h3><p>This endpoint has not been published yet.</p><button class="secondary small" type="button">Configure</button></article>
 		<a href="#forms"><span class="badge--warning">Action needed</span><h3>Support request</h3><p>Add a verified forwarding address to start collecting responses.</p></a>
+	</div>
+</section>
+
+<section id="expandable-cards" class="ds-section">
+	<header><p>Composition</p><h2>Expandable cards</h2><p>Use expandable cards to divide long forms into focused settings groups. The summary remains descriptive when its controls are hidden.</p></header>
+	<div>
+		<details class="expandable-card" open>
+			<summary><span><strong>Email</strong><small>Send accepted submissions to confirmed email addresses.</small></span></summary>
+			<div class="expandable-card-content">
+				<label><span>Delivery schedule</span><select><option selected>Immediately</option><option>Daily digest</option></select><small>Choose when confirmed recipients receive submissions.</small></label>
+				<label class="choice"><input type="checkbox" checked> Include the endpoint name in the subject</label>
+				<div class="actions"><button type="button" class="secondary">Save email settings</button></div>
+			</div>
+		</details>
+		<details class="expandable-card">
+			<summary><span><strong>Webhook</strong><small>POST each accepted submission to an external HTTPS endpoint.</small></span></summary>
+			<div class="expandable-card-content">
+				<label><span>Forwarder URL</span><input type="url" value="https://hooks.example.com/submissions"><small>HexForm signs every delivery so the receiver can verify its origin.</small></label>
+				<div class="actions"><button type="button" class="secondary">Save webhook settings</button></div>
+			</div>
+		</details>
 	</div>
 </section>
 
