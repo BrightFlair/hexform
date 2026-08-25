@@ -27,6 +27,30 @@ Feature: Receive and manage form submissions
 		And I should see "reader@example.com"
 		And I should see "A detailed enquiry"
 
+	Scenario: Show a webhook response on the submission
+		Given I have an endpoint named "Contact form"
+		And the endpoint "Contact form" forwards submissions to the test webhook
+		When someone submits "Forward this" to "Contact form" as "hook@example.com"
+		And I am signed in
+		And I open "Submissions" from app navigation
+		And I read the message from "hook@example.com"
+		Then I should see "Forwarding activity"
+		And I should see "Webhook"
+		And I should see "Succeeded"
+		And I should see "HTTP 202"
+
+	Scenario: Show an SMTP response on the submission
+		Given I have an endpoint named "Contact form"
+		And the endpoint "Contact form" has a confirmed email forwarder "team@example.com"
+		When someone submits "Email this" to "Contact form" as "sender@example.com"
+		And I am signed in
+		And I open "Submissions" from app navigation
+		And I read the message from "sender@example.com"
+		Then I should see "Forwarding activity"
+		And I should see "Email"
+		And I should see "team@example.com"
+		And I should see "SMTP"
+
 	Scenario: Ignore WebEngine fields in submitted data
 		Given I have an endpoint named "Contact form"
 		And the endpoint "Contact form" ignores submission keys "do,csrf-token,__component,tracking-id"

@@ -12,6 +12,8 @@ use HexForm\Endpoint\Endpoint;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Audit\AuditLog;
 use HexForm\Email\Emailer;
+use HexForm\Email\SmtpConfiguration;
+use HexForm\Email\SmtpConfigurationRepository;
 use HexForm\Forwarding\EmailForwarderRepository;
 use HexForm\User\User;
 use Gt\Ulid\Ulid;
@@ -25,6 +27,7 @@ function go(
 	Binder $binder,
 	HTMLDocument $document,
 	EmailForwarderRepository $forwarders,
+	SmtpConfigurationRepository $smtpConfigurations,
 	Flash $flash,
 ): void {
 	$endpoint = $endpointRepository->getByIdForUser($path->get("id"), $user);
@@ -34,17 +37,29 @@ function go(
 	}
 
 	$binder->bindData($endpoint);
-	$confirmationError = $flash->consume();
-	$paidError = $confirmationError === "This feature is only available on paid accounts.";
+	$flashMessage = $flash->consume();
+	$paidError = $flashMessage === "This feature is only available on paid accounts.";
+	$smtpError = str_starts_with($flashMessage ?? "", "SMTP: ");
+	$smtpSaved = in_array($flashMessage, ["SMTP saved", "SMTP deleted"], true);
 
-	if($confirmationError && !$paidError) {
-		$binder->bindKeyValue("confirmation-error-message", $confirmationError);
+	if($flashMessage && !$paidError && !$smtpError && !$smtpSaved) {
+		$binder->bindKeyValue("confirmation-error-message", $flashMessage);
 	}
 	else {
 		$document->querySelector("[data-confirmation-error]")?->remove();
 	}
 	if(!$paidError) {
 		$document->querySelector("[data-paid-error]")?->removeAttribute("open");
+	}
+	if($smtpError) {
+		$binder->bindKeyValue("smtp-error-message", substr($flashMessage, 6));
+	}
+	else {
+		$document->querySelector("[data-smtp-error]")?->removeAttribute("open");
+	}
+	if($smtpError || $smtpSaved) {
+		$document->querySelector('[data-forwarder-card="email"]')?->setAttribute("open", "open");
+		$document->querySelector("[data-smtp-settings]")?->setAttribute("open", "open");
 	}
 
 	$enabledForwarders = $endpoint->getEnabledForwarderList();
@@ -70,6 +85,24 @@ function go(
 		if($option->getAttribute("value") === $endpoint->getRetentionValue()) {
 			$option->setAttribute("selected", "selected");
 		}
+	}
+
+	$smtp = $smtpConfigurations->getForEndpointByUser($endpoint, $user);
+	$binder->bindKeyValue("smtp-host", $smtp?->host ?? "");
+	$binder->bindKeyValue("smtp-port", (string)($smtp?->port ?? 587));
+	$binder->bindKeyValue("smtp-username", $smtp?->username ?? "");
+	$binder->bindKeyValue("smtp-from-address", $smtp?->fromAddress ?? "");
+	$binder->bindKeyValue("smtp-from-name", $smtp?->fromName ?? "");
+	foreach($document->querySelectorAll("[data-smtp-security] option") as $option) {
+		if($option->getAttribute("value") === ($smtp?->security ?? SmtpConfiguration::SECURITY_STARTTLS)) {
+			$option->setAttribute("selected", "selected");
+		}
+	}
+	if(!$smtp) {
+		$document->querySelector("[data-smtp-custom]")?->remove();
+	}
+	else {
+		$document->querySelector("[data-smtp-default]")?->remove();
 	}
 
 	$list = $forwarders->getForEndpointByUser($endpoint, $user);
@@ -101,6 +134,80 @@ function go(
 		},
 		$document->querySelector("[data-email-forwarders]"),
 	);
+}
+
+function do_save_smtp(
+	EndpointRepository $endpoints,
+	SmtpConfigurationRepository $smtpConfigurations,
+	DynamicPath $path,
+	User $user,
+	Response $response,
+	Input $input,
+	Flash $flash,
+):void {
+	$endpoint = $endpoints->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
+		$response->redirect("/app/endpoints/");
+		return;
+	}
+
+	$host = trim($input->getString("smtpHost") ?? "");
+	$port = $input->getInt("smtpPort");
+	$security = $input->getString("smtpSecurity") ?? "";
+	$fromAddress = trim($input->getString("smtpFromAddress") ?? "");
+	$validHost = filter_var($host, FILTER_VALIDATE_IP) !== false
+		|| filter_var($host, FILTER_VALIDATE_DOMAIN, FILTER_FLAG_HOSTNAME) !== false;
+	if(
+		!$validHost
+		|| mb_strlen($host) > 253
+		|| !$port
+		|| $port > 65535
+		|| !in_array($security, SmtpConfiguration::securityList(), true)
+		|| !filter_var($fromAddress, FILTER_VALIDATE_EMAIL)
+	) {
+		$flash->set("SMTP: Check the host, port, security, and from address.");
+		$response->reload();
+		return;
+	}
+
+	$existing = $smtpConfigurations->getForEndpointByUser($endpoint, $user);
+	$password = $input->getString("smtpPassword") ?? "";
+	$smtpConfigurations->save(new SmtpConfiguration(
+		$endpoint->id,
+		$host,
+		$port,
+		smtpNullIfEmpty($input->getString("smtpUsername")),
+		$password === "" ? $existing?->password : $password,
+		$security,
+		$fromAddress,
+		smtpNullIfEmpty($input->getString("smtpFromName")),
+	));
+	$flash->set("SMTP saved");
+	$response->reload();
+}
+
+function do_delete_smtp(
+	EndpointRepository $endpoints,
+	SmtpConfigurationRepository $smtpConfigurations,
+	DynamicPath $path,
+	User $user,
+	Response $response,
+	Flash $flash,
+):void {
+	$endpoint = $endpoints->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
+		$response->redirect("/app/endpoints/");
+		return;
+	}
+
+	$smtpConfigurations->deleteForEndpointByUser($endpoint, $user);
+	$flash->set("SMTP deleted");
+	$response->reload();
+}
+
+function smtpNullIfEmpty(?string $value):?string {
+	$value = trim($value ?? "");
+	return $value === "" ? null : $value;
 }
 
 function do_save_forwarders(

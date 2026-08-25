@@ -23,6 +23,14 @@
 	</form>
 </dialog>
 
+<dialog class="flash-dialog" data-smtp-error data-flux="update" open>
+	<form method="dialog">
+		<h2>Could not save SMTP settings</h2>
+		<p data-bind:text="smtp-error-message">Check the SMTP settings and try again.</p>
+		<button>Close</button>
+	</form>
+</dialog>
+
 <section class="action-url">
 	<div>
 		<p>Action URL</p>
@@ -152,9 +160,8 @@
 	<button name="do" value="save_forwarders" data-flux="autosave">Save forwarding choices</button>
 </form>
 
-<div id="forwarding-cards" data-flux="update">
 <form class="forwarding-form" method="post">
-	<details class="expandable-card webhook-forwarding" data-forwarder-card="webhook">
+	<details class="expandable-card webhook-forwarding" data-forwarder-card="webhook" data-flux="update-attributes">
 		<summary>
 			<span>
 				<strong>Webhook forwarding</strong>
@@ -179,7 +186,7 @@
 	</details>
 </form>
 
-<details class="expandable-card email-forwarding" data-forwarder-card="email">
+<details class="expandable-card email-forwarding" data-forwarder-card="email" data-flux="update-attributes">
 	<summary>
 		<span>
 			<strong>Email forwarding</strong>
@@ -224,16 +231,78 @@
 			</label>
 			<button name="do" value="add_email_forwarder">Add email address</button>
 		</form>
+
+		<details class="expandable-card smtp-settings" data-smtp-settings>
+			<summary>
+				<span>
+					<strong>Custom SMTP server</strong>
+					<small>Override email delivery for this endpoint.</small>
+				</span>
+			</summary>
+			<div class="expandable-card-content">
+				<p>Send submission emails through your own SMTP server for this endpoint only.</p>
+				<form method="post" data-flux>
+					<div class="smtp-mode" aria-live="polite">
+						<strong data-smtp-default>Using HexForm SMTP</strong>
+						<strong data-smtp-custom>
+							Using custom SMTP
+							(<button class="quiet smtp-revert" name="do" value="delete_smtp" formnovalidate>revert to default</button>)
+						</strong>
+					</div>
+					<div class="field-row">
+						<label>
+							<span>SMTP host</span>
+							<input name="smtpHost" data-bind:value="smtp-host" placeholder="smtp.example.com" maxlength="253" required />
+						</label>
+						<label>
+							<span>Port</span>
+							<input type="number" name="smtpPort" data-bind:value="smtp-port" value="587" min="1" max="65535" required />
+						</label>
+					</div>
+					<label>
+						<span>Transport security</span>
+						<select name="smtpSecurity" data-smtp-security>
+							<option value="starttls">STARTTLS (recommended)</option>
+							<option value="tls">Implicit TLS</option>
+							<option value="none">None</option>
+						</select>
+					</label>
+					<div class="field-row">
+						<label>
+							<span>Username</span>
+							<input name="smtpUsername" data-bind:value="smtp-username" autocomplete="username" />
+						</label>
+						<label>
+							<span>Password</span>
+							<input type="password" name="smtpPassword" autocomplete="new-password" />
+							<small>Leave blank to keep the currently saved password.</small>
+						</label>
+					</div>
+					<div class="field-row">
+						<label>
+							<span>From address</span>
+							<input type="email" name="smtpFromAddress" data-bind:value="smtp-from-address" placeholder="forms@example.com" required />
+						</label>
+						<label>
+							<span>From name</span>
+							<input name="smtpFromName" data-bind:value="smtp-from-name" placeholder="Website forms" />
+						</label>
+					</div>
+					<div class="actions">
+						<button name="do" value="save_smtp" data-autosave="Saved">Save SMTP settings</button>
+					</div>
+				</form>
+			</div>
+		</details>
 	</div>
 </details>
 
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="zapier"><summary><span><strong>Zapier</strong><small>Zapier forwarding options are coming soon.</small></span></summary></details>
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="google-sheets"><summary><span><strong>Google Sheets</strong><small>Google Sheets forwarding options are coming soon.</small></span></summary></details>
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="trello"><summary><span><strong>Trello</strong><small>Trello forwarding options are coming soon.</small></span></summary></details>
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="github"><summary><span><strong>GitHub</strong><small>GitHub forwarding options are coming soon.</small></span></summary></details>
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="brevo"><summary><span><strong>Brevo</strong><small>Brevo forwarding options are coming soon.</small></span></summary></details>
-<details class="expandable-card placeholder-forwarding" data-forwarder-card="slack"><summary><span><strong>Slack</strong><small>Slack forwarding options are coming soon.</small></span></summary></details>
-</div>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="zapier" data-flux="update-attributes"><summary><span><strong>Zapier</strong><small>Zapier forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="google-sheets" data-flux="update-attributes"><summary><span><strong>Google Sheets</strong><small>Google Sheets forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="trello" data-flux="update-attributes"><summary><span><strong>Trello</strong><small>Trello forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="github" data-flux="update-attributes"><summary><span><strong>GitHub</strong><small>GitHub forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="brevo" data-flux="update-attributes"><summary><span><strong>Brevo</strong><small>Brevo forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="slack" data-flux="update-attributes"><summary><span><strong>Slack</strong><small>Slack forwarding options are coming soon.</small></span></summary></details>
 
 <section class="danger-zone">
 	<h2>Delete endpoint</h2>

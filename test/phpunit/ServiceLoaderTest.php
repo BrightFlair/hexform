@@ -12,10 +12,13 @@ use GT\ServiceContainer\Container;
 use GT\Session\Session;
 use GT\Session\SessionStore;
 use HexForm\Endpoint\EndpointRepository;
+use HexForm\Email\SmtpConfigurationRepository;
 use HexForm\Audit\AuditLog;
 use HexForm\Billing\BillingService;
 use HexForm\Billing\PlanSelector;
 use HexForm\Forwarding\EmailForwarderRepository;
+use HexForm\Forwarding\SubmissionForwardingLogRepository;
+use HexForm\Forwarding\WebhookForwarder;
 use HexForm\ServiceLoader;
 use HexForm\Submission\SubmissionRepository;
 use HexForm\User\User;
@@ -126,6 +129,42 @@ class ServiceLoaderTest extends TestCase {
 			EmailForwarderRepository::class,
 			$sut->loadEmailForwarderRepository(),
 		);
+	}
+
+	public function testLoadSmtpConfigurationRepository():void {
+		$queryCollection = self::createStub(QueryCollection::class);
+		$database = self::createMock(Database::class);
+		$database->expects(self::once())
+			->method("queryCollection")
+			->with("EndpointSmtp")
+			->willReturn($queryCollection);
+		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
+
+		self::assertInstanceOf(
+			SmtpConfigurationRepository::class,
+			$sut->loadSmtpConfigurationRepository(),
+		);
+	}
+
+	public function testLoadSubmissionForwardingLogRepository():void {
+		$queryCollection = self::createStub(QueryCollection::class);
+		$database = self::createMock(Database::class);
+		$database->expects(self::once())
+			->method("queryCollection")
+			->with("SubmissionForwardingLog")
+			->willReturn($queryCollection);
+		$sut = new ServiceLoader(new Config(), $this->createContainer($database));
+
+		self::assertInstanceOf(
+			SubmissionForwardingLogRepository::class,
+			$sut->loadSubmissionForwardingLogRepository(),
+		);
+	}
+
+	public function testLoadWebhookForwarder():void {
+		$sut = new ServiceLoader(new Config(), new Container());
+
+		self::assertInstanceOf(WebhookForwarder::class, $sut->loadWebhookForwarder());
 	}
 
 	public function testLoadAuditLog():void {

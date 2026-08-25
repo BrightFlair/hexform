@@ -7,6 +7,11 @@ parse_str((string)file_get_contents("php://input"), $input);
 
 header("Content-Type: application/json");
 
+if($method === "POST" && $path === "/hexform-test-webhook") {
+	http_response_code(202);
+	respond(["received" => true]);
+}
+
 if($method === "GET" && $path === "/v1/prices") {
 	$lookupKey = $_GET["lookup_keys"][0] ?? "";
 	respond([

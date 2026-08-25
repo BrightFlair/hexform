@@ -21,4 +21,20 @@
 			<dd data-bind:text="value">Value</dd>
 		</div>
 	</dl>
+
+	<div class="forwarding-activity">
+		<h2>Forwarding activity</h2>
+		<p data-no-forwarding-log>No forwarding attempts were made for this submission.</p>
+		<ul data-forwarding-log>
+			<li data-list>
+				<header>
+					<strong data-bind:text="typeDisplay">Forwarder</strong>
+					<span data-bind:text="outcomeDisplay">Status</span>
+				</header>
+				<p data-bind:text="destination">Destination</p>
+				<p data-bind:text="status">Forwarder response</p>
+				<time data-bind:text="dateDisplay">Time</time>
+			</li>
+		</ul>
+	</div>
 </section>

@@ -93,6 +93,29 @@ Feature: Manage form endpoints
 		And the audit log should contain a successful "confirm" for "behat@hexform.io"
 		And the audit log should not contain "send-confirmation" for "behat@hexform.io"
 
+	Scenario: Configure a custom SMTP server for submission emails
+		Given I have an endpoint named "Contact form"
+		And I am signed in
+		When I configure the endpoint "Contact form"
+		And I expand "Email forwarding"
+		And I expand "Custom SMTP server"
+		Then the SMTP controls should show "Using HexForm SMTP"
+		When I fill in "SMTP host" with "smtp.example.com"
+		And I fill in "Port" with "587"
+		And I select "STARTTLS (recommended)" from "Transport security"
+		And I fill in "Username" with "mailer@example.com"
+		And I fill in "Password" with "secret"
+		And I fill in "From address" with "forms@example.com"
+		And I fill in "From name" with "Website forms"
+		And I press "Save SMTP settings"
+		Then the "Save SMTP settings" button should temporarily say "Saved"
+		And "Custom SMTP server" should remain expanded
+		And the SMTP controls should show "Using custom SMTP (revert to default)"
+		And the endpoint "Contact form" should use the custom SMTP server "smtp.example.com" on port "587"
+		When I press "revert to default"
+		Then the SMTP controls should show "Using HexForm SMTP"
+		And the endpoint "Contact form" should use HexForm SMTP
+
 	Scenario: Reject an incorrect email confirmation code with feedback
 		Given I have an endpoint named "Contact form"
 		And the endpoint "Contact form" has a pending email forwarder "team@example.com" with code "12345"

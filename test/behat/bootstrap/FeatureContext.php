@@ -22,16 +22,32 @@ class FeatureContext extends MinkContext {
 	public function iExpand(string $heading):void {
 		$encodedHeading = json_encode($heading, JSON_THROW_ON_ERROR);
 		$this->getSession()->executeScript(<<<JS
-			const heading = $encodedHeading;
-			const summary = [...document.querySelectorAll("details > summary")]
-				.find(element => element.textContent.includes(heading));
-			if(!summary) {
-				throw new Error("Could not find expandable section.");
-			}
-			if(!summary.parentElement.open) {
-				summary.click();
-			}
+			(() => {
+				const heading = $encodedHeading;
+				const summary = [...document.querySelectorAll("details > summary")]
+					.find(element => element.textContent.includes(heading));
+				if(!summary) {
+					throw new Error("Could not find expandable section.");
+				}
+				if(!summary.parentElement.open) {
+					summary.click();
+				}
+			})();
 		JS);
+	}
+
+	/** @Then :heading should remain expanded */
+	public function shouldRemainExpanded(string $heading):void {
+		$encodedHeading = json_encode($heading, JSON_THROW_ON_ERROR);
+		$expanded = $this->getSession()->evaluateScript(<<<JS
+			[...document.querySelectorAll("details")].some(details =>
+				details.open && details.querySelector(":scope > summary")
+					?.textContent.includes($encodedHeading)
+			)
+		JS);
+		if(!$expanded) {
+			throw $this->expectation("The '$heading' section did not remain expanded.");
+		}
 	}
 
 	/** @When I toggle the :name forwarder */
@@ -303,6 +319,13 @@ class FeatureContext extends MinkContext {
 		)->execute(["url" => $url, "id" => $endpoint["id"]]);
 	}
 
+	/** @Given the endpoint :title forwards submissions to the test webhook */
+	public function endpointForwardsToTestWebhook(string $title):void {
+		$url = rtrim((string)getenv("HEXFORM_STRIPE_API_BASE"), "/")
+			. "/hexform-test-webhook";
+		$this->theEndpointForwardsSubmissionsTo($title, $url);
+	}
+
 	/** @Given the endpoint :title ignores submission keys :keys */
 	public function endpointIgnoresSubmissionKeys(string $title, string $keys):void {
 		$endpoint = $this->endpoint($title);
@@ -327,6 +350,24 @@ class FeatureContext extends MinkContext {
 			"endpointId" => $endpoint["id"],
 			"email" => $email,
 			"code" => $code,
+		]);
+	}
+
+	/** @Given the endpoint :title has a confirmed email forwarder :email */
+	public function endpointHasConfirmedEmailForwarder(string $title, string $email):void {
+		$endpoint = $this->endpoint($title);
+		$this->database()->prepare(<<<'SQL'
+			insert into EmailForwarder (
+				id, endpointId, email, confirmedAt,
+				confirmationCode, confirmationCreatedAt
+			) values (
+				:id, :endpointId, :email, current_timestamp,
+				'done!', current_timestamp
+			)
+		SQL)->execute([
+			"id" => "behat-confirmed-forwarder-" . count($this->endpointList),
+			"endpointId" => $endpoint["id"],
+			"email" => $email,
 		]);
 	}
 
@@ -370,6 +411,46 @@ class FeatureContext extends MinkContext {
 		$row = $this->findContaining("[data-email-forwarders] li", $email);
 		if(!str_contains($row->getText(), "Confirmed")) {
 			throw $this->expectation("The forwarding address '$email' is not confirmed.");
+		}
+	}
+
+	/** @Then the endpoint :title should use the custom SMTP server :host on port :port */
+	public function endpointShouldUseCustomSmtp(string $title, string $host, string $port):void {
+		$endpoint = $this->endpoint($title);
+		$statement = $this->database()->prepare(
+			"select host, port from EndpointSmtp where endpointId = ?",
+		);
+		$statement->execute([$endpoint["id"]]);
+		$row = $statement->fetch(PDO::FETCH_ASSOC);
+		if(!$row || $row["host"] !== $host || (string)$row["port"] !== $port) {
+			throw $this->expectation("The endpoint does not use $host:$port.");
+		}
+	}
+
+	/** @Then the SMTP controls should show :mode */
+	public function smtpControlsShouldShow(string $mode):void {
+		$encodedMode = json_encode($mode, JSON_THROW_ON_ERROR);
+		$this->getSession()->wait(5000, <<<JS
+			document.querySelector(".smtp-mode")?.textContent
+				.replace(/\s+/g, " ").trim() === $encodedMode
+		JS);
+		$actual = $this->getSession()->evaluateScript(<<<'JS'
+			document.querySelector(".smtp-mode")?.textContent.replace(/\s+/g, " ").trim()
+		JS);
+		if($actual !== $mode) {
+			throw $this->expectation("Expected SMTP mode '$mode', got '$actual'.");
+		}
+	}
+
+	/** @Then the endpoint :title should use HexForm SMTP */
+	public function endpointShouldUseHexFormSmtp(string $title):void {
+		$endpoint = $this->endpoint($title);
+		$statement = $this->database()->prepare(
+			"select count(*) from EndpointSmtp where endpointId = ?",
+		);
+		$statement->execute([$endpoint["id"]]);
+		if((int)$statement->fetchColumn() !== 0) {
+			throw $this->expectation("The endpoint still has custom SMTP settings.");
 		}
 	}
 
@@ -678,6 +759,8 @@ class FeatureContext extends MinkContext {
 	}
 
 	private function deleteTestUser():void {
+		$this->database()->prepare("delete from Submission where id like ?")
+			->execute([self::TEST_SUBMISSION_ID . "-%"]);
 		$this->database()->prepare("delete from User where id = ?")
 			->execute([self::TEST_USER_ID]);
 	}

@@ -3,17 +3,19 @@ namespace HexForm\Email;
 
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
-use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use HexForm\Forwarding\ForwardingResult;
 
 readonly class Emailer {
 	private const string FROM_ADDRESS = "forms@hexform.io";
 	private const string FROM_NAME = "HexForm";
 
 	public function __construct(
-		private Mailer $mailer,
+		private MailerInterface $mailer,
 		private string $templateDirectory = "data/email",
+		private SmtpMailerFactory $smtpMailerFactory = new SmtpMailerFactory(),
 	) {}
 
 	public function sendConfirmation(string $email, string $code):bool {
@@ -21,7 +23,27 @@ readonly class Emailer {
 	}
 
 	/** @param array<string, mixed> $submission */
-	public function sendSubmission(string $email, string $endpointTitle, array $submission):bool {
+	public function sendSubmission(
+		string $email,
+		string $endpointTitle,
+		array $submission,
+		?SmtpConfiguration $smtp = null,
+	):bool {
+		return $this->sendSubmissionWithStatus(
+			$email,
+			$endpointTitle,
+			$submission,
+			$smtp,
+		)->successful;
+	}
+
+	/** @param array<string, mixed> $submission */
+	public function sendSubmissionWithStatus(
+		string $email,
+		string $endpointTitle,
+		array $submission,
+		?SmtpConfiguration $smtp = null,
+	):ForwardingResult {
 		$rows = [];
 		foreach($submission as $key => $value) {
 			array_push($rows,
@@ -30,15 +52,20 @@ readonly class Emailer {
 			);
 		}
 
-		return $this->send($email, "submission", [
+		return $this->sendWithStatus($email, "submission", [
 			"endpointSubject" => $endpointTitle,
 			"endpointTitle" => $this->escapeMarkdown($endpointTitle),
 			"submissionRows" => implode("\n", $rows),
-		]);
+		], $smtp);
 	}
 
 	/** @param array<string, string> $variables */
-	public function createEmail(string $emailAddress, string $templateName, array $variables):Email {
+	public function createEmail(
+		string $emailAddress,
+		string $templateName,
+		array $variables,
+		?Address $from = null,
+	):Email {
 		$path = "$this->templateDirectory/$templateName.md";
 		$template = file_get_contents($path);
 		if($template === false) {
@@ -58,7 +85,7 @@ readonly class Emailer {
 
 		$email = new Email();
 		return $email
-			->from(new Address(self::FROM_ADDRESS, self::FROM_NAME))
+			->from($from ?? new Address(self::FROM_ADDRESS, self::FROM_NAME))
 			->to($emailAddress)
 			->subject($subject)
 			->text($markdown)
@@ -66,13 +93,46 @@ readonly class Emailer {
 	}
 
 	/** @param array<string, string> $variables */
-	private function send(string $emailAddress, string $templateName, array $variables):bool {
+	private function send(
+		string $emailAddress,
+		string $templateName,
+		array $variables,
+		?SmtpConfiguration $smtp = null,
+	):bool {
+		return $this->sendWithStatus(
+			$emailAddress,
+			$templateName,
+			$variables,
+			$smtp,
+		)->successful;
+	}
+
+	/** @param array<string, string> $variables */
+	private function sendWithStatus(
+		string $emailAddress,
+		string $templateName,
+		array $variables,
+		?SmtpConfiguration $smtp = null,
+	):ForwardingResult {
 		try {
-			$this->mailer->send($this->createEmail($emailAddress, $templateName, $variables));
-			return true;
+			$mailer = $smtp ? $this->smtpMailerFactory->create($smtp) : $this->mailer;
+			$mailer->send($this->createEmail(
+				$emailAddress,
+				$templateName,
+				$variables,
+				$smtp?->getFrom(),
+			));
+			return new ForwardingResult(
+				true,
+				$smtp ? "Accepted by custom SMTP server" : "Accepted by HexForm SMTP server",
+			);
 		}
-		catch(TransportExceptionInterface) {
-			return false;
+		catch(TransportExceptionInterface $exception) {
+			return new ForwardingResult(
+				false,
+				"SMTP submission failed: "
+					. mb_strimwidth($exception->getMessage(), 0, 450, "…"),
+			);
 		}
 	}
 

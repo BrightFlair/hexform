@@ -8,8 +8,11 @@ use Gt\Ulid\Ulid;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
 use HexForm\Email\Emailer;
+use HexForm\Email\SmtpConfigurationRepository;
 use HexForm\Forwarding\EmailForwarderRepository;
 use HexForm\Audit\AuditLog;
+use HexForm\Forwarding\SubmissionForwardingLogRepository;
+use HexForm\Forwarding\WebhookForwarder;
 
 function go(
 	DynamicPath $path,
@@ -20,7 +23,10 @@ function go(
 	ServerInfo $serverInfo,
 	EmailForwarderRepository $forwarders,
 	Emailer $emailer,
+	SmtpConfigurationRepository $smtpConfigurations,
 	AuditLog $audit,
+	SubmissionForwardingLogRepository $forwardingLog,
+	WebhookForwarder $webhookForwarder,
 ): void {
 	if($serverInfo->getRequestMethod() !== "POST") {
 		$response->redirect("/");
@@ -47,20 +53,24 @@ function go(
 		$endpoint->junkFieldName &&
 		!empty($data[$endpoint->junkFieldName]);
 
+	$submissionId = new Ulid("SUBMISSION");
 	$submissions->create(
-		new Ulid("SUBMISSION"),
+		$submissionId,
 		$endpoint,
 		$data,
 		$isJunk,
 	);
 
 	if(!$isJunk && $endpoint->hasForwarder("email")) {
+		$smtp = $smtpConfigurations->getForEndpoint($endpoint);
 		foreach($forwarders->getConfirmedForEndpoint($endpoint) as $forwarder) {
-			$emailSent = $emailer->sendSubmission(
+			$result = $emailer->sendSubmissionWithStatus(
 				$forwarder->email,
 				$endpoint->title,
 				$data,
+				$smtp,
 			);
+			$forwardingLog->record($submissionId, "email", $forwarder->email, $result);
 
 			$audit->record(
 				null,
@@ -68,10 +78,29 @@ function go(
 				"email-forwarder",
 				$forwarder->id,
 				"forward-submission",
-				$emailSent ? "succeeded" : "failed",
-				["email" => $forwarder->email],
+				$result->successful ? "succeeded" : "failed",
+				["email" => $forwarder->email, "smtp" => $smtp ? "custom" : "hexform"],
 			);
 		}
+	}
+
+	if(!$isJunk && $endpoint->hasForwarder("webhook") && $endpoint->forwarderUrl) {
+		$result = $webhookForwarder->send($endpoint->forwarderUrl, $data);
+		$forwardingLog->record(
+			$submissionId,
+			"webhook",
+			$endpoint->forwarderUrl,
+			$result,
+		);
+		$audit->record(
+			null,
+			$endpoint->id,
+			"webhook-forwarder",
+			null,
+			"forward-submission",
+			$result->successful ? "succeeded" : "failed",
+			["url" => $endpoint->forwarderUrl, "statusCode" => $result->statusCode],
+		);
 	}
 
 	if($endpoint->confirmationUrl) {

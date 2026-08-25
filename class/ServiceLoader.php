@@ -8,7 +8,10 @@ use HexForm\User\UserRepository;
 use HexForm\Endpoint\EndpointRepository;
 use HexForm\Submission\SubmissionRepository;
 use HexForm\Email\Emailer;
+use HexForm\Email\SmtpConfigurationRepository;
 use HexForm\Forwarding\EmailForwarderRepository;
+use HexForm\Forwarding\SubmissionForwardingLogRepository;
+use HexForm\Forwarding\WebhookForwarder;
 use GT\Database\Database;
 use GT\Http\Uri;
 use GT\Session\Session;
@@ -72,6 +75,23 @@ class ServiceLoader extends DefaultServiceLoader {
 		return new EmailForwarderRepository(
 			$this->container->get(Database::class)->queryCollection("EmailForwarder"),
 		);
+	}
+
+	public function loadSmtpConfigurationRepository():SmtpConfigurationRepository {
+		return new SmtpConfigurationRepository(
+			$this->container->get(Database::class)->queryCollection("EndpointSmtp"),
+		);
+	}
+
+	public function loadSubmissionForwardingLogRepository():SubmissionForwardingLogRepository {
+		return new SubmissionForwardingLogRepository(
+			$this->container->get(Database::class)
+				->queryCollection("SubmissionForwardingLog"),
+		);
+	}
+
+	public function loadWebhookForwarder():WebhookForwarder {
+		return new WebhookForwarder();
 	}
 
 	public function loadAuditLog():AuditLog {
