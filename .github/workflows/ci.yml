@@ -223,5 +223,6 @@ jobs:
             && (php -S 127.0.0.1:8001 test/behat/stripe-router.php
             >/tmp/hexform-behat-stripe.log 2>&1 &)
             && exec env HEXFORM_BEHAT=1
+            HEXFORM_STRIPE_API_BASE=http://127.0.0.1:8001
             php -d display_errors=0 -S 0.0.0.0:8000
             -t /app/www /app/vendor/phpgt/webengine/go.php
