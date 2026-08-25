@@ -15,6 +15,7 @@ readonly class EndpointRepository {
 	public function updateGeneral(Endpoint $endpoint):void {
 		$params = $this->toParams($endpoint);
 		unset($params["forwarderUrl"]);
+		unset($params["enabledForwarders"]);
 		$this->db->update("updateGeneral", $params);
 	}
 
@@ -23,6 +24,15 @@ readonly class EndpointRepository {
 			"id" => $endpoint->id,
 			"userId" => $endpoint->userId,
 			"forwarderUrl" => $forwarderUrl,
+		]);
+	}
+
+	/** @param list<string> $forwarders */
+	public function updateEnabledForwarders(Endpoint $endpoint, array $forwarders):void {
+		$this->db->update("updateEnabledForwarders", [
+			"id" => $endpoint->id,
+			"userId" => $endpoint->userId,
+			"enabledForwarders" => implode(",", $forwarders),
 		]);
 	}
 
@@ -76,6 +86,7 @@ readonly class EndpointRepository {
 			"maximumSubmissionsPerMonth" => $endpoint->maximumSubmissionsPerMonth,
 			"forwarderUrl" => $endpoint->forwarderUrl,
 			"ignoredKeys" => $endpoint->ignoredKeys,
+			"enabledForwarders" => $endpoint->enabledForwarders,
 		];
 	}
 
@@ -100,6 +111,7 @@ readonly class EndpointRepository {
 			$row->getString("ignoredKeys") ?? Endpoint::DEFAULT_IGNORED_KEYS,
 			$row->getInt("submissionCount") ?? 0,
 			$row->getDateTime("lastSubmitted"),
+			$row->getString("enabledForwarders") ?? Endpoint::DEFAULT_ENABLED_FORWARDERS,
 		);
 	}
 }

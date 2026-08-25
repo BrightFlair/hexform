@@ -9,6 +9,7 @@
     "sass": "^1.90.0"
   },
   "dependencies": {
+    "@phpgt/flux": "github:PhpGt/Flux",
     "echarts": "^6.1.0"
   }
 }

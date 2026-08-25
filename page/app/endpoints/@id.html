@@ -1,7 +1,7 @@
 <header class="app-page-heading">
 	<div>
 		<p>Endpoint settings</p>
-		<h1 data-bind:text="title">Endpoint</h1>
+		<h1 data-bind:text="title" data-flux="update">Endpoint</h1>
 		<p>Configure how this endpoint accepts, stores, and forwards submissions.</p>
 	</div>
 	<a class="secondary" data-inbox>Open inbox</a>
@@ -11,6 +11,14 @@
 	<form method="dialog">
 		<h2>Could not confirm email</h2>
 		<p data-bind:text="confirmation-error-message">The confirmation code is incorrect. Please try again.</p>
+		<button>Close</button>
+	</form>
+</dialog>
+
+<dialog class="flash-dialog" data-paid-error data-flux="update" open>
+	<form method="dialog">
+		<h2>Paid feature</h2>
+		<p>This feature is only available on paid accounts.</p>
 		<button>Close</button>
 	</form>
 </dialog>
@@ -35,7 +43,7 @@
 	</code-sample>
 </section>
 
-<form class="settings-form" method="post">
+<form class="settings-form" method="post" data-flux>
 	<section class="settings-panel">
 		<h2>General</h2>
 
@@ -123,15 +131,30 @@
 	</div>
 
 		<div class="actions">
-			<button name="do" value="save_general">Save changes</button>
+			<button name="do" value="save_general" data-autosave="Saved">Save changes</button>
 		</div>
 	</section>
 </form>
 
 <h2>Forwarding rules</h2>
 
+<form class="forwarder-selector no-label-style" method="post" data-forwarder-selector data-flux>
+	<div class="forwarder-choices" aria-label="Available forwarders">
+		<label><input type="checkbox" name="forwarders[]" value="email" data-forwarder-choice /><img src="/asset/icon/mail.svg" alt="" /> <span>Email</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="webhook" data-forwarder-choice /><img src="/asset/icon/hexagon.svg" alt="" /> <span>Webhook</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="zapier" data-forwarder-choice /><img src="/asset/icon/brand-zapier.svg" alt="" /> <span>Zapier</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="google-sheets" data-forwarder-choice /><img src="/asset/icon/brand-google-drive.svg" alt="" /> <span>Google Sheets</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="trello" data-forwarder-choice /><img src="/asset/icon/brand-trello.svg" alt="" /> <span>Trello</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="github" data-forwarder-choice /><img src="/asset/icon/brand-github.svg" alt="" /> <span>GitHub</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="brevo" data-forwarder-choice /><img src="/asset/icon/mail.svg" alt="" /> <span>Brevo</span></label>
+		<label><input type="checkbox" name="forwarders[]" value="slack" data-forwarder-choice /><img src="/asset/icon/brand-slack.svg" alt="" /> <span>Slack</span></label>
+	</div>
+	<button name="do" value="save_forwarders" data-flux="autosave">Save forwarding choices</button>
+</form>
+
+<div id="forwarding-cards" data-flux="update">
 <form class="forwarding-form" method="post">
-	<details class="expandable-card webhook-forwarding">
+	<details class="expandable-card webhook-forwarding" data-forwarder-card="webhook">
 		<summary>
 			<span>
 				<strong>Webhook forwarding</strong>
@@ -156,7 +179,7 @@
 	</details>
 </form>
 
-<details class="expandable-card email-forwarding">
+<details class="expandable-card email-forwarding" data-forwarder-card="email">
 	<summary>
 		<span>
 			<strong>Email forwarding</strong>
@@ -203,6 +226,14 @@
 		</form>
 	</div>
 </details>
+
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="zapier"><summary><span><strong>Zapier</strong><small>Zapier forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="google-sheets"><summary><span><strong>Google Sheets</strong><small>Google Sheets forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="trello"><summary><span><strong>Trello</strong><small>Trello forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="github"><summary><span><strong>GitHub</strong><small>GitHub forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="brevo"><summary><span><strong>Brevo</strong><small>Brevo forwarding options are coming soon.</small></span></summary></details>
+<details class="expandable-card placeholder-forwarding" data-forwarder-card="slack"><summary><span><strong>Slack</strong><small>Slack forwarding options are coming soon.</small></span></summary></details>
+</div>
 
 <section class="danger-zone">
 	<h2>Delete endpoint</h2>

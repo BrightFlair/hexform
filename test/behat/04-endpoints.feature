@@ -27,6 +27,8 @@ Feature: Manage form endpoints
 		And I fill in "Maximum submissions per month" with "250"
 		And I press "Save changes"
 		Then the "Title" field should contain "Sales enquiries"
+		And the endpoint heading should become "Sales enquiries"
+		And the "Save changes" button should temporarily say "Saved"
 		And the "Maximum submissions per month" field should contain "250"
 		And the "Ignored keys" field should contain "do,csrf-token,__component,tracking-id"
 		And the endpoint list should contain "Sales enquiries"
@@ -40,6 +42,17 @@ Feature: Manage form endpoints
 		And I press "Save webhook changes"
 		Then the "Forwarder URL" field should contain "https://hooks.example.com/contact"
 		And the "Title" field should contain "Contact form"
+
+	Scenario: Toggle forwarding cards with the forwarder checkboxes
+		Given I have an endpoint named "Contact form"
+		And I have an active "developer" billing subscription
+		And I sign in without choosing a subscription
+		When I configure the endpoint "Contact form"
+		Then the "Slack" forwarding card should be visually hidden
+		When I toggle the "Slack" forwarder
+		Then the "Slack" forwarding card should be visually visible
+		When I toggle the "Slack" forwarder
+		Then the "Slack" forwarding card should be visually hidden
 
 	Scenario: Open an endpoint-specific inbox
 		Given I have an endpoint named "Contact form"

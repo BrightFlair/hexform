@@ -35,14 +35,30 @@ function go(
 
 	$binder->bindData($endpoint);
 	$confirmationError = $flash->consume();
+	$paidError = $confirmationError === "This feature is only available on paid accounts.";
 
-	if($confirmationError) {
+	if($confirmationError && !$paidError) {
 		$binder->bindKeyValue("confirmation-error-message", $confirmationError);
 	}
 	else {
 		$document->querySelector("[data-confirmation-error]")?->remove();
 	}
+	if(!$paidError) {
+		$document->querySelector("[data-paid-error]")?->removeAttribute("open");
+	}
 
+	$enabledForwarders = $endpoint->getEnabledForwarderList();
+	foreach($document->querySelectorAll("[data-forwarder-choice]") as $choice) {
+		$name = $choice->getAttribute("value");
+		if(in_array($name, $enabledForwarders, true)) {
+			$choice->setAttribute("checked", "checked");
+		}
+	}
+	foreach($document->querySelectorAll("[data-forwarder-card]") as $card) {
+		if(!in_array($card->getAttribute("data-forwarder-card"), $enabledForwarders, true)) {
+			$card->setAttribute("hidden", "hidden");
+		}
+	}
 	$document->querySelector("[data-inbox]")
 		?->setAttribute("href", "/app/submissions/?endpoint=" . urlencode($endpoint->id));
 
@@ -85,6 +101,37 @@ function go(
 		},
 		$document->querySelector("[data-email-forwarders]"),
 	);
+}
+
+function do_save_forwarders(
+	EndpointRepository $repository,
+	DynamicPath $path,
+	User $user,
+	Response $response,
+	Input $input,
+	Flash $flash,
+):void {
+	$endpoint = $repository->getByIdForUser($path->get("id"), $user);
+	if(!$endpoint) {
+		$response->redirect("/app/endpoints/");
+		return;
+	}
+
+	$available = ["email", "webhook", "zapier", "google-sheets", "trello", "github", "brevo", "slack"];
+	$free = ["email", "webhook"];
+	$requested = array_values(array_intersect(
+		$available,
+		$input->getMultipleString("forwarders"),
+	));
+	$hasPaidPlan = in_array($user->subscriptionPlan, ["developer", "enterprise"], true);
+	if(!$hasPaidPlan && array_diff($requested, $free)) {
+		$flash->set("This feature is only available on paid accounts.");
+		$response->reload();
+		return;
+	}
+
+	$repository->updateEnabledForwarders($endpoint, $requested);
+	$response->reload();
 }
 
 function do_add_email_forwarder(

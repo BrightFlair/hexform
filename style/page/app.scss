@@ -372,6 +372,39 @@ body.dir--app {
 		}
 	}
 
+	.forwarder-selector {
+		margin-bottom: 1rem;
+
+		.forwarder-choices {
+			display: flex;
+			gap: .75rem;
+			padding-bottom: .5rem;
+			overflow-x: auto;
+		}
+
+		label {
+			display: inline-flex;
+			min-width: max-content;
+			gap: .55rem;
+			padding: .65rem .8rem;
+			border: 1px solid var(--pal-line);
+			border-radius: var(--size-radius);
+			background: var(--pal-card);
+			align-items: center;
+			cursor: pointer;
+		}
+
+		label:has(input:checked) {
+			border-color: var(--theme-primary);
+			box-shadow: 0 0 0 1px var(--theme-primary);
+		}
+
+		img { width: 1.5rem; height: 1.5rem; object-fit: contain; }
+		button { margin-top: .75rem; }
+	}
+
+	.placeholder-forwarding { margin-bottom: 1rem; }
+
 	.flash-dialog {
 		max-width: min(32rem, calc(100% - 2rem));
 		padding: 1.5rem;

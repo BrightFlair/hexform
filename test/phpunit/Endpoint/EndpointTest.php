@@ -54,6 +54,14 @@ class EndpointTest extends TestCase {
 		);
 	}
 
+	public function testEnabledForwarders():void {
+		$sut = $this->createEndpoint(enabledForwarders: "email,slack");
+
+		self::assertSame(["email", "slack"], $sut->getEnabledForwarderList());
+		self::assertTrue($sut->hasForwarder("email"));
+		self::assertFalse($sut->hasForwarder("webhook"));
+	}
+
 	private function createEndpoint(
 		string $id = self::TEST_ENDPOINT_ID,
 		string $userId = self::TEST_USER_ID,
@@ -71,6 +79,7 @@ class EndpointTest extends TestCase {
 		string $ignoredKeys = Endpoint::DEFAULT_IGNORED_KEYS,
 		int $submissionCount = 3,
 		?DateTimeInterface $lastSubmitted = null,
+		string $enabledForwarders = Endpoint::DEFAULT_ENABLED_FORWARDERS,
 	):Endpoint {
 		return new Endpoint(
 			$id,
@@ -89,6 +98,7 @@ class EndpointTest extends TestCase {
 			$ignoredKeys,
 			$submissionCount,
 			$lastSubmitted,
+			$enabledForwarders,
 		);
 	}
 }

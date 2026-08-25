@@ -34,6 +34,88 @@ class FeatureContext extends MinkContext {
 		JS);
 	}
 
+	/** @When I toggle the :name forwarder */
+	public function iToggleTheForwarder(string $name):void {
+		$selector = $this->forwarderChoiceSelector($name);
+		$encodedSelector = json_encode($selector, JSON_THROW_ON_ERROR);
+		$this->getSession()->wait(5000, <<<'JS'
+			document.getElementById("flux-style") !== null
+		JS);
+		if(!$this->getSession()->evaluateScript(
+			'document.getElementById("flux-style") !== null',
+		)) {
+			throw $this->expectation("Flux did not initialise.");
+		}
+		$isCurrentlyChecked = $this->getSession()->evaluateScript(
+			"document.querySelector($encodedSelector).checked",
+		);
+		$expected = $isCurrentlyChecked ? "false" : "true";
+		$cardSelector = json_encode(
+			"[data-forwarder-card='" . strtolower(str_replace(" ", "-", $name)) . "']",
+			JSON_THROW_ON_ERROR,
+		);
+		$this->getSession()->executeScript(<<<JS
+			(() => {
+				const checkbox = document.querySelector($encodedSelector);
+				checkbox.click();
+			})();
+		JS);
+		$this->getSession()->wait(5000, <<<JS
+			document.readyState === "complete"
+				&& document.querySelector($encodedSelector)?.checked === $expected
+				&& document.querySelector($cardSelector)?.hidden === !$expected
+		JS);
+	}
+
+	/** @Then the :name forwarding card should be visually visible */
+	public function forwardingCardShouldBeVisuallyVisible(string $name):void {
+		$this->assertForwardingCardVisibility($name, true);
+	}
+
+	/** @Then the :name forwarding card should be visually hidden */
+	public function forwardingCardShouldBeVisuallyHidden(string $name):void {
+		$this->assertForwardingCardVisibility($name, false);
+	}
+
+	/** @Then the endpoint heading should become :title */
+	public function endpointHeadingShouldBecome(string $title):void {
+		$encodedTitle = json_encode($title, JSON_THROW_ON_ERROR);
+		$this->getSession()->wait(5000, <<<JS
+			document.querySelector(".app-page-heading h1")?.textContent.trim() === $encodedTitle
+		JS);
+		$this->assertSession()->elementTextContains(
+			"css",
+			".app-page-heading h1",
+			$title,
+		);
+	}
+
+	/** @Then the :buttonText button should temporarily say :feedback */
+	public function buttonShouldTemporarilySay(string $buttonText, string $feedback):void {
+		$encodedFeedback = json_encode($feedback, JSON_THROW_ON_ERROR);
+		$this->getSession()->wait(5000, <<<JS
+			[...document.querySelectorAll("button")]
+				.some(button => button.textContent.trim() === $encodedFeedback)
+		JS);
+		$button = $this->getSession()->getPage()->findButton($feedback);
+		if(!$button) {
+			throw $this->expectation(
+				"The '$buttonText' button did not temporarily say '$feedback'.",
+			);
+		}
+
+		$encodedButtonText = json_encode($buttonText, JSON_THROW_ON_ERROR);
+		$this->getSession()->wait(3000, <<<JS
+			[...document.querySelectorAll("button")]
+				.some(button => button.textContent.trim() === $encodedButtonText)
+		JS);
+		if(!$this->getSession()->getPage()->findButton($buttonText)) {
+			throw $this->expectation(
+				"The '$feedback' feedback did not return to '$buttonText'.",
+			);
+		}
+	}
+
 	/** @BeforeScenario */
 	public function prepareScenario():void {
 		$this->getSession()->reset();
@@ -695,6 +777,42 @@ class FeatureContext extends MinkContext {
 
 	private function acceptNextConfirmation():void {
 		$this->getSession()->executeScript("window.confirm = () => true");
+	}
+
+	private function assertForwardingCardVisibility(string $name, bool $expected):void {
+		$slug = strtolower(str_replace(" ", "-", $name));
+		$selector = json_encode(
+			"[data-forwarder-card='$slug']",
+			JSON_THROW_ON_ERROR,
+		);
+		$visible = $this->getSession()->evaluateScript(<<<JS
+			(() => {
+				const card = document.querySelector($selector);
+				return Boolean(card && !card.hidden
+					&& getComputedStyle(card).display !== "none"
+					&& card.getClientRects().length);
+			})()
+		JS);
+		if($visible !== $expected) {
+			$state = $expected ? "visible" : "hidden";
+			$details = $this->getSession()->evaluateScript(<<<JS
+				(() => {
+					const card = document.querySelector($selector);
+					return card ? "hidden=" + card.hidden + ", display="
+						+ getComputedStyle(card).display + ", rects=" + card.getClientRects().length : "missing";
+				})()
+			JS);
+			$endpoint = reset($this->endpointList);
+			$statement = $this->database()->prepare("select enabledForwarders from Endpoint where id = ?");
+			$statement->execute([$endpoint["id"]]);
+			$stored = $statement->fetchColumn();
+			throw $this->expectation("The $name forwarding card is not visually $state ($details, stored=$stored).");
+		}
+	}
+
+	private function forwarderChoiceSelector(string $name):string {
+		$slug = strtolower(str_replace(" ", "-", $name));
+		return "[data-forwarder-choice][value='$slug']";
 	}
 
 	private function expectation(string $message):ExpectationException {

@@ -54,7 +54,7 @@ function go(
 		$isJunk,
 	);
 
-	if(!$isJunk) {
+	if(!$isJunk && $endpoint->hasForwarder("email")) {
 		foreach($forwarders->getConfirmedForEndpoint($endpoint) as $forwarder) {
 			$emailSent = $emailer->sendSubmission(
 				$forwarder->email,

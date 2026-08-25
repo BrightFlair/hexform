@@ -40,6 +40,7 @@ class EndpointRepositoryTest extends TestCase {
 		$endpoint = $this->createEndpoint();
 		$expected = $this->expectedParameters($endpoint);
 		unset($expected["forwarderUrl"]);
+		unset($expected["enabledForwarders"]);
 		$db = self::createMock(QueryCollection::class);
 		$db->expects(self::once())
 			->method("update")
@@ -62,6 +63,20 @@ class EndpointRepositoryTest extends TestCase {
 		$sut = new EndpointRepository($db);
 
 		$sut->updateForwarderUrl($endpoint, "https://example.com/new-hook");
+	}
+
+	public function testUpdateEnabledForwarders():void {
+		$endpoint = $this->createEndpoint();
+		$db = self::createMock(QueryCollection::class);
+		$db->expects(self::once())
+			->method("update")
+			->with("updateEnabledForwarders", [
+				"id" => $endpoint->id,
+				"userId" => $endpoint->userId,
+				"enabledForwarders" => "email,slack",
+			]);
+
+		(new EndpointRepository($db))->updateEnabledForwarders($endpoint, ["email", "slack"]);
 	}
 
 	public function testDelete():void {
@@ -201,6 +216,7 @@ class EndpointRepositoryTest extends TestCase {
 			"maximumSubmissionsPerMonth" => $endpoint->maximumSubmissionsPerMonth,
 			"forwarderUrl" => $endpoint->forwarderUrl,
 			"ignoredKeys" => $endpoint->ignoredKeys,
+			"enabledForwarders" => $endpoint->enabledForwarders,
 		];
 	}
 
