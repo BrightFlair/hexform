@@ -36,7 +36,8 @@
 		injectAfter.after(field);
 		field.required = true;
 		field.tabIndex = -1;
-		field.style.scale = "0.01";
+		field.style.position = "absolute";
+		field.style.translate = "-100vw";
 
 		let timeout = null;
 
