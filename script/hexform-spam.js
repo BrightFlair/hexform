@@ -22,6 +22,30 @@
 
 		return response.json();
 	}).then(json => {
-		console.log(json);
+		injectForm(form, json);
 	});
+
+	function injectForm(form, json) {
+		let field = form.ownerDocument.createElement("input");
+		field.name = json.junkFieldName;
+
+		let firstField = form.querySelector("input");
+		let firstFieldLabel = firstField.closest("label");
+		let injectAfter = firstFieldLabel ?? firstField;
+
+		injectAfter.after(field);
+		field.required = true;
+
+		let timeout = null;
+
+		form.addEventListener("input", () => {
+			if(timeout) {
+				return;
+			}
+
+			timeout = setTimeout(() => {
+				field.required = false;
+			}, 5000);
+		});
+	}
 })();
