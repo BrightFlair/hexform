@@ -29,7 +29,9 @@ function go(
 	WebhookForwarder $webhookForwarder,
 ): void {
 	if($serverInfo->getRequestMethod() !== "POST") {
-		$response->redirect("/");
+		header("Content-type: text/javascript");
+		echo file_get_contents("script/hexform-spam.js");
+		exit;
 	}
 
 	$endpoint = $endpoints->getByCode($path->get("code"));
